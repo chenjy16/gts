@@ -1,0 +1,17 @@
+config:
+  jedis:
+    pool:
+      host: 192.168.1.235
+      port: 6380
+    maxTotal: 200
+    maxIdle: 50
+    minIdle: 10
+    maxWaitMillis: 10000
+    testOnBorrow: true
+    testOnReturn: true
+    testWhileIdle: true
+    seconds: 1800
+    timeBetweenEvictionRunsMillis: 30000
+    numTestsPerEvictionRun: 10
+    minEvictableIdleTimeMillis: 60000
+
