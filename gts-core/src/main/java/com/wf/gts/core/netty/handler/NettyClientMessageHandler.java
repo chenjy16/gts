@@ -38,14 +38,13 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientMessageHandler.class);
-
+    
     /**
      * false 未链接
      * true 连接中
      */
     public volatile static boolean net_state = false;
 
-    private Logger logger = LoggerFactory.getLogger(NettyClientMessageHandler.class);
 
     private static volatile ChannelHandlerContext ctx;
 
@@ -64,7 +63,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, final Object msg) throws Exception {
         net_state = true;
         HeartBeat heartBeat = (HeartBeat) msg;
-        //LogUtil.debug(LOGGER,"接收服务端据命令为,执行的动作为:{}", heartBeat::getAction);
+        LOGGER.debug("接收服务端据命令为,执行的动作为:{}", heartBeat.getAction());
         final NettyMessageActionEnum actionEnum = NettyMessageActionEnum.acquireByCode(heartBeat.getAction());
         try {
             switch (actionEnum) {
@@ -130,7 +129,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("与服务器断开连接服务器");
+        LOGGER.info("与服务器断开连接服务器");
         super.channelInactive(ctx);
         SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
 
@@ -140,7 +139,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         NettyClientMessageHandler.ctx = ctx;
-        logger.info("建立链接-->" + ctx);
+        LOGGER.info("建立链接-->" + ctx);
         net_state = true;
     }
 
@@ -158,7 +157,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
                 //表示已经多久没有发送数据了
                 heartBeat.setAction(NettyMessageActionEnum.HEART.getCode());
                 ctx.writeAndFlush(heartBeat);
-              //  LogUtil.debug(LOGGER,"向服务端发送的心跳，动作为:{}", heartBeat::getAction);
+                LOGGER.debug("向服务端发送的心跳，动作为:{}", heartBeat.getAction());
             } else if (event.state() == IdleState.ALL_IDLE) {
                 //表示已经多久既没有收到也没有发送数据了
                 SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
@@ -195,9 +194,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
                                     == heartBeat.getAction()) {
                               
                                 sendTask.setAsyncCall(objects -> null);
-                                
                             } else {
-                              
                                 sendTask.setAsyncCall(objects -> false);
                                 
                             }
@@ -206,7 +203,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
                     }, txConfig.getDelayTime(), TimeUnit.SECONDS);
             //发送线程在此等待，等tm是否 正确返回（正确返回唤醒） 返回错误或者无返回通过上面的调度线程唤醒
             sendTask.await();
-
             //如果已经被唤醒，就不需要去执行调度线程了 ，关闭上面的调度线程池中的任务
             if (!schedule.isDone()) {
                 schedule.cancel(false);

@@ -15,6 +15,7 @@ public class TxTransactionFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
       
+      
         if (RpcContext.getContext().isConsumerSide()) {
             RpcContext.getContext().setAttachment("tx-group",TxTransactionLocal.getInstance().getTxGroupId());
         }

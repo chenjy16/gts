@@ -3,6 +3,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,8 @@ public class NettyClientImpl implements NettyClient {
 
     private final NettyClientHandlerInitializer nettyClientHandlerInitializer;
 
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientImpl.class);
 
     @Autowired
     public NettyClientImpl(NettyClientHandlerInitializer nettyClientHandlerInitializer) {
@@ -122,15 +126,15 @@ public class NettyClientImpl implements NettyClient {
         }
 
         ChannelFuture future = bootstrap.connect(host, port);
-        //LogUtil.info(LOGGER, "连接txManager-socket服务-> host:port:{}", () -> host + ":" + port);
+        LOGGER.info("连接txManager-socket服务-> host:port:{}",host + ":" + port);
 
         future.addListener((ChannelFutureListener) futureListener -> {
           
             if (futureListener.isSuccess()) {
                 channel = futureListener.channel();
-                //LogUtil.info(LOGGER, "Connect to server successfully!-> host:port:{}", () -> host + ":" + port);
+                LOGGER.info("Connect to server successfully!-> host:port:{}", host + ":" + port);
             } else {
-               // LogUtil.info(LOGGER, "Failed to connect to server, try connect after 5s-> host:port:{}", () -> host + ":" + port);
+                LOGGER.info("Failed to connect to server, try connect after 5s-> host:port:{}",host + ":" + port);
                 futureListener.channel().eventLoop().schedule(this::doConnect, 5, TimeUnit.SECONDS);
             }
             

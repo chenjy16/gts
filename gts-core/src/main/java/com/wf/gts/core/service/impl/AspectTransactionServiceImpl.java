@@ -11,7 +11,6 @@ import com.wf.gts.core.service.AspectTransactionService;
 import com.wf.gts.core.service.TxTransactionFactoryService;
 import com.wf.gts.core.util.SpringBeanUtils;
 
-
 @Service
 public class AspectTransactionServiceImpl implements AspectTransactionService {
 
@@ -35,6 +34,7 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
         final Class c = txTransactionFactoryService.factoryOf(info);
         final TxTransactionHandler txTransactionHandler =
                 (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(c);
+        
         return txTransactionHandler.handler(point, info);
     }
 }

@@ -25,10 +25,12 @@ public class TxManagerLocator {
 
     private static final TxManagerLocator TX_MANAGER_LOCATOR = new TxManagerLocator();
 
+    
     public static TxManagerLocator getInstance() {
         return TX_MANAGER_LOCATOR;
     }
 
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerLocator.class);
 
     private TxConfig txConfig;
@@ -46,8 +48,8 @@ public class TxManagerLocator {
     private TxManagerLocator() {
         List<TxManagerServiceDTO> initial = Lists.newArrayList();
         m_configServices = new AtomicReference<>(initial);
-        m_responseType = new TypeToken<List<TxManagerServiceDTO>>() {
-        }.getType();
+        m_responseType = new TypeToken<List<TxManagerServiceDTO>>() {}.getType();
+        
         this.m_executorService = Executors.newSingleThreadScheduledExecutor(
                 TxTransactionThreadFactory.create("TxManagerLocator", true));
     }
@@ -74,7 +76,7 @@ public class TxManagerLocator {
                     return OkHttpTools.getInstance().get(url, null, TxManagerServer.class);
                 } catch (Throwable ex) {
                     ex.printStackTrace();
-                    //LogUtil.error(LOGGER, "loadTxManagerServer fail exception:{}", ex::getMessage);
+                    LOGGER.error("loadTxManagerServer fail exception:{}", ex.getMessage());
 
                 }
             }
@@ -95,7 +97,7 @@ public class TxManagerLocator {
     public void schedulePeriodicRefresh() {
         this.m_executorService.scheduleAtFixedRate(
                 () -> {
-                    //LogUtil.info(LOGGER,"refresh updateTxManagerServices delayTime:{}",()->txConfig.getRefreshInterval());
+                    LOGGER.info("refresh updateTxManagerServices delayTime:{}",txConfig.getRefreshInterval());
                     updateTxManagerServices();
                 }, 0, txConfig.getRefreshInterval(),
                 TimeUnit.SECONDS);
@@ -110,18 +112,16 @@ public class TxManagerLocator {
                 final List<TxManagerServiceDTO> serviceDTOList =
                         OkHttpTools.getInstance().get(url, m_responseType);
                 if (CollectionUtils.isEmpty(serviceDTOList)) {
-                    //LogUtil.error(LOGGER, "Empty response! 请求url为:{}", () -> url);
+                    LOGGER.error("Empty response! 请求url为:{}",url);
                     continue;
                 }
                 m_configServices.set(serviceDTOList);
                 return;
             } catch (Throwable ex) {
                 ex.printStackTrace();
-                //LogUtil.error(LOGGER, "updateTxManagerServices fail exception:{}", ex::getMessage);
-
+                LOGGER.error("updateTxManagerServices fail exception:{}", ex.getMessage());
             }
         }
-
     }
 
     private String assembleUrl() {

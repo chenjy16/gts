@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.wf.gts.core.config.TxConfig;
 import com.wf.gts.core.util.SpringBeanUtils;
 
+
 /**
  * TxTransaction 启动类
  */
@@ -39,11 +40,12 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
 
     private void start(TxConfig txConfig) {
         if (!checkDataConfig(txConfig)) {
-           // throw new Exception("分布式事务配置信息不完整！");
+            throw new RuntimeException("分布式事务配置信息不完整！");
         }
         txTransactionInitialize.init(txConfig);
     }
 
+    
     private boolean checkDataConfig(TxConfig txConfig) {
         return !StringUtils.isBlank(txConfig.getTxManagerUrl());
     }
