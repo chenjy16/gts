@@ -17,7 +17,6 @@ import com.wf.gts.common.enums.TransactionRoleEnum;
 import com.wf.gts.common.enums.TransactionStatusEnum;
 import com.wf.gts.common.utils.IdWorkerUtils;
 import com.wf.gts.core.bean.TxTransactionInfo;
-import com.wf.gts.core.concurrent.TransactionThreadPool;
 import com.wf.gts.core.service.TxManagerMessageService;
 import com.wf.gts.core.util.TxTransactionLocal;
 
@@ -30,20 +29,14 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartTxTransactionHandler.class);
 
-    private final TransactionThreadPool transactionThreadPool;
-
     private final TxManagerMessageService txManagerMessageService;
-
-   // private final TxCompensationCommand txCompensationCommand;
 
     private final PlatformTransactionManager platformTransactionManager;
 
-
+    
     @Autowired(required = false)
-    public StartTxTransactionHandler(TransactionThreadPool transactionThreadPool, TxManagerMessageService txManagerMessageService,PlatformTransactionManager platformTransactionManager) {
-        this.transactionThreadPool = transactionThreadPool;
+    public StartTxTransactionHandler(TxManagerMessageService txManagerMessageService,PlatformTransactionManager platformTransactionManager) {
         this.txManagerMessageService = txManagerMessageService;
-        //this.txCompensationCommand = txCompensationCommand;
         this.platformTransactionManager = platformTransactionManager;
     }
 
@@ -57,24 +50,23 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
         //创建事务组信息
         final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey));
+        
         if (success) {
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus transactionStatus = platformTransactionManager.getTransaction(def);
+            TransactionStatus transactionStatus=createTransactionStatus();
             try {
+                long startTime = System.currentTimeMillis();
                 //发起调用
                 final Object res = point.proceed();
-
-                //保存本地补偿数据
-                //String compensateId = txCompensationCommand.saveTxCompensation(info.getInvocation(), groupId, waitKey);
-               
+                long runTime = System.currentTimeMillis() - startTime;
+                
+                if(info.getTxTransaction().clientTimeout()< runTime ){//超时回滚
+                  rollbackForAll(transactionStatus, groupId);
+                }
                 final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId);
                 if (commit) {
                     //我觉得到这一步了，应该是切面走完，然后需要提交了，此时应该都是进行提交的
                     //提交事务
                     platformTransactionManager.commit(transactionStatus);
-                    //删除补偿信息
-                   // txCompensationCommand.removeTxCompensation(compensateId);
                     //通知tm完成事务
                     CompletableFuture.runAsync(() ->
                             txManagerMessageService
@@ -88,10 +80,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 return res;
 
             } catch (final Throwable throwable) {
-                //如果有异常 当前项目事务进行回滚 ，同时通知tm 整个事务失败
-                platformTransactionManager.rollback(transactionStatus);
-                //通知tm整个事务组失败，需要回滚，（回滚那些正常提交的模块，他们正在等待通知。。。。）
-                txManagerMessageService.rollBackTxTransaction(groupId);
+                rollbackForAll(transactionStatus, groupId);
                 throwable.printStackTrace();
                 throw throwable;
                 
@@ -103,7 +92,45 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         }
     }
 
-
+    
+    
+    
+    /**
+     * 功能描述: 回滚所有事物
+     * @author: chenjy
+     * @date: 2017年9月18日 上午11:37:58 
+     * @param transactionStatus
+     * @param groupId
+     */
+    private void rollbackForAll(TransactionStatus transactionStatus,String groupId ){
+        //如果有异常 当前项目事务进行回滚 ，同时通知tm 整个事务失败
+        platformTransactionManager.rollback(transactionStatus);
+        //通知tm整个事务组失败，需要回滚，（回滚那些正常提交的模块，他们正在等待通知。。。。）
+        txManagerMessageService.rollBackTxTransaction(groupId);
+    }
+    
+    /**
+     * 功能描述: 创建事务
+     * @author: chenjy
+     * @date: 2017年9月18日 上午11:37:23 
+     * @return
+     */
+    private TransactionStatus  createTransactionStatus(){
+      DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+      def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+      TransactionStatus transactionStatus = platformTransactionManager.getTransaction(def);
+      return transactionStatus;
+    }
+    
+    
+    /**
+     * 功能描述: 创建事务组
+     * @author: chenjy
+     * @date: 2017年9月18日 上午11:37:37 
+     * @param groupId
+     * @param taskKey
+     * @return
+     */
     private TxTransactionGroup newTxTransactionGroup(String groupId, String taskKey) {
         //创建事务组信息
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();

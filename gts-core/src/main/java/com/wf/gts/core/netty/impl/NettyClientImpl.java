@@ -174,14 +174,14 @@ public class NettyClientImpl implements NettyClient {
     @Override
     public boolean checkState() {
         if (!NettyClientMessageHandler.net_state) {
-           // LogUtil.error(LOGGER, () -> "socket服务尚未建立连接成功,将在此等待2秒.");
+            LOGGER.info("socket服务尚未建立连接成功,将在此等待2秒.");
             try {
                 Thread.sleep(1000 * 2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             if (!NettyClientMessageHandler.net_state) {
-               // LogUtil.error(LOGGER, () -> "TxManager还未连接成功,请检查TxManager服务后再试");
+                LOGGER.info("TxManager还未连接成功,请检查TxManager服务后再试");
                 return false;
             }
         }

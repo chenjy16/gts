@@ -24,12 +24,10 @@ import com.wf.gts.core.constant.Constant;
 public class TxManagerLocator {
 
     private static final TxManagerLocator TX_MANAGER_LOCATOR = new TxManagerLocator();
-
     
     public static TxManagerLocator getInstance() {
         return TX_MANAGER_LOCATOR;
     }
-
     
     private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerLocator.class);
 
@@ -49,7 +47,6 @@ public class TxManagerLocator {
         List<TxManagerServiceDTO> initial = Lists.newArrayList();
         m_configServices = new AtomicReference<>(initial);
         m_responseType = new TypeToken<List<TxManagerServiceDTO>>() {}.getType();
-        
         this.m_executorService = Executors.newSingleThreadScheduledExecutor(
                 TxTransactionThreadFactory.create("TxManagerLocator", true));
     }
@@ -82,7 +79,6 @@ public class TxManagerLocator {
             }
         }
         return null;
-
     }
 
 
@@ -111,6 +107,7 @@ public class TxManagerLocator {
             try {
                 final List<TxManagerServiceDTO> serviceDTOList =
                         OkHttpTools.getInstance().get(url, m_responseType);
+                
                 if (CollectionUtils.isEmpty(serviceDTOList)) {
                     LOGGER.error("Empty response! 请求url为:{}",url);
                     continue;
