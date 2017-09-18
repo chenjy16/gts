@@ -41,22 +41,20 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
      */
     @Override
     public void rollBack(String txGroupId) {
-        //try {
-            txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.ROLLBACK.getCode());
-            final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
-            if (CollectionUtils.isNotEmpty(txTransactionItems)) {
-                final Map<Boolean, List<TxTransactionItem>> listMap = filterData(txTransactionItems);
-                if (Objects.isNull(listMap)) {
-                    LOGGER.info("事务组id:{},提交失败！数据不完整",txGroupId);
-                    return;
-                }
-                final List<TxTransactionItem> currentItem = listMap.get(Boolean.TRUE);
-                final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
-                doRollBack(txGroupId, currentItem,elseItems);
+     
+        txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.ROLLBACK.getCode());
+        final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
+        if (CollectionUtils.isNotEmpty(txTransactionItems)) {
+            final Map<Boolean, List<TxTransactionItem>> listMap = filterData(txTransactionItems);
+            if (Objects.isNull(listMap)) {
+                LOGGER.info("事务组id:{},提交失败！数据不完整",txGroupId);
+                return;
             }
-        /*} finally {
-            txManagerService.removeRedisByTxGroupId(txGroupId);
-        }*/
+            final List<TxTransactionItem> currentItem = listMap.get(Boolean.TRUE);
+            final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
+            doRollBack(txGroupId, currentItem,elseItems);
+        }
+     
     }
 
 

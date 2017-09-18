@@ -19,36 +19,26 @@ import com.wf.gts.common.utils.ExecutorMessageTool;
 @Component
 public class HttpTransactionExecutor {
 
-    /**
-     * logger
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpTransactionExecutor.class);
-
-
     public void rollBack(List<TxTransactionItem> txTransactionItems) {
         try {
             execute(txTransactionItems, TransactionStatusEnum.ROLLBACK);
         } catch (Exception e) {
-            e.printStackTrace();
-            //LOGGER.info("txManger 发送rollback指令异常{} ", e::getMessage);
+            LOGGER.error("txManger 发送rollback指令异常{} ", e);
         }
-
     }
-
 
     public void commit(List<TxTransactionItem> txTransactionItems) {
         try {
             execute(txTransactionItems, TransactionStatusEnum.COMMIT);
         } catch (Exception e) {
-            e.printStackTrace();
-            //LogUtil.info(LOGGER, "txManger 发送commit 指令异常 ", e::getMessage);
+            LOGGER.error("txManger 发送commit 指令异常:{} ", e);
         }
     }
 
 
     private void execute(List<TxTransactionItem> txTransactionItems, TransactionStatusEnum transactionStatusEnum) {
         if (CollectionUtils.isNotEmpty(txTransactionItems)) {
-          
             final CompletableFuture[] cfs = txTransactionItems
                     .stream()
                     .map(item ->
@@ -68,16 +58,11 @@ public class HttpTransactionExecutor {
                                 
 
                             }).whenComplete((v, e) ->
-                                    
                                     LOGGER.info("txManger 成功发送 {} 指令 事务taskId为：{}", transactionStatusEnum.getDesc(), item.getTaskKey()))
                           )
-                    
                     .toArray(CompletableFuture[]::new);
-           
             //等待所有的执行完
             CompletableFuture.allOf(cfs).join();
         }
     }
-
-
 }
