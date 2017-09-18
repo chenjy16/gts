@@ -13,7 +13,6 @@ public class Scanner extends ClassPathBeanDefinitionScanner {
     public Scanner(BeanDefinitionRegistry registry) {
         super(registry);
     }
-
     @Override
     protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
         return super.doScan(basePackages);

@@ -15,7 +15,7 @@ import com.wf.gts.core.util.SpringBeanUtils;
  */
 @Component
 public class TxTransactionBootstrap extends TxConfig implements ApplicationContextAware {
-
+  
     private ConfigurableApplicationContext cfgContext;
     
     /**

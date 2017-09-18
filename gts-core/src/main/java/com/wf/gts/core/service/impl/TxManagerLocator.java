@@ -32,11 +32,8 @@ public class TxManagerLocator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerLocator.class);
 
     private TxConfig txConfig;
-
     private ScheduledExecutorService m_executorService;
-
     private AtomicReference<List<TxManagerServiceDTO>> m_configServices;
-
     private Type m_responseType;
 
     public void setTxConfig(TxConfig txConfig) {

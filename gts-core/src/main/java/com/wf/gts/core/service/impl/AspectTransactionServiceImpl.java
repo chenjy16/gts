@@ -34,15 +34,19 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
         TxTransactionInfo info = new TxTransactionInfo(txTransaction, transactionGroupId, invocation);
         final Class c = txTransactionFactoryService.factoryOf(info);
         final TxTransactionHandler txTransactionHandler =
-                (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(c);
+        (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(c);
 
         return txTransactionHandler.handler(point, info);
     }
     
-    
-    
+    /**
+     * 功能描述: 获取方法上的注解
+     * @author: chenjy
+     * @date: 2017年9月18日 下午2:48:05 
+     * @param method
+     * @return
+     */
     private TxTransaction getTxTransaction(Method method){
-      //获取方法上的注解
       TxTransaction  txTransaction = method.getAnnotation(TxTransaction.class);
       return txTransaction;
     }

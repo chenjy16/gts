@@ -6,12 +6,10 @@ import com.wf.gts.core.handler.ActorTxTransactionHandler;
 import com.wf.gts.core.handler.StartTxTransactionHandler;
 import com.wf.gts.core.service.TxTransactionFactoryService;
 
-/**
- * 判断是进行start 还是running 还是补偿
- */
-@Service
-public class TxTransactionFactoryServiceImpl implements TxTransactionFactoryService {
 
+@Service
+public class TxTransactionFactoryServiceImpl implements TxTransactionFactoryService<TxTransactionInfo> {
+    
     @Override
     public Class factoryOf(TxTransactionInfo info) throws Throwable {
         if (StringUtils.isBlank(info.getTxGroupId())) {

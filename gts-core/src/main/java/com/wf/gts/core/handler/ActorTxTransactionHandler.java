@@ -1,5 +1,6 @@
 package com.wf.gts.core.handler;
 import java.util.concurrent.CompletableFuture;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import com.wf.gts.common.utils.ThreadPoolManager;
 import com.wf.gts.core.bean.TxTransactionInfo;
 import com.wf.gts.core.concurrent.BlockTask;
 import com.wf.gts.core.concurrent.BlockTaskHelper;
-import com.wf.gts.core.concurrent.TransactionThreadPool;
 import com.wf.gts.core.service.TxManagerMessageService;
 
 /**
@@ -28,15 +28,15 @@ import com.wf.gts.core.service.TxManagerMessageService;
 public class ActorTxTransactionHandler implements TxTransactionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActorTxTransactionHandler.class);
-    private final TransactionThreadPool transactionThreadPool;
+
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;
 
     @Autowired
-    public ActorTxTransactionHandler(PlatformTransactionManager platformTransactionManager, TransactionThreadPool transactionThreadPool, TxManagerMessageService txManagerMessageService) {
+    public ActorTxTransactionHandler(PlatformTransactionManager platformTransactionManager, TxManagerMessageService txManagerMessageService) {
     
         this.platformTransactionManager = platformTransactionManager;
-        this.transactionThreadPool = transactionThreadPool;
+  
         this.txManagerMessageService = txManagerMessageService;
     }
 
