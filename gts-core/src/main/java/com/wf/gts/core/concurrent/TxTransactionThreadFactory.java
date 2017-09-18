@@ -46,7 +46,7 @@ public class TxTransactionThreadFactory implements ThreadFactory {
         try {
           TimeUnit.SECONDS.sleep(2);
         } catch (InterruptedException ex) {
-          // ignore
+          
         }
       } else {
         log.info("All txTransaction threads are shutdown.");

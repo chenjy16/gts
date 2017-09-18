@@ -52,9 +52,7 @@ public class TransactionRecover implements Serializable {
     private TransactionInvocation transactionInvocation;
 
 
-    /**
-     *  {@linkplain com.happylifeplat.transaction.common.enums.TransactionStatusEnum}
-     */
+   
     private int status;
 
     public String getId() {
