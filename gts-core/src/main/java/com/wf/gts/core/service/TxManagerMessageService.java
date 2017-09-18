@@ -58,15 +58,6 @@ public interface TxManagerMessageService {
     Boolean preCommitTxTransaction(String txGroupId,int timeout);
 
 
-    /**
-     * 完成提交自身的事务
-     *
-     * @param txGroupId 事务组id
-     * @param taskKey   子事务的taskKey
-     * @param status    状态  {@linkplain com.happylifeplat.transaction.common.enums.TransactionStatusEnum}
-     * @return true 成功 false 失败
-     */
-    Boolean completeCommitTxTransaction(String txGroupId, String taskKey,int status,int timeout);
 
 
     /**
@@ -78,13 +69,5 @@ public interface TxManagerMessageService {
      */
     void AsyncCompleteCommitTxTransaction(String txGroupId, String taskKey,int status);
 
-    /**
-     * 提交参与者事务状态
-     * @param txGroupId  事务组id
-     * @param txTransactionItem 参与者
-     * @param status 状态
-     * @return
-     */
-    Boolean commitActorTxTransaction(String txGroupId,TxTransactionItem txTransactionItem,int status);
 
 }

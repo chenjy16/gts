@@ -4,18 +4,12 @@ package com.wf.gts.core.util;
 public class TxTransactionLocal {
 
     private static final TxTransactionLocal TX_TRANSACTION_LOCAL = new TxTransactionLocal();
-
-    private TxTransactionLocal() {
-
-    }
-
+    private static final ThreadLocal<String> currentLocal = new ThreadLocal<>();
+    private TxTransactionLocal() {}
+    
     public static TxTransactionLocal getInstance() {
         return TX_TRANSACTION_LOCAL;
     }
-
-
-    private static final ThreadLocal<String> currentLocal = new ThreadLocal<>();
-
 
     public void setTxGroupId(String txGroupId) {
         currentLocal.set(txGroupId);

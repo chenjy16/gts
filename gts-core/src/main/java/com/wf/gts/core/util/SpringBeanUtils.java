@@ -9,66 +9,50 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class SpringBeanUtils {
 
   private ConfigurableApplicationContext cfgContext;
-  /**
-   * 实体对象
-   */
   private static final SpringBeanUtils INSTANCE = new SpringBeanUtils();
-
-  private SpringBeanUtils() {
-      if (INSTANCE != null) {
-          throw new Error("error");
-      }
-  }
+  private SpringBeanUtils() {}
 
   public static SpringBeanUtils getInstance() {
       return INSTANCE;
   }
 
   /**
-   * 防止序列化产生对象
-   *
-   * @return 防止序列化
+   * 功能描述: 防止序列化产生对象
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:27:08 
+   * @return
    */
   private Object readResolve() {
       return INSTANCE;
   }
 
-  /**
-   * 获取一个Bean信息
-   *
-   * @param type 类型
-   * @param <T>  泛型
-   * @return 对象
-   */
   public <T> T getBean(Class<T> type) {
       return cfgContext.getBean(type);
   }
 
-  /**
-   * 获取bean的名字
-   *
-   * @param type 类型
-   * @return bean名字
-   */
   public String getBeanName(Class type) {
       return cfgContext.getBeanNamesForType(type)[0];
   }
 
   /**
-   * 判断一个bean是否存在Spring容器中.
-   *
-   * @param type 类型
-   * @return 成功 true 失败 false
+   * 功能描述: 判断一个bean是否存在Spring容器中
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:27:42 
+   * @param type
+   * @return
    */
   public boolean exitsBean(Class type) {
       return cfgContext.containsBean(type.getName());
   }
 
+  
   /**
-   * 动态注册一个Bean动Spring容器中
-   *
-   * @param beanName  名称
-   * @param beanClazz 定义bean
+   * 功能描述: 动态注册一个Bean动Spring容器中
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:27:58 
+   * @param beanName
+   * @param beanClazz
+   * @param propertys
    */
   public void registerBean(String beanName, Class beanClazz, Map<String, Object> propertys) {
       BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(beanClazz);
@@ -85,8 +69,10 @@ public class SpringBeanUtils {
   }
 
   /**
-   * 注册Bean信息
-   *
+   * 功能描述: 注册Bean信息
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:28:15 
+   * @param beanName
    * @param beanDefinition
    */
   public void registerBean(String beanName, BeanDefinition beanDefinition) {
@@ -95,8 +81,10 @@ public class SpringBeanUtils {
   }
 
   /**
-   * 根据枚举类型获取Spring注册的Bean
-   * @param annotationType 枚举
+   * 功能描述: 根据枚举类型获取Spring注册的Bean
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:28:28 
+   * @param annotationType
    * @return
    */
   public Map<String, Object> getBeanWithAnnotation(Class<? extends Annotation> annotationType) {
@@ -104,14 +92,18 @@ public class SpringBeanUtils {
   }
 
   /**
-   * 动态注册一个Bean动Spring容器中
-   * @param beanName  名称
-   * @param beanClazz 定义bean
+   * 功能描述: 动态注册一个Bean动Spring容器中
+   * @author: chenjy
+   * @date: 2017年9月18日 下午2:28:42 
+   * @param beanName
+   * @param beanClazz
    */
   public void registerBean(String beanName, Class beanClazz) {
       registerBean(beanName, beanClazz, null);
   }
 
+  
+  
   public void setCfgContext(ConfigurableApplicationContext cfgContext) {
       this.cfgContext = cfgContext;
   }
