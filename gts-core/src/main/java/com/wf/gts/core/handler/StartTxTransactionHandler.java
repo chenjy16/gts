@@ -49,38 +49,22 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         TxTransactionLocal.getInstance().setTxGroupId(groupId);
         final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
         //创建事务组信息
-        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey));
-        
+        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey),info.getTxTransaction().clientTimeout());
         if (success) {
             TransactionStatus transactionStatus=createTransactionStatus();
             try {
                 long startTime = System.currentTimeMillis();
-                //发起调用
                 final Object res = point.proceed();
                 long runTime = System.currentTimeMillis() - startTime;
-                
                 if(info.getTxTransaction().clientTimeout()< runTime ){//超时回滚
-                  rollbackForAll(transactionStatus, groupId);
+                  throw new RuntimeException("方式执行超时");
                 }
-                final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId);
-                if (commit) {
-                    //我觉得到这一步了，应该是切面走完，然后需要提交了，此时应该都是进行提交的
-                    //提交事务
-                    platformTransactionManager.commit(transactionStatus);
-                    //通知tm完成事务
-                    CompletableFuture.runAsync(() ->
-                            txManagerMessageService
-                                    .AsyncCompleteCommitTxTransaction(groupId, waitKey,
-                                            TransactionStatusEnum.COMMIT.getCode()));
-                } else {
-                    LOGGER.info("预提交失败!");
-                    platformTransactionManager.rollback(transactionStatus);
-                }
+                commit(transactionStatus, groupId, info,waitKey);
                 LOGGER.info("tx-transaction end,  事务发起类");
                 return res;
 
             } catch (final Throwable throwable) {
-                rollbackForAll(transactionStatus, groupId);
+                rollbackForAll(transactionStatus, groupId,info.getTxTransaction().clientTimeout());
                 throwable.printStackTrace();
                 throw throwable;
                 
@@ -92,8 +76,29 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         }
     }
 
-    
-    
+    /**
+     * 功能描述: 提交事务
+     * @author: chenjy
+     * @date: 2017年9月18日 下午1:13:22 
+     * @param transactionStatus
+     * @param groupId
+     * @param info
+     * @param waitKey
+     */
+    private void  commit(TransactionStatus transactionStatus,String groupId, TxTransactionInfo info,String waitKey){
+        final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().clientTimeout());
+        if (commit) {
+            platformTransactionManager.commit(transactionStatus);
+            //通知tm完成事务
+            CompletableFuture.runAsync(() ->
+                    txManagerMessageService
+                            .AsyncCompleteCommitTxTransaction(groupId, waitKey,
+                                    TransactionStatusEnum.COMMIT.getCode()));
+        } else {
+            LOGGER.info("预提交失败!");
+            platformTransactionManager.rollback(transactionStatus);
+        }
+    }
     
     /**
      * 功能描述: 回滚所有事物
@@ -102,12 +107,14 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      * @param transactionStatus
      * @param groupId
      */
-    private void rollbackForAll(TransactionStatus transactionStatus,String groupId ){
+    private void rollbackForAll(TransactionStatus transactionStatus,String groupId,int timeout){
         //如果有异常 当前项目事务进行回滚 ，同时通知tm 整个事务失败
         platformTransactionManager.rollback(transactionStatus);
         //通知tm整个事务组失败，需要回滚，（回滚那些正常提交的模块，他们正在等待通知。。。。）
-        txManagerMessageService.rollBackTxTransaction(groupId);
+        txManagerMessageService.rollBackTxTransaction(groupId,timeout);
     }
+    
+    
     
     /**
      * 功能描述: 创建事务

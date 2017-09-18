@@ -96,7 +96,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
         //检查各位channel 是否都激活，渠道状态不是回滚的
         final Boolean ok = checkChannel(currentItem);
-
         if (!ok) {
             doRollBack(txGroupId, currentItem,elseItems);
         } else {

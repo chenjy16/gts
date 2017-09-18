@@ -30,11 +30,11 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup) {
+    public Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.CREATE_GROUP.getCode());
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Boolean) object;
         }
@@ -49,14 +49,14 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem) {
+    public Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.ADD_TRANSACTION.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(txGroupId);
         txTransactionGroup.setItemList(Collections.singletonList(txTransactionItem));
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Boolean) object;
         }
@@ -69,13 +69,13 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return 事务组状态
      */
     @Override
-    public int findTransactionGroupStatus(String txGroupId) {
+    public int findTransactionGroupStatus(String txGroupId,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(txGroupId);
 
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Integer) object;
         }
@@ -89,13 +89,13 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return TxTransactionGroup
      */
     @Override
-    public TxTransactionGroup findByTxGroupId(String txGroupId) {
+    public TxTransactionGroup findByTxGroupId(String txGroupId,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(txGroupId);
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (TxTransactionGroup) object;
         }
@@ -108,14 +108,14 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean rollBackTxTransaction(String txGroupId) {
+    public Boolean rollBackTxTransaction(String txGroupId,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.ROLLBACK.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setStatus(TransactionStatusEnum.ROLLBACK.getCode());
         txTransactionGroup.setId(txGroupId);
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Boolean) object;
         }
@@ -129,7 +129,7 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean preCommitTxTransaction(String txGroupId) {
+    public Boolean preCommitTxTransaction(String txGroupId,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.PRE_COMMIT.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
@@ -137,7 +137,7 @@ public class NettyMessageService implements TxManagerMessageService {
         txTransactionGroup.setId(txGroupId);
 
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Boolean) object;
         }
@@ -152,7 +152,7 @@ public class NettyMessageService implements TxManagerMessageService {
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean completeCommitTxTransaction(String txGroupId, String taskKey, int status) {
+    public Boolean completeCommitTxTransaction(String txGroupId, String taskKey, int status,int timeout) {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.COMPLETE_COMMIT.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
@@ -166,7 +166,7 @@ public class NettyMessageService implements TxManagerMessageService {
         txTransactionGroup.setItemList(Collections.singletonList(item));
 
         heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat);
+        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Boolean) object;
         }
@@ -205,7 +205,6 @@ public class NettyMessageService implements TxManagerMessageService {
      */
     @Override
     public Boolean commitActorTxTransaction(String txGroupId, TxTransactionItem txTransactionItem, int status) {
-
         return null;
     }
 

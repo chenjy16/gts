@@ -171,53 +171,35 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
      * @param heartBeat 定义的数据传输对象
      * @return Object
      */
-    public Object sendTxManagerMessage(HeartBeat heartBeat) {
+    public Object sendTxManagerMessage(HeartBeat heartBeat,int timeout) {
       
         if (ctx != null && ctx.channel() != null && ctx.channel().isActive()) {
             final String sendKey = IdWorkerUtils.getInstance().createTaskKey();
             BlockTask sendTask = BlockTaskHelper.getInstance().getTask(sendKey);
             heartBeat.setKey(sendKey);
             ctx.writeAndFlush(heartBeat);
-            
-            
-            final ScheduledFuture<?> schedule = ctx.executor()
-                    .schedule(() -> {
-                        if (!sendTask.isNotify()) {
-                          
-                          
-                            if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()
-                                    == heartBeat.getAction()) {
-                              
-                                sendTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
-                                
-                            } else if (NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode()
-                                    == heartBeat.getAction()) {
-                              
-                                sendTask.setAsyncCall(objects -> null);
-                            } else {
-                                sendTask.setAsyncCall(objects -> false);
-                                
-                            }
-                            sendTask.signal();
-                        }
-                    }, txConfig.getDelayTime(), TimeUnit.SECONDS);
             //发送线程在此等待，等tm是否 正确返回（正确返回唤醒） 返回错误或者无返回通过上面的调度线程唤醒
-            sendTask.await();
-            //如果已经被唤醒，就不需要去执行调度线程了 ，关闭上面的调度线程池中的任务
-            if (!schedule.isDone()) {
-                schedule.cancel(false);
+            long nana=sendTask.await(timeout*1000*1000);
+            if(nana<=0){
+                if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()
+                    == heartBeat.getAction()) {
+                    sendTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
+                } else if (NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode()
+                        == heartBeat.getAction()) {
+                    sendTask.setAsyncCall(objects -> null);
+                } else {
+                    sendTask.setAsyncCall(objects -> false);
+                }
             }
+            
             try {
-              
                 return sendTask.getAsyncCall().callBack();
-                
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
                 return null;
             } finally {
                 BlockTaskHelper.getInstance().removeByKey(sendKey);
             }
-
         } else {
             return null;
         }

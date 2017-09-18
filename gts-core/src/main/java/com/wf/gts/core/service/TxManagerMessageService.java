@@ -12,7 +12,7 @@ public interface TxManagerMessageService {
      * @param txTransactionGroup 事务组
      * @return true 成功 false 失败
      */
-    Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup);
+    Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,int timeout);
 
 
     /**
@@ -21,7 +21,7 @@ public interface TxManagerMessageService {
      * @param txTransactionItem 子事务项
      * @return true 成功 false 失败
      */
-    Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem);
+    Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,int timeout);
 
 
     /**
@@ -29,7 +29,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return 事务组状态
      */
-    int findTransactionGroupStatus(String txGroupId);
+    int findTransactionGroupStatus(String txGroupId,int timeout);
 
 
     /**
@@ -37,7 +37,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return TxTransactionGroup
      */
-    TxTransactionGroup findByTxGroupId(String txGroupId);
+    TxTransactionGroup findByTxGroupId(String txGroupId,int timeout);
 
 
 
@@ -46,7 +46,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      */
-    Boolean rollBackTxTransaction(String txGroupId);
+    Boolean rollBackTxTransaction(String txGroupId,int timeout);
 
 
     /**
@@ -55,7 +55,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      */
-    Boolean preCommitTxTransaction(String txGroupId);
+    Boolean preCommitTxTransaction(String txGroupId,int timeout);
 
 
     /**
@@ -66,7 +66,7 @@ public interface TxManagerMessageService {
      * @param status    状态  {@linkplain com.happylifeplat.transaction.common.enums.TransactionStatusEnum}
      * @return true 成功 false 失败
      */
-    Boolean completeCommitTxTransaction(String txGroupId, String taskKey,int status);
+    Boolean completeCommitTxTransaction(String txGroupId, String taskKey,int status,int timeout);
 
 
     /**

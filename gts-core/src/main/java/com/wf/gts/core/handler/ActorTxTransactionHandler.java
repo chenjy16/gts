@@ -21,8 +21,6 @@ import com.wf.gts.core.concurrent.BlockTaskHelper;
 import com.wf.gts.core.concurrent.TransactionThreadPool;
 import com.wf.gts.core.service.TxManagerMessageService;
 
-
-
 /**
  * 分布式事务运参与者
  */
@@ -61,47 +59,11 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                     task.setAsyncCall(objects -> res);
                     task.signal();
                     try {
-                        //3秒
-                        long nana=waitTask.await(3*1000*1000*1000);
+                        long nana=waitTask.await(info.getTxTransaction().ServiceTimeout()*1000*1000);
                         if(nana<=0){
-                              //如果获取通知超时了，那么就去获取事务组的状态
-                              final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId());
-                              if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
-                                      TransactionStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
-
-                                  //如果事务组是预提交，或者是提交状态
-                                  //表明事务组是成功的，这时候就算超时也应该去提交
-                                  LOGGER.info("事务组id：{}，自动超时，获取事务组状态为提交，进行提交!", info.getTxGroupId());
-                                  waitTask.setAsyncCall(objects -> TransactionStatusEnum.COMMIT.getCode());
-                                  waitTask.signal();
-                              } else {
-                                  LOGGER.info("事务组id：{}，自动超时进行回滚!", info.getTxGroupId());
-                                  waitTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
-                                  waitTask.signal();
-                              }
-                              LOGGER.error("============通过定时任务来唤醒线程！事务状态为:{}", transactionGroupStatus);
+                          findTransactionGroupStatus(info, waitTask);
                         }
-                        
-                        final Integer status = (Integer) waitTask.getAsyncCall().callBack();
-                        if (TransactionStatusEnum.COMMIT.getCode() == status) {
-                            //提交事务
-                            platformTransactionManager.commit(transactionStatus);
-                            //通知tm 自身事务已经完成
-                            //通知tm完成事务
-                            CompletableFuture.runAsync(() ->
-                                    txManagerMessageService
-                                            .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
-                                                    TransactionStatusEnum.COMMIT.getCode()));
-  
-                        } else if (NettyResultEnum.TIME_OUT.getCode() == status) {
-                            //如果超时了，就回滚当前事务
-                            platformTransactionManager.rollback(transactionStatus);
-                            //通知tm 自身事务需要回滚,不能提交
-                            CompletableFuture.runAsync(() ->
-                                    txManagerMessageService
-                                            .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
-                                                    TransactionStatusEnum.ROLLBACK.getCode()));
-                        }
+                        commitOrTimeout(transactionStatus, info, waitTask, waitKey);
                     } catch (Throwable throwable) {
                         platformTransactionManager.rollback(transactionStatus);
                         throwable.printStackTrace();
@@ -133,6 +95,65 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
         }
     }
 
+    
+    /**
+     * 功能描述: 提交或者超时回滚
+     * @author: chenjy
+     * @date: 2017年9月18日 下午1:28:56 
+     * @param transactionStatus
+     * @param info
+     * @param waitTask
+     * @param waitKey
+     * @throws Throwable 
+     */
+    private void commitOrTimeout(TransactionStatus transactionStatus,TxTransactionInfo info,BlockTask waitTask,String waitKey) throws Throwable{
+      final Integer status = (Integer) waitTask.getAsyncCall().callBack();
+      if (TransactionStatusEnum.COMMIT.getCode() == status) {
+          //提交事务
+          platformTransactionManager.commit(transactionStatus);
+          //通知tm 自身事务已经完成
+          //通知tm完成事务
+          CompletableFuture.runAsync(() ->
+                  txManagerMessageService
+                          .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
+                                  TransactionStatusEnum.COMMIT.getCode()));
+
+      } else if (NettyResultEnum.TIME_OUT.getCode() == status) {
+          //如果超时了，就回滚当前事务
+          platformTransactionManager.rollback(transactionStatus);
+          //通知tm 自身事务需要回滚,不能提交
+          CompletableFuture.runAsync(() ->
+                  txManagerMessageService
+                          .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
+                                  TransactionStatusEnum.ROLLBACK.getCode()));
+      }
+    }
+    
+    
+    /**
+     * 功能描述: 查找事务组状态
+     * @author: chenjy
+     * @date: 2017年9月18日 下午1:24:39 
+     * @param info
+     * @param waitTask
+     */
+    private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask){
+      //如果获取通知超时了，那么就去获取事务组的状态
+        final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().ServiceTimeout());
+        if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
+                TransactionStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
+  
+            //如果事务组是预提交，或者是提交状态
+            //表明事务组是成功的，这时候就算超时也应该去提交
+            LOGGER.info("事务组id：{}，自动超时，获取事务组状态为提交，进行提交!", info.getTxGroupId());
+            waitTask.setAsyncCall(objects -> TransactionStatusEnum.COMMIT.getCode());
+        } else {
+            LOGGER.info("事务组id：{}，自动超时进行回滚!", info.getTxGroupId());
+            waitTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
+        }
+        LOGGER.error("============通过定时任务来唤醒线程！事务状态为:{}", transactionGroupStatus);
+      
+    }
 
     /**
      * 功能描述: 开启事务
@@ -162,7 +183,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
       item.setStatus(TransactionStatusEnum.BEGIN.getCode());//开始事务
       item.setRole(TransactionRoleEnum.ACTOR.getCode());//参与者
       item.setTxGroupId(info.getTxGroupId());
-      return txManagerMessageService.addTxTransaction(info.getTxGroupId(), item);
+      return txManagerMessageService.addTxTransaction(info.getTxGroupId(), item,info.getTxTransaction().ServiceTimeout());
     }
 
 
