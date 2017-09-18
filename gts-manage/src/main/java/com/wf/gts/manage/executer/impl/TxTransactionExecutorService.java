@@ -65,8 +65,7 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                                     }
                                     
                                 }).whenComplete((v, e) ->
-                                    System.out.println("")
-                                    //LOGGER.info("txManger 成功发送rollback指令 事务taskId为：{}", item::getTaskKey)
+                                    LOGGER.info("txManger 成功发送rollback指令 事务taskId为：{}", item.getTaskKey())
                                 ))
                         
                         
@@ -74,15 +73,14 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                 
                 
                 CompletableFuture.allOf(cfs).join();
-                //LogUtil.info(LOGGER, "txManger 成功发送rollback指令 事务组id为：{}", () -> txGroupId);
+                LOGGER.info("txManger 成功发送rollback指令 事务组id为：{}",txGroupId);
             }
             
             
             httpExecute(elseItems, TransactionStatusEnum.ROLLBACK);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            //LogUtil.info(LOGGER, "txManger 发送rollback指令异常 ", e::getMessage);
+            LOGGER.info("txManger 发送rollback指令异常：{} ", e);
         }
     }
 
@@ -107,9 +105,9 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                 HeartBeat heartBeat = ExecutorMessageTool.buildMessage(item, sender, TransactionStatusEnum.COMMIT);
                 if (Objects.nonNull(sender.getChannel())) {
                     sender.getChannel().writeAndFlush(heartBeat);
-                    //LOGGER.info("txManger 成功发送doCommit指令 事务taskId为：{}", item::getTaskKey);
+                    LOGGER.info("txManger 成功发送doCommit指令 事务taskId为：{}", item.getTaskKey());
                 } else {
-                    LOGGER.error("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
+                    LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
                 }
 
             });
@@ -117,8 +115,7 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
             httpExecute(elseItems, TransactionStatusEnum.COMMIT);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            //LogUtil.info(LOGGER, "txManger 发送doCommit指令异常 ", e::getMessage);
+            LOGGER.info("txManger 发送doCommit指令异常:{} ", e);
         }
 
     }

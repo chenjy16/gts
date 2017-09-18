@@ -4,8 +4,6 @@ package com.wf.gts.manage.domain;
  * TmManager ip 端口信息
  */
 public class Address {
-  
-  
     private static final Address ourInstance = new Address();
 
     /**

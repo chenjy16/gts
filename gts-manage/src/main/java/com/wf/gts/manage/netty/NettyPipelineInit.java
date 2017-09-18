@@ -14,11 +14,6 @@ import io.netty.channel.ChannelPipeline;
 public class NettyPipelineInit {
     public static void serializePipeline(SerializeProtocolEnum serializeProtocol, ChannelPipeline pipeline) {
         switch (serializeProtocol) {
-            case KRYO:
-                KryoCodecService kryoCodecService = new KryoCodecService(KryoPoolFactory.getKryoPoolInstance());
-                pipeline.addLast(new KryoEncoder(kryoCodecService));
-                pipeline.addLast(new KryoDecoder(kryoCodecService));
-                break;
             case PROTOSTUFF:
                 ProtostuffCodecService protostuffCodecService = new ProtostuffCodecService();
                 pipeline.addLast(new ProtostuffEncoder(protostuffCodecService));

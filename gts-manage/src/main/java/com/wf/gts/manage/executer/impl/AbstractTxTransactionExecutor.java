@@ -19,9 +19,6 @@ import io.netty.channel.Channel;
 
 public abstract class AbstractTxTransactionExecutor implements TxTransactionExecutor {
 
-    /**
-     * logger
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTxTransactionExecutor.class);
 
 
@@ -44,7 +41,7 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
      */
     @Override
     public void rollBack(String txGroupId) {
-        try {
+        //try {
             txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.ROLLBACK.getCode());
             final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
             if (CollectionUtils.isNotEmpty(txTransactionItems)) {
@@ -57,9 +54,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
                 final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
                 doRollBack(txGroupId, currentItem,elseItems);
             }
-        } finally {
-            //txManagerService.removeRedisByTxGroupId(txGroupId);
-        }
+        /*} finally {
+            txManagerService.removeRedisByTxGroupId(txGroupId);
+        }*/
     }
 
 

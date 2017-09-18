@@ -47,7 +47,6 @@ public interface TxManagerService {
    */
   Boolean updateTxTransactionItemStatus(String key,String hashKey,int status);
 
-
   /**
    * 获取事务组的状态
    * @param txGroupId 事务组id
@@ -56,17 +55,6 @@ public interface TxManagerService {
   int findTxTransactionGroupStatus(String txGroupId);
 
 
-  /**
-   * 删除已经提交的事务组 每个子项都必须提交才删除
-   * @return  true 成功  false 失败
-   */
- // Boolean removeCommitTxGroup();
 
-
-  /**
-   * 删除回滚的事务组
-   * @return true 成功  false 失败
-   */
- // Boolean removeRollBackTxGroup();
 
 }

@@ -17,7 +17,6 @@ public class RedisConfig {
 
 	/**
 	 * 功能描述: 配置信息类 <br>
-	 * @author: wenwj
 	 * @date: 2017年8月28日 下午4:00:34 
 	 * @param maxTotal
 	 * @param maxIdle
@@ -65,7 +64,6 @@ public class RedisConfig {
 	/**
 	 * 
 	 * 功能描述: 缓存连接类<br>
-	 * @author: wenwj
 	 * @date: 2017年8月28日 下午4:00:49 
 	 * @param host
 	 * @param port
@@ -84,7 +82,6 @@ public class RedisConfig {
 	/**
 	 * 
 	 * 功能描述: 缓存实例<br>
-	 * @author: wenwj
 	 * @date: 2017年8月28日 下午4:01:08 
 	 * @param connectionFactory
 	 * @return
