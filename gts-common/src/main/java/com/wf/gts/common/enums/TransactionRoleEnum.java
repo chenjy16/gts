@@ -1,9 +1,6 @@
 package com.wf.gts.common.enums;
 
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
 
 
 /**
@@ -20,12 +17,7 @@ public enum TransactionRoleEnum {
     /**
      * Fail netty result enum.
      */
-    ACTOR(1, "参与者"),
-
-
-
-
-    ;
+    ACTOR(1, "参与者");
 
 
 
@@ -41,7 +33,6 @@ public enum TransactionRoleEnum {
 
     /**
      * Gets code.
-     *
      * @return the code
      */
     public int getCode() {
@@ -50,7 +41,6 @@ public enum TransactionRoleEnum {
 
     /**
      * Sets code.
-     *
      * @param code the code
      */
     public void setCode(int code) {
@@ -59,7 +49,6 @@ public enum TransactionRoleEnum {
 
     /**
      * Gets desc.
-     *
      * @return the desc
      */
     public String getDesc() {
@@ -68,7 +57,6 @@ public enum TransactionRoleEnum {
 
     /**
      * Sets desc.
-     *
      * @param desc the desc
      */
     public void setDesc(String desc) {

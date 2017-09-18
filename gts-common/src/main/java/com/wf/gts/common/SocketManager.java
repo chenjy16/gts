@@ -2,12 +2,10 @@ package com.wf.gts.common;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.springframework.util.CollectionUtils;
-
 import com.google.common.collect.Lists;
-
 import io.netty.channel.Channel;
+
 
 public class SocketManager {
   
@@ -24,7 +22,6 @@ public class SocketManager {
   /**
    * 当前连接数
    */
-
   private int nowConnection;
 
   /**
@@ -67,16 +64,12 @@ public class SocketManager {
       nowConnection = clients.size();
       allowConnection = (maxConnection != nowConnection);
   }
-
-
   public int getMaxConnection() {
       return maxConnection;
   }
-
   public int getNowConnection() {
       return nowConnection;
   }
-
   public boolean isAllowConnection() {
       return allowConnection;
   }

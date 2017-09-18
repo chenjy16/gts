@@ -10,7 +10,7 @@ public class HeartBeat implements Serializable {
     private static final long serialVersionUID = 4183978848464761529L;
 
     /**
-     * 执行动作 {@linkplain com.happylifeplat.transaction.common.enums.NettyMessageActionEnum}
+     * 执行动作 
      */
     private int action;
 
@@ -21,9 +21,7 @@ public class HeartBeat implements Serializable {
     private String key;
 
 
-    /**
-     * {@linkplain com.happylifeplat.transaction.common.enums.NettyResultEnum}
-     */
+    
     private int result;
 
 

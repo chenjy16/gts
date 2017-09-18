@@ -1,13 +1,10 @@
 package com.wf.gts.core.netty.handler;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
 import com.wf.gts.common.beans.HeartBeat;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
@@ -19,46 +16,32 @@ import com.wf.gts.core.concurrent.BlockTaskHelper;
 import com.wf.gts.core.config.TxConfig;
 import com.wf.gts.core.netty.NettyClient;
 import com.wf.gts.core.util.SpringBeanUtils;
-
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.ScheduledFuture;
 
 
 
 @Component
 @ChannelHandler.Sharable
 public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
-
-    /**
-     * logger
-     */
+  
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientMessageHandler.class);
-    
     /**
      * false 未链接
      * true 连接中
      */
     public volatile static boolean net_state = false;
-
-
     private static volatile ChannelHandlerContext ctx;
-
-
     private static final HeartBeat heartBeat = new HeartBeat();
-
-
     private TxConfig txConfig;
-
     public void setTxConfig(TxConfig txConfig) {
         this.txConfig = txConfig;
     }
-
-
+    
     @Override
     public void channelRead(ChannelHandlerContext ctx, final Object msg) throws Exception {
         net_state = true;
@@ -96,8 +79,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void notify(HeartBeat heartBeat) {
-        final List<TxTransactionItem> txTransactionItems = heartBeat.getTxTransactionGroup()
-                .getItemList();
+        final List<TxTransactionItem> txTransactionItems = heartBeat.getTxTransactionGroup().getItemList();
         if (!CollectionUtils.isEmpty(txTransactionItems)) {
             final TxTransactionItem item = txTransactionItems.get(0);
             final BlockTask task = BlockTaskHelper.getInstance().getTask(item.getTaskKey());
@@ -178,23 +160,22 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
             BlockTask sendTask = BlockTaskHelper.getInstance().getTask(sendKey);
             heartBeat.setKey(sendKey);
             ctx.writeAndFlush(heartBeat);
-            //发送线程在此等待，等tm是否 正确返回（正确返回唤醒） 返回错误或者无返回通过上面的调度线程唤醒
+            //发送线程在此等待，等tm是否正确返回（正确返回唤醒） 返回错误或者无返回通过上面的调度线程唤醒
             long nana=sendTask.await(timeout*1000*1000);
             if(nana<=0){
-                if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()
-                    == heartBeat.getAction()) {
+                if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()== heartBeat.getAction()) {
                     sendTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
-                } else if (NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode()
-                        == heartBeat.getAction()) {
+                } else if (NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode()== heartBeat.getAction()) {
                     sendTask.setAsyncCall(objects -> null);
                 } else {
                     sendTask.setAsyncCall(objects -> false);
                 }
             }
-            
             try {
+              
                 return sendTask.getAsyncCall().callBack();
             } catch (Throwable throwable) {
+              
                 throwable.printStackTrace();
                 return null;
             } finally {
@@ -215,7 +196,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
         if (ctx != null && ctx.channel() != null && ctx.channel().isActive()) {
             ctx.writeAndFlush(heartBeat);
         }
-
     }
 
 }

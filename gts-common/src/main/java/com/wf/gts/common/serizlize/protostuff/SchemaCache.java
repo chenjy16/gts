@@ -1,24 +1,11 @@
 package com.wf.gts.common.serizlize.protostuff;
-
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * <p>Description: .</p>
- * <p>Company: 深圳市旺生活互联网科技有限公司</p>
- * <p>Copyright: 2015-2017 happylifeplat.com All Rights Reserved</p>
- *  SchemaCache
- * @author yu.xiao@happylifeplat.com
- * @version 1.0
- * @date 2017/7/18 16:03
- * @since JDK 1.8
- */
 public class SchemaCache {
     private static class SchemaCacheHolder {
         private static SchemaCache cache = new SchemaCache();

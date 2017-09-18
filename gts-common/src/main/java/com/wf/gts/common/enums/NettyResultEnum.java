@@ -1,6 +1,4 @@
 package com.wf.gts.common.enums;
-
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +13,6 @@ public enum NettyResultEnum {
      * Begin transaction status enum.
      */
     SUCCESS(0, "成功"),
-
 
     /**
      * Fail netty result enum.
@@ -40,12 +37,6 @@ public enum NettyResultEnum {
     }
 
 
-    /**
-     * Acquire by code netty result enum.
-     *
-     * @param code the code
-     * @return the netty result enum
-     */
     public static NettyResultEnum acquireByCode(int code) {
         Optional<NettyResultEnum> actionEnum =
                 Arrays.stream(NettyResultEnum.values())
@@ -55,38 +46,18 @@ public enum NettyResultEnum {
 
     }
 
-    /**
-     * Gets code.
-     *
-     * @return the code
-     */
     public int getCode() {
         return code;
     }
 
-    /**
-     * Sets code.
-     *
-     * @param code the code
-     */
     public void setCode(int code) {
         this.code = code;
     }
 
-    /**
-     * Gets desc.
-     *
-     * @return the desc
-     */
     public String getDesc() {
         return desc;
     }
 
-    /**
-     * Sets desc.
-     *
-     * @param desc the desc
-     */
     public void setDesc(String desc) {
         this.desc = desc;
     }

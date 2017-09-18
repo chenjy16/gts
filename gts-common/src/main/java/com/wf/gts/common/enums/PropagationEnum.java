@@ -47,11 +47,6 @@ public enum PropagationEnum {
         this.value = value;
     }
 
-    /**
-     * Gets value.
-     *
-     * @return the value
-     */
     public int getValue() {
         return this.value;
     }

@@ -19,7 +19,7 @@ public class TxTransactionGroup implements Serializable {
     private int waitTime;
 
     /**
-     * 事务状态 {@linkplain com.happylifeplat.transaction.common.enums.TransactionStatusEnum}
+     * 事务状态
      */
     private int status;
 
