@@ -58,7 +58,6 @@ public class NettyClientImpl implements NettyClient {
 
     @Autowired
     public NettyClientImpl(NettyClientHandlerInitializer nettyClientHandlerInitializer) {
-
         this.nettyClientHandlerInitializer = nettyClientHandlerInitializer;
     }
 
@@ -75,8 +74,8 @@ public class NettyClientImpl implements NettyClient {
         servletExecutor = new DefaultEventExecutorGroup(txConfig.getNettyThreadMax());
         nettyClientHandlerInitializer.setServletExecutor(servletExecutor);
         nettyClientHandlerInitializer.setTxConfig(txConfig);
-        //TxManagerLocator.getInstance().setTxConfig(txConfig);
-        //TxManagerLocator.getInstance().schedulePeriodicRefresh();
+        TxManagerLocator.getInstance().setTxConfig(txConfig);
+        TxManagerLocator.getInstance().schedulePeriodicRefresh();
         try {
             bootstrap = new Bootstrap();
             groups(bootstrap, txConfig.getNettyThreadMax());

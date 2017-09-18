@@ -16,11 +16,13 @@ public class InitServiceImpl implements InitService {
 
     private final NettyClient nettyClient;
 
+    
     @Autowired
     public InitServiceImpl(NettyClient nettyClient) {
         this.nettyClient = nettyClient;
     }
 
+    
     @Override
     public void initialization(TxConfig txConfig) {
         try {

@@ -87,12 +87,6 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     hb.setTxTransactionGroup(txTransactionGroup);
                     ctx.writeAndFlush(hb);
                     break;
-                case FIND_TRANSACTION_GROUP_INFO:
-                    final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txTransactionGroup.getId());
-                    txTransactionGroup.setItemList(txTransactionItems);
-                    hb.setTxTransactionGroup(txTransactionGroup);
-                    ctx.writeAndFlush(hb);
-                    break;
                 case ROLLBACK:
                     ctx.writeAndFlush(buildSendMessage(hb.getKey(), true));
                     //收到客户端的回滚通知  此通知为事务发起（start）里面通知的
@@ -119,6 +113,9 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     
+    /**
+     * 建立连接
+     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
@@ -130,12 +127,12 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
     }
 
-    
     
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
@@ -143,7 +140,9 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
         super.channelUnregistered(ctx);
     }
 
-    
+    /**
+     * 读完成
+     */
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.flush();
@@ -176,7 +175,6 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
             HB.setResult(NettyResultEnum.FAIL.getCode());
         }
         return HB;
-
     }
 
 }

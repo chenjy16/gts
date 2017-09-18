@@ -101,8 +101,6 @@ public class SpringBeanUtils {
   public void registerBean(String beanName, Class beanClazz) {
       registerBean(beanName, beanClazz, null);
   }
-
-  
   
   public void setCfgContext(ConfigurableApplicationContext cfgContext) {
       this.cfgContext = cfgContext;

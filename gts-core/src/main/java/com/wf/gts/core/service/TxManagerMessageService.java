@@ -32,13 +32,6 @@ public interface TxManagerMessageService {
     int findTransactionGroupStatus(String txGroupId,int timeout);
 
 
-    /**
-     * 获取事务组信息
-     * @param txGroupId 事务组id
-     * @return TxTransactionGroup
-     */
-    TxTransactionGroup findByTxGroupId(String txGroupId,int timeout);
-
 
 
     /**

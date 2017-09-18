@@ -84,24 +84,7 @@ public class NettyMessageService implements TxManagerMessageService {
 
     }
 
-    /**
-     * 获取事务组信息
-     * @param txGroupId 事务组id
-     * @return TxTransactionGroup
-     */
-    @Override
-    public TxTransactionGroup findByTxGroupId(String txGroupId,int timeout) {
-        HeartBeat heartBeat = new HeartBeat();
-        heartBeat.setAction(NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode());
-        TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
-        txTransactionGroup.setId(txGroupId);
-        heartBeat.setTxTransactionGroup(txTransactionGroup);
-        final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
-        if (Objects.nonNull(object)) {
-            return (TxTransactionGroup) object;
-        }
-        return null;
-    }
+ 
 
     /**
      * 通知tm 回滚整个事务组

@@ -1,5 +1,4 @@
 package com.wf.gts.core.service.impl;
-
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import com.wf.gts.common.entity.TxManagerServer;
@@ -51,7 +48,6 @@ public class TxManagerLocator {
 
     /**
      * 获取TxManager 服务信息
-     *
      * @return TxManagerServer
      */
     public TxManagerServer locator() {
@@ -86,7 +82,11 @@ public class TxManagerLocator {
         return m_configServices.get();
     }
 
-
+    /**
+     * 功能描述: 定时刷新事务管理器服务地址
+     * @author: chenjy
+     * @date: 2017年9月18日 下午3:51:03
+     */
     public void schedulePeriodicRefresh() {
         this.m_executorService.scheduleAtFixedRate(
                 () -> {
@@ -96,7 +96,12 @@ public class TxManagerLocator {
                 TimeUnit.SECONDS);
     }
 
-
+    
+    /**
+     * 功能描述: 刷新事务管理器服务地址
+     * @author: chenjy
+     * @date: 2017年9月18日 下午3:50:11
+     */
     private synchronized void updateTxManagerServices() {
         String url = assembleUrl();
         int maxRetries = 2;
@@ -104,7 +109,6 @@ public class TxManagerLocator {
             try {
                 final List<TxManagerServiceDTO> serviceDTOList =
                         OkHttpTools.getInstance().get(url, m_responseType);
-                
                 if (CollectionUtils.isEmpty(serviceDTOList)) {
                     LOGGER.error("Empty response! 请求url为:{}",url);
                     continue;

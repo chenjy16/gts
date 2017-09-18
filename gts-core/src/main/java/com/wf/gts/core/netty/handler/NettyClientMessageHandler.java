@@ -65,11 +65,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
                     blockTask.setAsyncCall(objects -> txTransactionGroup.getStatus());
                     blockTask.signal();
                     break;
-                case FIND_TRANSACTION_GROUP_INFO:
-                    final BlockTask task = BlockTaskHelper.getInstance().getTask(heartBeat.getKey());
-                    task.setAsyncCall(objects -> heartBeat.getTxTransactionGroup());
-                    task.signal();
-                    break;
 
             }
         } finally {
@@ -164,13 +159,8 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
             long nana=sendTask.await(timeout*1000*1000);
             if(nana<=0){
                 if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()== heartBeat.getAction()) {
-                  
                     sendTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
-                } else if (NettyMessageActionEnum.FIND_TRANSACTION_GROUP_INFO.getCode()== heartBeat.getAction()) {
-                   
-                    sendTask.setAsyncCall(objects -> null);
-                } else {
-                    
+                }else{
                     sendTask.setAsyncCall(objects -> false);
                 }
             }
@@ -191,7 +181,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     
     
     /**
-     * 向TxManager 异步 发送消息
+     * 向TxManager 异步发送消息
      * @param heartBeat 定义的数据传输对象
      */
     public void AsyncSendTxManagerMessage(HeartBeat heartBeat) {
