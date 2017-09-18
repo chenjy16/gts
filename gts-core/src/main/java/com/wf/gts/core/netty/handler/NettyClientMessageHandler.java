@@ -38,6 +38,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     private static volatile ChannelHandlerContext ctx;
     private static final HeartBeat heartBeat = new HeartBeat();
     private TxConfig txConfig;
+    
     public void setTxConfig(TxConfig txConfig) {
         this.txConfig = txConfig;
     }
@@ -77,7 +78,8 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
 
 
     }
-
+    
+    
     private void notify(HeartBeat heartBeat) {
         final List<TxTransactionItem> txTransactionItems = heartBeat.getTxTransactionGroup().getItemList();
         if (!CollectionUtils.isEmpty(txTransactionItems)) {
@@ -133,7 +135,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
                 //表示已经多久没有收到数据了
-                //ctx.close();
                 SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 //表示已经多久没有发送数据了
@@ -187,7 +188,8 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
 
     }
 
-
+    
+    
     /**
      * 向TxManager 异步 发送消息
      * @param heartBeat 定义的数据传输对象
