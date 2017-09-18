@@ -1,14 +1,8 @@
 package com.wf.gts.manage.netty.handler;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.beans.HeartBeat;
 import com.wf.gts.common.beans.TxTransactionGroup;
@@ -18,7 +12,6 @@ import com.wf.gts.common.enums.NettyResultEnum;
 import com.wf.gts.manage.domain.Address;
 import com.wf.gts.manage.executer.TxTransactionExecutor;
 import com.wf.gts.manage.service.TxManagerService;
-
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -33,17 +26,14 @@ import io.netty.util.ReferenceCountUtil;
 @Component
 public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyServerMessageHandler.class);
     private final TxManagerService txManagerService;
     private final TxTransactionExecutor txTransactionExecutor;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(16);
 
     @Autowired
     public NettyServerMessageHandler(TxManagerService txManagerService, TxTransactionExecutor txTransactionExecutor) {
         this.txManagerService = txManagerService;
         this.txTransactionExecutor = txTransactionExecutor;
     }
-
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -126,13 +116,11 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
             ctx.close();
         }
     }
-
     
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
     }
-
     
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
