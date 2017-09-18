@@ -17,7 +17,6 @@ import com.wf.gts.core.util.SpringBeanUtils;
 public class TxTransactionBootstrap extends TxConfig implements ApplicationContextAware {
   
     private ConfigurableApplicationContext cfgContext;
-    
     /**
      * 初始化实体
      */
@@ -35,9 +34,8 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
         SpringBeanUtils.getInstance().setCfgContext(cfgContext);
         start(this);
     }
-
-
-
+    
+    
     private void start(TxConfig txConfig) {
         if (!checkDataConfig(txConfig)) {
             throw new RuntimeException("分布式事务配置信息不完整！");

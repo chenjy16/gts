@@ -28,11 +28,8 @@ import com.wf.gts.core.util.TxTransactionLocal;
 public class StartTxTransactionHandler implements TxTransactionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartTxTransactionHandler.class);
-
     private final TxManagerMessageService txManagerMessageService;
-
     private final PlatformTransactionManager platformTransactionManager;
-
     
     @Autowired(required = false)
     public StartTxTransactionHandler(TxManagerMessageService txManagerMessageService,PlatformTransactionManager platformTransactionManager) {
@@ -43,7 +40,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
 
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
-        LOGGER.info("tx-transaction start,  事务发起类：");
+        LOGGER.info("tx-transaction start,事务发起类:{}",info);
         final String groupId = IdWorkerUtils.getInstance().createGroupId();
         //设置事务组ID
         TxTransactionLocal.getInstance().setTxGroupId(groupId);
@@ -56,8 +53,8 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 long startTime = System.currentTimeMillis();
                 final Object res = point.proceed();
                 long runTime = System.currentTimeMillis() - startTime;
-                if(info.getTxTransaction().clientTimeout()< runTime ){//超时回滚
-                  throw new RuntimeException("方式执行超时");
+                if(info.getTxTransaction().clientTimeout()< runTime ){
+                  throw new RuntimeException("方法执行超时");
                 }
                 commit(transactionStatus, groupId, info,waitKey);
                 LOGGER.info("tx-transaction end,  事务发起类");
@@ -67,7 +64,6 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 rollbackForAll(transactionStatus, groupId,info.getTxTransaction().clientTimeout());
                 throwable.printStackTrace();
                 throw throwable;
-                
             } finally {
                 TxTransactionLocal.getInstance().removeTxGroupId();
             }

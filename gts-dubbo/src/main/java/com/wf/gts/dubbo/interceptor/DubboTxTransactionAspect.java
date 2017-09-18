@@ -17,9 +17,6 @@ public class DubboTxTransactionAspect extends TxTransactionAspect implements Ord
     public DubboTxTransactionAspect(DubboTxTransactionInterceptor dubboTxTransactionInterceptor) {
         this.setTxTransactionInterceptor(dubboTxTransactionInterceptor);
     }
-    public void init() {
-
-    }
 
     @Override
     public int getOrder() {

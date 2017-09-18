@@ -136,7 +136,6 @@ public class NettyMessageService implements TxManagerMessageService {
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setStatus(TransactionStatusEnum.PRE_COMMIT.getCode());
         txTransactionGroup.setId(txGroupId);
-
         heartBeat.setTxTransactionGroup(txTransactionGroup);
         final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {

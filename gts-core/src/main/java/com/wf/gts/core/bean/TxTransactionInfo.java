@@ -3,7 +3,6 @@ package com.wf.gts.core.bean;
 import com.wf.gts.core.annotation.TxTransaction;
 
 public class TxTransactionInfo {
-
     /**
      * 补偿方法对象
      */

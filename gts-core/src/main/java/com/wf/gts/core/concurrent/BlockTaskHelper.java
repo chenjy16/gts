@@ -22,20 +22,22 @@ public class BlockTaskHelper {
     }
 
     private static final LoadingCache<String, BlockTask> cache = CacheBuilder.newBuilder()
-            .maximumWeight(MAX_COUNT)
-            .weigher((Weigher<String, BlockTask>) (string, BlockTask) -> getSize())
-            .build(new CacheLoader<String, BlockTask>() {
-                @Override
-                public BlockTask load(String key) throws Exception {
-                    return createTask(key);
-                }
-            });
+      .maximumWeight(MAX_COUNT)
+      .weigher((Weigher<String, BlockTask>) (string, BlockTask) -> getSize())
+      
+      .build(new CacheLoader<String, BlockTask>() {
+          @Override
+          public BlockTask load(String key) throws Exception {
+              return createTask(key);
+          }
+    });
 
 
     public static BlockTaskHelper getInstance() {
         return BLOCK_TASK_HELPER;
     }
 
+    
     private static int getSize() {
         if (cache == null) {
             return 0;
@@ -53,7 +55,6 @@ public class BlockTaskHelper {
 
     /**
      * 获取task
-     *
      * @param key 需要获取的key
      */
     public BlockTask getTask(String key) {
