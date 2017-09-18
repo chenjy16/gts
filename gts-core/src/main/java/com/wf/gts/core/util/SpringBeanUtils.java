@@ -1,19 +1,13 @@
 package com.wf.gts.core.util;
-
 import java.lang.annotation.Annotation;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.util.Assert;
 
 public class SpringBeanUtils {
-  
-  private final Log LOGGER = LogFactory.getLog(getClass());
+
   private ConfigurableApplicationContext cfgContext;
   /**
    * 实体对象
@@ -47,7 +41,6 @@ public class SpringBeanUtils {
    * @return 对象
    */
   public <T> T getBean(Class<T> type) {
-      Assert.notNull(type);
       return cfgContext.getBean(type);
   }
 
@@ -58,7 +51,6 @@ public class SpringBeanUtils {
    * @return bean名字
    */
   public String getBeanName(Class type) {
-      Assert.notNull(type);
       return cfgContext.getBeanNamesForType(type)[0];
   }
 
@@ -69,7 +61,6 @@ public class SpringBeanUtils {
    * @return 成功 true 失败 false
    */
   public boolean exitsBean(Class type) {
-      Assert.notNull(type);
       return cfgContext.containsBean(type.getName());
   }
 
@@ -80,8 +71,6 @@ public class SpringBeanUtils {
    * @param beanClazz 定义bean
    */
   public void registerBean(String beanName, Class beanClazz, Map<String, Object> propertys) {
-      Assert.notNull(beanName);
-      Assert.notNull(beanClazz);
       BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(beanClazz);
       if (propertys != null) {
           propertys.forEach((k, v) -> builder.addPropertyValue(k, v));
@@ -92,8 +81,6 @@ public class SpringBeanUtils {
   }
 
   public void registerBean(String beanName, Object obj) {
-      Assert.notNull(beanName);
-      Assert.notNull(obj);
       cfgContext.getBeanFactory().registerSingleton(beanName, obj);
   }
 
@@ -113,7 +100,6 @@ public class SpringBeanUtils {
    * @return
    */
   public Map<String, Object> getBeanWithAnnotation(Class<? extends Annotation> annotationType) {
-      Assert.notNull(annotationType);
       return cfgContext.getBeansWithAnnotation(annotationType);
   }
 

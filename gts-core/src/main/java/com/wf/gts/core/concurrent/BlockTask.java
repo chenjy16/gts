@@ -22,7 +22,6 @@ public class BlockTask {
 
     private Lock lock;
     private Condition condition;
-    private CountDownLatch countDownLatch;
 
     private AsyncCall asyncCall;
 
@@ -50,21 +49,8 @@ public class BlockTask {
     public BlockTask() {
         lock = new ReentrantLock();
         condition = lock.newCondition();
-        //countDownLatch = new CountDownLatch(1);
-
     }
 
-    public void countDownAwait() {
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            countDownLatch.countDown();
-        }
-    }
-
-    public void countDown() {
-        countDownLatch.countDown();
-    }
 
 
     public void signal() {
@@ -89,6 +75,17 @@ public class BlockTask {
         }
     }
 
+    
+    public long await(long nanosTimeout) {
+      try {
+          lock.lock();
+          return condition.awaitNanos(nanosTimeout);
+      } catch (Exception e) {
+      } finally {
+          lock.unlock();
+      }
+      return -1l;
+  }
 
     public void setAsyncCall(AsyncCall asyncCall) {
         this.asyncCall = asyncCall;

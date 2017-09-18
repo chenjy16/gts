@@ -12,12 +12,13 @@ import com.wf.gts.core.util.TxTransactionLocal;
 @Activate(group = {Constants.SERVER_KEY, Constants.CONSUMER})
 public class TxTransactionFilter implements Filter {
 
-  
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+      
         if (RpcContext.getContext().isConsumerSide()) {
             RpcContext.getContext().setAttachment("tx-group",TxTransactionLocal.getInstance().getTxGroupId());
         }
         return invoker.invoke(invocation);
     }
+    
 }
