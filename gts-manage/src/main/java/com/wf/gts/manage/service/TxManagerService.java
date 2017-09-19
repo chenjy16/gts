@@ -1,4 +1,5 @@
 package com.wf.gts.manage.service;
+import java.util.Collection;
 import java.util.List;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
@@ -53,6 +54,15 @@ public interface TxManagerService {
    * @return 事务组状态
    */
   int findTxTransactionGroupStatus(String txGroupId);
+  
+  
+  /**
+   * 功能描述: 事务组列表
+   * @author: chenjy
+   * @date: 2017年9月19日 下午3:49:33 
+   * @return
+   */
+  Collection<String> listTxGroupId();
 
 
 

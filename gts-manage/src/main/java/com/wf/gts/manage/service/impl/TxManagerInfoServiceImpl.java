@@ -107,7 +107,9 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     private List<String> findEurekaService() {
         final List<InstanceInfo> configServiceInstances = discoveryService.getConfigServiceInstances();
         return configServiceInstances.stream().map(InstanceInfo::getHomePageUrl).collect(Collectors.toList());
-
-
     }
+    
+    
+    
+    
 }

@@ -29,6 +29,8 @@
                 <th>属性值</th>
             </tr>
             </thead>
+            
+            
             <tbody>
             <tr>
                 <th scope="row">
@@ -55,24 +57,14 @@
                 <td><span th:text="${info.nowConnection}"></span></td>
             </tr>
             <tr>
-                <th scope="row">
-                    事务模块最大等待时间(秒)
-                </th>
-                <td><span th:text="${info.transactionWaitMaxTime}"></span></td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    redis存储最大时间(秒)
-                </th>
-                <td><span th:text="${info.redisSaveMaxTime}"></span></td>
-            </tr>
-            <tr>
-                <th scope="row">
+            <th scope="row">
                     负载均衡服务器地址
                 </th>
                 <td><span th:text="${info.clusterInfoList}"></span></td>
             </tr>
+            
             </tbody>
+            
         </table>
     </div>
 </div>

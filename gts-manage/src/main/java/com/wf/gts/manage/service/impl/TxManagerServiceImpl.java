@@ -1,10 +1,13 @@
 package com.wf.gts.manage.service.impl;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
@@ -85,6 +88,14 @@ public class TxManagerServiceImpl implements TxManagerService{
 
   private String cacheKey(String key) {
       return String.format(Constant.REDIS_PRE_FIX, key);
+  }
+
+
+
+  @Override
+  public Collection<String> listTxGroupId() {
+    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+    return keys;
   }
 
 }
