@@ -26,6 +26,9 @@ public class TxManagerIndexController {
         request.setAttribute("info", txManagerInfo);
         return "index";
     }
+    
+    
+    
 
 
 }

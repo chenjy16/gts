@@ -86,7 +86,7 @@ public class NettyClientImpl implements NettyClient {
     }
 
     private void groups(Bootstrap bootstrap, int workThreads) {
-        if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
+        /*if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
             workerGroup = new EpollEventLoopGroup(workThreads);
             bootstrap.group(workerGroup);
             bootstrap.channel(EpollSocketChannel.class);
@@ -97,7 +97,7 @@ public class NettyClientImpl implements NettyClient {
                     .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(nettyClientHandlerInitializer);
-        } else {
+        } else {*/
             workerGroup = new NioEventLoopGroup(workThreads);
             bootstrap.group(workerGroup);
             bootstrap.channel(NioSocketChannel.class);
@@ -108,7 +108,7 @@ public class NettyClientImpl implements NettyClient {
                     .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(nettyClientHandlerInitializer);
-        }
+        //}
     }
 
 
