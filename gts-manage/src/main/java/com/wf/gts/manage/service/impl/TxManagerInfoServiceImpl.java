@@ -22,7 +22,6 @@ import com.wf.gts.manage.service.TxManagerInfoService;
 @Service("txManagerInfoService")
 public class TxManagerInfoServiceImpl implements TxManagerInfoService {
 
-
     @Autowired(required = false)
     private DiscoveryService discoveryService;
 
@@ -42,7 +41,9 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Override
     public TxManagerServer findTxManagerServer() {
         final List<String> eurekaService = findEurekaService();
+        
         if (CollectionUtils.isNotEmpty(eurekaService)) {
+          
             final List<TxManagerInfo> txManagerInfos = eurekaService.stream().map(url ->
                     restTemplate.getForObject(url + "/tx/manager/findTxManagerInfo", TxManagerInfo.class))
                     .collect(Collectors.toList());
@@ -54,6 +55,7 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
                                 .filter(info -> info.getNowConnection() < info.getMaxConnection())
                                 .sorted(Comparator.comparingInt(TxManagerInfo::getNowConnection).reversed())
                                 .findFirst();
+                
                 if (txManagerInfoOptional.isPresent()) {
                     final TxManagerInfo txManagerInfo = txManagerInfoOptional.get();
                     TxManagerServer txManagerServer = new TxManagerServer();

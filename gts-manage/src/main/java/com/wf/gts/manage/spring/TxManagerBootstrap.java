@@ -1,6 +1,4 @@
 package com.wf.gts.manage.spring;
-
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +20,10 @@ public class TxManagerBootstrap implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        nettyService.start();
+        try {
+          nettyService.start();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
     }
 }

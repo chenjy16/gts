@@ -10,7 +10,6 @@ import com.wf.gts.manage.domain.NettyParam;
 @EnableAutoConfiguration
 public class NettyConfig {
   
-  
   @Bean
   @ConfigurationProperties("tx.manager.netty")
   public NettyParam getNettyConfig() {

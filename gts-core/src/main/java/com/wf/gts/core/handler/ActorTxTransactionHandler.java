@@ -59,7 +59,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
                     task.setAsyncCall(objects -> res);
                     task.signal();
                     try {
-                        long nana=waitTask.await(info.getTxTransaction().ServiceTimeout()*1000*1000);
+                        long nana=waitTask.await(info.getTxTransaction().serviceWaitMaxTime()*1000*1000);
                         if(nana<=0){
                           findTransactionGroupStatus(info, waitTask);
                         }
@@ -139,7 +139,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
      */
     private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask){
       //如果获取通知超时了，那么就去获取事务组的状态
-        final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().ServiceTimeout());
+        final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().serviceWaitMaxTime());
         if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
                 TransactionStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
   
@@ -183,7 +183,7 @@ public class ActorTxTransactionHandler implements TxTransactionHandler {
       item.setStatus(TransactionStatusEnum.BEGIN.getCode());//开始事务
       item.setRole(TransactionRoleEnum.ACTOR.getCode());//参与者
       item.setTxGroupId(info.getTxGroupId());
-      return txManagerMessageService.addTxTransaction(info.getTxGroupId(), item,info.getTxTransaction().ServiceTimeout());
+      return txManagerMessageService.addTxTransaction(info.getTxGroupId(), item,info.getTxTransaction().serviceWaitMaxTime());
     }
 
 

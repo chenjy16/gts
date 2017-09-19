@@ -46,14 +46,14 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         TxTransactionLocal.getInstance().setTxGroupId(groupId);
         final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
         //创建事务组信息
-        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey),info.getTxTransaction().clientTimeout());
+        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey),info.getTxTransaction().clientWaitMaxTime());
         if (success) {
             TransactionStatus transactionStatus=createTransactionStatus();
             try {
                 long startTime = System.currentTimeMillis();
                 final Object res = point.proceed();
                 long runTime = System.currentTimeMillis() - startTime;
-                if(info.getTxTransaction().clientTimeout()< runTime ){
+                if(info.getTxTransaction().clientWaitMaxTime()< runTime ){
                   throw new RuntimeException("方法执行超时");
                 }
                 commit(transactionStatus, groupId, info,waitKey);
@@ -61,7 +61,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 return res;
 
             } catch (final Throwable throwable) {
-                rollbackForAll(transactionStatus, groupId,info.getTxTransaction().clientTimeout());
+                rollbackForAll(transactionStatus, groupId,info.getTxTransaction().clientWaitMaxTime());
                 throwable.printStackTrace();
                 throw throwable;
             } finally {
@@ -82,7 +82,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      * @param waitKey
      */
     private void  commit(TransactionStatus transactionStatus,String groupId, TxTransactionInfo info,String waitKey){
-        final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().clientTimeout());
+        final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().clientWaitMaxTime());
         if (commit) {
             platformTransactionManager.commit(transactionStatus);
             //通知tm完成事务

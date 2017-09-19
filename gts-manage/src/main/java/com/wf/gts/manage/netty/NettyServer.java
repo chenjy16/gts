@@ -5,14 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.google.common.base.StandardSystemProperty;
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.enums.SerializeProtocolEnum;
 import com.wf.gts.manage.domain.NettyParam;
 import com.wf.gts.manage.netty.handler.NettyServerHandlerInitializer;
 import com.wf.gts.manage.service.TxManagerService;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelOption;
@@ -76,7 +74,7 @@ public class NettyServer  {
 
 
     private void groups(ServerBootstrap b, int workThreads) {
-        if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
+  /*      if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
             bossGroup = new EpollEventLoopGroup(1);
             workerGroup = new EpollEventLoopGroup(workThreads);
             b.group(bossGroup, workerGroup)
@@ -88,7 +86,7 @@ public class NettyServer  {
                     .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerHandlerInitializer);
-        } else {
+        } else {*/
             bossGroup = new NioEventLoopGroup();
             workerGroup = new NioEventLoopGroup(workThreads);
             b.group(bossGroup, workerGroup)
@@ -101,7 +99,7 @@ public class NettyServer  {
                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerHandlerInitializer);
-        }
+       // }
     }
 
     
