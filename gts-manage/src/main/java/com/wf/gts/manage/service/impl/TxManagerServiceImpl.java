@@ -94,8 +94,9 @@ public class TxManagerServiceImpl implements TxManagerService{
 
   @Override
   public Collection<String> listTxGroupId() {
-    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
-    return keys;
+    /*Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+    return keys;*/
+    return null;
   }
 
 }

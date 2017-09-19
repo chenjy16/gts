@@ -15,9 +15,11 @@ import com.wf.gts.manage.service.TxManagerService;
 
 @Controller
 public class TxManagerIndexController {
-
+  
+  
     private final TxManagerInfoService txManagerInfoService;
     private final TxManagerService txManagerService;
+    
     @Autowired
     public TxManagerIndexController(TxManagerInfoService txManagerInfoService,TxManagerService txManagerService) {
         this.txManagerInfoService = txManagerInfoService;
