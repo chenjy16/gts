@@ -25,15 +25,15 @@ import com.wf.gts.core.service.TxManagerMessageService;
  * 分布式事务运参与者
  */
 @Component
-public class ActorTxTransactionHandler implements TxTransactionHandler {
+public class JoinTxTransactionHandler implements TxTransactionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActorTxTransactionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoinTxTransactionHandler.class);
 
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;
 
     @Autowired
-    public ActorTxTransactionHandler(PlatformTransactionManager platformTransactionManager, TxManagerMessageService txManagerMessageService) {
+    public JoinTxTransactionHandler(PlatformTransactionManager platformTransactionManager, TxManagerMessageService txManagerMessageService) {
     
         this.platformTransactionManager = platformTransactionManager;
   
