@@ -12,11 +12,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TxTransaction {
   
-  //调用方超时时间
-  int clientWaitMaxTime() default 3000;
+  //调用方事务超时时间
+  int clientTransTimeout() default 3000;
   
-  //被调用方超时时间
-  int serviceWaitMaxTime() default 3000;
+  //被调用方事务超时时间
+  int serviceTransTimeout() default 3000;
+  
+  //被调用方事务超时时间
+  int socketTimeout() default 1000;
   
   //是否通知
   boolean isNotice() default false;
