@@ -79,7 +79,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
         }
         
         /*
-                     获取当前连接的channel  为什么？
                     因为如果tm是集群环境，可能业务的channel对象连接到不同的tm
                     那么当前的tm可没有其他业务模块的长连接信息，那么就应该做：
                     1.检查当前tm的channel状态，并只提交当前渠道的命令
@@ -106,16 +105,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
         if (CollectionUtils.isNotEmpty(txTransactionItems)) {
           
             final List<TxTransactionItem> collect = txTransactionItems.stream().filter(item -> {
-              
-              
                 Channel channel = SocketManager.getInstance().getChannelByModelName(item.getModelName());
-                
-                
                 return Objects.nonNull(channel) && (channel.isActive() || item.getStatus() != TransactionStatusEnum.ROLLBACK.getCode());
-           
             }).collect(Collectors.toList());
-            
-            
             return txTransactionItems.size() == collect.size();
         }
         return true;

@@ -1,5 +1,6 @@
 package com.wf.gts.core.bean;
 
+import com.wf.gts.common.beans.TransactionInvocation;
 import com.wf.gts.core.annotation.TxTransaction;
 
 public class TxTransactionInfo {

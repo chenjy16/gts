@@ -62,9 +62,13 @@ public interface TxManagerService {
    * @date: 2017年9月19日 下午3:49:33 
    * @return
    */
-  Collection<String> listTxGroupId();
+  List<List<TxTransactionItem>> listTxTransactionItem();
 
 
-
+  /**
+   * 删除已经提交的事务组 每个子项都必须提交才删除
+   * @return  true 成功  false 失败
+   */
+  void removeCommitTxGroup();
 
 }

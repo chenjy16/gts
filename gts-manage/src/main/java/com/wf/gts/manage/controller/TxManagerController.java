@@ -21,8 +21,6 @@ public class TxManagerController {
     private final TxManagerInfoService txManagerInfoService;
     private final HttpTransactionExecutor httpTransactionExecutor;
     
-    
-   
     @Autowired
     public TxManagerController(TxManagerInfoService txManagerInfoService, HttpTransactionExecutor transactionExecutor) {
         this.txManagerInfoService = txManagerInfoService;

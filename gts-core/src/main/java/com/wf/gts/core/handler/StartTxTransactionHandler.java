@@ -11,6 +11,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import com.wf.gts.common.beans.TransactionInvocation;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
 import com.wf.gts.common.enums.TransactionRoleEnum;
@@ -27,6 +29,7 @@ import com.wf.gts.core.util.TxTransactionLocal;
 @Component
 public class StartTxTransactionHandler implements TxTransactionHandler {
 
+  
     private static final Logger LOGGER = LoggerFactory.getLogger(StartTxTransactionHandler.class);
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;
@@ -40,13 +43,15 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
 
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
-        LOGGER.info("tx-transaction start,事务发起类:{}",info);
+      
+        LOGGER.info("tx-transaction start,事务发起类");
         final String groupId = IdWorkerUtils.getInstance().createGroupId();
         //设置事务组ID
         TxTransactionLocal.getInstance().setTxGroupId(groupId);
         final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
         //创建事务组信息
-        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey),info.getTxTransaction().socketTimeout());
+        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey,info.getInvocation()),info.getTxTransaction().socketTimeout());
+       
         if (success) {
             TransactionStatus transactionStatus=createTransactionStatus();
             try {
@@ -59,7 +64,6 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 commit(transactionStatus, groupId, info,waitKey);
                 LOGGER.info("tx-transaction end,  事务发起类");
                 return res;
-
             } catch (final Throwable throwable) {
                 rollbackForAll(transactionStatus, groupId,info.getTxTransaction().socketTimeout());
                 throwable.printStackTrace();
@@ -83,7 +87,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      */
     private void  commit(TransactionStatus transactionStatus,String groupId, TxTransactionInfo info,String waitKey){
         
-      final Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().socketTimeout());
+        Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().socketTimeout());
         if (commit) {
             platformTransactionManager.commit(transactionStatus);
             //通知tm完成事务
@@ -135,11 +139,12 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      * @param taskKey
      * @return
      */
-    private TxTransactionGroup newTxTransactionGroup(String groupId, String taskKey) {
+    private TxTransactionGroup newTxTransactionGroup(String groupId, String taskKey,TransactionInvocation invocation) {
         //创建事务组信息
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(groupId);
         List<TxTransactionItem> items = new ArrayList<>(2);
+        
         //tmManager 用redis hash 结构来存储 整个事务组的状态做为hash结构的第一条数据
         TxTransactionItem groupItem = new TxTransactionItem();
         groupItem.setStatus(TransactionStatusEnum.BEGIN.getCode());//整个事务组状态为开始
@@ -147,6 +152,7 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         groupItem.setTaskKey(groupId);
         groupItem.setRole(TransactionRoleEnum.START.getCode());
         items.add(groupItem);
+        
         TxTransactionItem item = new TxTransactionItem();
         item.setTaskKey(taskKey);
         item.setTransId(IdWorkerUtils.getInstance().createUUID());

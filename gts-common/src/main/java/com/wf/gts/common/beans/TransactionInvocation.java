@@ -1,4 +1,4 @@
-package com.wf.gts.core.bean;
+package com.wf.gts.common.beans;
 
 import java.io.Serializable;
 
@@ -6,7 +6,9 @@ import java.io.Serializable;
  * 事务补偿方法参数
  */
 public class TransactionInvocation implements Serializable {
-    private static final long serialVersionUID = 7722060715819141844L;
+  
+
+    private static final long serialVersionUID = 9209965609104391346L;
     /**
      * 事务执行器
      */

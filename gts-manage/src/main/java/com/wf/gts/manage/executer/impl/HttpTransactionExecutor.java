@@ -20,7 +20,9 @@ import com.wf.gts.common.utils.ExecutorMessageTool;
 public class HttpTransactionExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpTransactionExecutor.class);
+    
     public void rollBack(List<TxTransactionItem> txTransactionItems) {
+       
         try {
             execute(txTransactionItems, TransactionStatusEnum.ROLLBACK);
         } catch (Exception e) {
@@ -56,7 +58,6 @@ public class HttpTransactionExecutor {
                                             transactionStatusEnum.getDesc(), item.getTxGroupId(), item.getTaskKey());
                                 }
                                 
-
                             }).whenComplete((v, e) ->
                                     LOGGER.info("txManger 成功发送 {} 指令 事务taskId为：{}", transactionStatusEnum.getDesc(), item.getTaskKey()))
                           )

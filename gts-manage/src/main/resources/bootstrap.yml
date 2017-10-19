@@ -1,22 +1,14 @@
 eureka:
-  instance:
-    hostname: ${hostname:localhost}
-    preferIpAddress: true
-    lease-renewal-interval-in-seconds: 2
-    lease-expiration-duration-in-seconds: 6
-  server:
-    peerEurekaNodesUpdateIntervalMs: 60000
-    enableSelfPreservation: false
-    evictionIntervalTimerInMs: 5000
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://192.168.1.126:8761/eureka/
+    registry-fetch-interval-seconds: 10  
     healthcheck:
-      enabled: true
-    eurekaServiceUrlPollIntervalSeconds: 60
-endpoints:
-  health:
-    sensitive: false
+      enabled: true  
+  instance:
+    hostname: 192.168.1.126
+    lease-renewal-interval-in-seconds: 15      # 心跳时间，即服务续约间隔时间（缺省为30s）
+    lease-expiration-duration-in-seconds: 30  # 发呆时间，即服务续约到期时间（缺省为90s）        
         
 config:
   jedis:

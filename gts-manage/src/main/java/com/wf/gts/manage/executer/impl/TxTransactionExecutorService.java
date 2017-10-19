@@ -5,13 +5,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.google.gson.Gson;
 import com.wf.gts.common.beans.ChannelSender;
 import com.wf.gts.common.beans.HeartBeat;
@@ -21,7 +19,6 @@ import com.wf.gts.common.utils.ExecutorMessageTool;
 import com.wf.gts.common.utils.OkHttpTools;
 import com.wf.gts.manage.constant.Constant;
 import com.wf.gts.manage.service.TxManagerService;
-
 
 @Component
 public class TxTransactionExecutorService extends AbstractTxTransactionExecutor {
@@ -53,10 +50,8 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                                 CompletableFuture.runAsync(() -> {
                                   
                                     ChannelSender channelSender = new ChannelSender();
-                                    
                                     HeartBeat heartBeat = ExecutorMessageTool.buildMessage(item, channelSender,
                                             TransactionStatusEnum.ROLLBACK);
-                                    
                                     if (Objects.nonNull(channelSender.getChannel())) {
                                         channelSender.getChannel().writeAndFlush(heartBeat);
                                     } else {
@@ -68,14 +63,10 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                                     LOGGER.info("txManger 成功发送rollback指令 事务taskId为：{}", item.getTaskKey())
                                 ))
                         
-                        
                         .toArray(CompletableFuture[]::new);
-                
-                
                 CompletableFuture.allOf(cfs).join();
                 LOGGER.info("txManger 成功发送rollback指令 事务组id为：{}",txGroupId);
             }
-            
             
             httpExecute(elseItems, TransactionStatusEnum.ROLLBACK);
 
@@ -92,7 +83,6 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
 
     /**
      * 执行提交动作
-     *
      * @param txGroupId          事务组id
      * @param txTransactionItems 连接到当前tm的channel信息
      * @param elseItems          连接到其他tm的channel信息
@@ -109,9 +99,7 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                 } else {
                     LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
                 }
-
             });
-
             httpExecute(elseItems, TransactionStatusEnum.COMMIT);
 
         } catch (Exception e) {
@@ -122,7 +110,6 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
 
 
     /**
-     * 获取当前连接的channel  为什么？
      * 因为如果tm是集群环境，可能业务的channel对象连接到不同的tm
      * 那么当前的tm可没有其他业务模块的长连接信息，那么就应该做：
      * 1.检查当前tm的channel状态，并只提交当前渠道的命令
@@ -150,6 +137,7 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                 }
             });
 
+            
         }
     }
 

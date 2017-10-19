@@ -1,0 +1,11 @@
+server:
+  port: ${PORT:8761}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.4.240:8762/eureka/
+    registerWithEureka: false   #表示是否注册自身到eureka服务器
+    fetchRegistry: false    #fetchRegistry表示是否从eureka服务器获取注册信息
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+    enable-self-preservation: false

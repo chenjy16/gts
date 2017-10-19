@@ -1,6 +1,5 @@
 package com.wf.gts.core.handler;
 import java.util.concurrent.CompletableFuture;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,25 +27,21 @@ import com.wf.gts.core.service.TxManagerMessageService;
 public class JoinTxTransactionHandler implements TxTransactionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JoinTxTransactionHandler.class);
-
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;
 
     @Autowired
     public JoinTxTransactionHandler(PlatformTransactionManager platformTransactionManager, TxManagerMessageService txManagerMessageService) {
-    
         this.platformTransactionManager = platformTransactionManager;
-  
         this.txManagerMessageService = txManagerMessageService;
     }
 
 
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
-        LOGGER.info("分布式事务参与方，开始执行,事务组id");
+        LOGGER.info("分布式事务参与方，开始执行,事务组id:{}",info.getTxGroupId());
         final String taskKey = IdWorkerUtils.getInstance().createTaskKey();
         final BlockTask task = BlockTaskHelper.getInstance().getTask(taskKey);
-        
         ThreadPoolManager.getInstance().addExecuteTask(() -> {
             final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
             final BlockTask waitTask = BlockTaskHelper.getInstance().getTask(waitKey);
@@ -95,6 +90,9 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
         }
     }
 
+    
+    
+    
     
     /**
      * 功能描述: 提交或者超时回滚
@@ -150,7 +148,7 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
             LOGGER.info("事务组id：{}，自动超时进行回滚!", info.getTxGroupId());
             waitTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
         }
-        LOGGER.error("============通过定时任务来唤醒线程！事务状态为:{}", transactionGroupStatus);
+        LOGGER.error("从redis查询事务状态为:{}", transactionGroupStatus);
       
     }
 

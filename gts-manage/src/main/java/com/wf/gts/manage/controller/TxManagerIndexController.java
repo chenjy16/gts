@@ -36,13 +36,8 @@ public class TxManagerIndexController {
     @RequestMapping("tx/list")
     @ResponseBody
     public Object list(HttpServletRequest request) {
-        Collection<String> keys=txManagerService.listTxGroupId();
-        List<TxTransactionItem> res=Lists.newArrayList();
-        keys.forEach(key->{
-          List<TxTransactionItem> list=txManagerService.listByTxGroupId(key);
-          res.addAll(list);
-        });
-        return res;
+      
+        return null;
     }
 
 }

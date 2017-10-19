@@ -1,0 +1,11 @@
+server:
+  port: ${PORT:8762}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.4.240:8761/eureka/
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+    enable-self-preservation: false

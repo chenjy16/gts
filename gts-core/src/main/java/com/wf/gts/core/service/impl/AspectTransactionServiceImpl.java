@@ -1,11 +1,14 @@
 package com.wf.gts.core.service.impl;
 import java.lang.reflect.Method;
+
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.wf.gts.common.beans.TransactionInvocation;
 import com.wf.gts.core.annotation.TxTransaction;
-import com.wf.gts.core.bean.TransactionInvocation;
 import com.wf.gts.core.bean.TxTransactionInfo;
 import com.wf.gts.core.handler.TxTransactionHandler;
 import com.wf.gts.core.service.AspectTransactionService;
@@ -25,10 +28,13 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
     @Override
     public Object invoke(String transactionGroupId, ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
+        
         Method method = signature.getMethod();
         Class<?> clazz = point.getTarget().getClass();
         Object[] args = point.getArgs();
         Method thisMethod = clazz.getMethod(method.getName(), method.getParameterTypes());
+        
+        
         TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
         TxTransaction  txTransaction=getTxTransaction(thisMethod);
         TxTransactionInfo info = new TxTransactionInfo(txTransaction, transactionGroupId, invocation);

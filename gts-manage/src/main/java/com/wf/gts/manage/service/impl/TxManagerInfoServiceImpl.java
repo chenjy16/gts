@@ -37,18 +37,22 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Value("${transaction_wait_max_time}")
     private int transaction_wait_max_time;
 
+    
+    @Value("${tx.manager.ip}")
+    private String ip;
 
     @Override
     public TxManagerServer findTxManagerServer() {
-        final List<String> eurekaService = findEurekaService();
+        final List<String> manageService = findManageService();
         
-        if (CollectionUtils.isNotEmpty(eurekaService)) {
+        if (CollectionUtils.isNotEmpty(manageService)) {
           
-            final List<TxManagerInfo> txManagerInfos = eurekaService.stream().map(url ->
-                    restTemplate.getForObject(url + "/tx/manager/findTxManagerInfo", TxManagerInfo.class))
-                    .collect(Collectors.toList());
+            final List<TxManagerInfo> txManagerInfos = manageService.stream().map(url ->
+            restTemplate.getForObject(url + "/tx/manager/findTxManagerInfo", TxManagerInfo.class))
+            .collect(Collectors.toList());
 
             if (CollectionUtils.isNotEmpty(txManagerInfos)) {
+              
                 //获取连接数最多的服务  想要把所有的业务长连接，连接到同一个tm，但是又不能超过最大的连接
                 final Optional<TxManagerInfo> txManagerInfoOptional =
                         txManagerInfos.stream().filter(Objects::nonNull)
@@ -63,7 +67,6 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
                     txManagerServer.setPort(txManagerInfo.getPort());
                     return txManagerServer;
                 }
-
             }
         }
         return null;
@@ -72,21 +75,24 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Override
     public TxManagerInfo findTxManagerInfo() {
         TxManagerInfo txManagerInfo = new TxManagerInfo();
-        //设置ip为eureka 上注册的TxManager ip
-        String ip = EurekaServerContextHolder.getInstance().getServerContext().getApplicationInfoManager().getEurekaInstanceConfig().getIpAddress();
         txManagerInfo.setIp(ip);
         txManagerInfo.setPort(nettyParam.getPort());
         txManagerInfo.setMaxConnection(SocketManager.getInstance().getMaxConnection());
         txManagerInfo.setNowConnection(SocketManager.getInstance().getNowConnection());
         txManagerInfo.setTransactionWaitMaxTime(transaction_wait_max_time);
         txManagerInfo.setRedisSaveMaxTime(redis_save_max_time);
-        txManagerInfo.setClusterInfoList(findEurekaService());
+        txManagerInfo.setClusterInfoList(findManageService());
         return txManagerInfo;
     }
 
+    
+    
+    
+    
     @Override
     public List<TxManagerServiceDTO> loadTxManagerService() {
-        final List<InstanceInfo> instanceInfoList = discoveryService.getConfigServiceInstances();
+        List<InstanceInfo> instanceInfoList = discoveryService.getManageServiceInstances();
+        
         return instanceInfoList.stream().map(instanceInfo -> {
             TxManagerServiceDTO dto = new TxManagerServiceDTO();
             dto.setAppName(instanceInfo.getAppName());
@@ -99,13 +105,13 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     
     
     /**
-     * 功能描述: 注册中心地址
+     * 功能描述: 获取事务管理服务地址
      * @author: chenjy
      * @date: 2017年9月18日 下午5:46:26 
      * @return
      */
-    private List<String> findEurekaService() {
-        final List<InstanceInfo> configServiceInstances = discoveryService.getConfigServiceInstances();
+    private List<String> findManageService() {
+        final List<InstanceInfo> configServiceInstances = discoveryService.getManageServiceInstances();
         return configServiceInstances.stream().map(InstanceInfo::getHomePageUrl).collect(Collectors.toList());
     }
     

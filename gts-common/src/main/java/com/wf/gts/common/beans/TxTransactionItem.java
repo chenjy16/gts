@@ -43,7 +43,6 @@ public class TxTransactionItem implements Serializable {
 
 
 
-
     public String getTaskKey() {
         return taskKey;
     }
@@ -100,4 +99,7 @@ public class TxTransactionItem implements Serializable {
     public void setTxGroupId(String txGroupId) {
         this.txGroupId = txGroupId;
     }
+
+
+    
 }
