@@ -37,7 +37,6 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Value("${transaction_wait_max_time}")
     private int transaction_wait_max_time;
 
-    
     @Value("${tx.manager.ip}")
     private String ip;
 
@@ -92,7 +91,6 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
     @Override
     public List<TxManagerServiceDTO> loadTxManagerService() {
         List<InstanceInfo> instanceInfoList = discoveryService.getManageServiceInstances();
-        
         return instanceInfoList.stream().map(instanceInfo -> {
             TxManagerServiceDTO dto = new TxManagerServiceDTO();
             dto.setAppName(instanceInfo.getAppName());

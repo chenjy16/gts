@@ -126,7 +126,6 @@ public class NettyMessageService implements TxManagerMessageService {
         }
         return false;
     }
-
    
     /**
      * 异步完成自身事务的提交
@@ -147,8 +146,6 @@ public class NettyMessageService implements TxManagerMessageService {
         heartBeat.setTxTransactionGroup(txTransactionGroup);
         nettyClientMessageHandler.AsyncSendTxManagerMessage(heartBeat);
     }
-
-
 
 
 }

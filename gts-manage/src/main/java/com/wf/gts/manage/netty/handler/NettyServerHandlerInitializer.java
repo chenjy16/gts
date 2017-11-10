@@ -19,7 +19,6 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
  */
 @Component
 public class NettyServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
-
   
     private final NettyParam nettyConfig;
     private final NettyServerMessageHandler nettyServerMessageHandler;

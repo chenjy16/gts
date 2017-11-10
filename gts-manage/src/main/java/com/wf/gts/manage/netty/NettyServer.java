@@ -1,11 +1,8 @@
 package com.wf.gts.manage.netty;
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.google.common.base.StandardSystemProperty;
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.enums.SerializeProtocolEnum;
 import com.wf.gts.manage.domain.NettyParam;
@@ -15,9 +12,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollChannelOption;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -60,15 +54,14 @@ public class NettyServer  {
         try {
             final SerializeProtocolEnum serializeProtocolEnum =
             SerializeProtocolEnum.acquireSerializeProtocol(nettyConfig.getSerialize());
-            
             nettyServerHandlerInitializer.setSerializeProtocolEnum(serializeProtocolEnum);
             nettyServerHandlerInitializer.setServletExecutor(servletExecutor);
             ServerBootstrap b = new ServerBootstrap();
             groups(b,MAX_THREADS<<1);
             b.bind(nettyConfig.getPort());
-            LOGGER.info("netty service started on port: " + nettyConfig.getPort());
+            LOGGER.info("netty服务启动成功,端口:{}",nettyConfig.getPort());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("netty服务启动异常:{}",e);
         }
     }
 
@@ -118,7 +111,7 @@ public class NettyServer  {
                 servletExecutor.shutdownGracefully().await();
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.info("netty服务关闭异常:{}",e);
         }
     }
 }

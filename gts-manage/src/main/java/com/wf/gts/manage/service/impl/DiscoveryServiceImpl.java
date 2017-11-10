@@ -28,7 +28,7 @@ public class DiscoveryServiceImpl implements DiscoveryService{
       Applications app=eurekaClient.getApplications();
       Application application = eurekaClient.getApplication("gts-manager");
       if (application == null) {
-          LOGGER.error("获取eureka服务失败！");
+          LOGGER.error("获取注册服务失败！");
       }
       return application != null ? application.getInstances() : new ArrayList<>();
   }

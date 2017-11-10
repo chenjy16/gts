@@ -25,10 +25,10 @@ public class TxManagerLocator {
     public static TxManagerLocator getInstance() {
         return TX_MANAGER_LOCATOR;
     }
-    
     private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerLocator.class);
 
     private TxConfig txConfig;
+    
     private ScheduledExecutorService m_executorService;
     private AtomicReference<List<TxManagerServiceDTO>> m_configServices;
     private Type m_responseType;
@@ -109,6 +109,7 @@ public class TxManagerLocator {
             try {
                 final List<TxManagerServiceDTO> serviceDTOList =
                         OkHttpTools.getInstance().get(url, m_responseType);
+                
                 if (CollectionUtils.isEmpty(serviceDTOList)) {
                     LOGGER.error("Empty response! 请求url为:{}",url);
                     continue;

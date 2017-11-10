@@ -15,7 +15,7 @@ import com.wf.gts.manage.tcc.service.CoordinateService;
 
 
 @RestController
-@RequestMapping(value = "/tcc", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = "/gtsManage/tcc", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class CoordinateController {
   
     private static final String COORDINATOR_URI_PREFIX = "/coordinator";

@@ -17,6 +17,7 @@
 	        <module>gts-manage</module>
 	        <module>gts-dubbo</module>
 	        <module>gts-common</module>
+	        <module>gts-discovery</module>
 	    </modules>
   
 	    <properties>

@@ -15,7 +15,7 @@ import com.wf.gts.manage.service.TxManagerInfoService;
 
 
 @RestController
-@RequestMapping("/tx/manager")
+@RequestMapping("/gtsManage/tx/manager")
 public class TxManagerController {
 
     private final TxManagerInfoService txManagerInfoService;

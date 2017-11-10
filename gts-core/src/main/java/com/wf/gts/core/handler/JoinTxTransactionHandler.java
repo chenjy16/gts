@@ -18,6 +18,7 @@ import com.wf.gts.common.utils.ThreadPoolManager;
 import com.wf.gts.core.bean.TxTransactionInfo;
 import com.wf.gts.core.concurrent.BlockTask;
 import com.wf.gts.core.concurrent.BlockTaskHelper;
+import com.wf.gts.core.constant.Constant;
 import com.wf.gts.core.service.TxManagerMessageService;
 
 /**
@@ -36,13 +37,16 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
         this.txManagerMessageService = txManagerMessageService;
     }
 
-
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
-        LOGGER.info("分布式事务参与方，开始执行,事务组id:{}",info.getTxGroupId());
+      
+        LOGGER.info("分布式事务参与方，开始执行,事务组id:{},方法名称:{},服务名:{}",
+            info.getTxGroupId(),info.getInvocation().getMethod(),info.getInvocation().getClass().toString());
         final String taskKey = IdWorkerUtils.getInstance().createTaskKey();
         final BlockTask task = BlockTaskHelper.getInstance().getTask(taskKey);
+        
         ThreadPoolManager.getInstance().addExecuteTask(() -> {
+          
             final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
             final BlockTask waitTask = BlockTaskHelper.getInstance().getTask(waitKey);
             TransactionStatus transactionStatus=startTransaction();
@@ -54,14 +58,23 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                     task.setAsyncCall(objects -> res);
                     task.signal();
                     try {
-                        long nana=waitTask.await(info.getTxTransaction().serviceTransTimeout()*1000*1000);
+                        long nana=waitTask.await(info.getTxTransaction()
+                            .serviceTransTimeout()*Constant.CONSTANT_INT_THOUSAND*Constant.CONSTANT_INT_THOUSAND);
                         if(nana<=0){
                           findTransactionGroupStatus(info, waitTask);
                         }
-                        commitOrTimeout(transactionStatus, info, waitTask, waitKey);
+                        commitOrRollback(transactionStatus, info, waitTask, waitKey);
+                        
                     } catch (Throwable throwable) {
                         platformTransactionManager.rollback(transactionStatus);
-                        throwable.printStackTrace();
+                        
+                        //通知tm 自身事务需要回滚,不能提交
+                     /*   CompletableFuture.runAsync(() ->
+                                txManagerMessageService
+                                        .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
+                                                TransactionStatusEnum.ROLLBACK.getCode()));*/
+                        
+                        LOGGER.error("分布式事务参与方,事务提交异常:{},事务组id:{}",throwable.getMessage(),info.getTxGroupId());
                     } finally {
                         BlockTaskHelper.getInstance().removeByKey(waitKey);
                     }
@@ -69,11 +82,8 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                 } else {
                     platformTransactionManager.rollback(transactionStatus);
                 }
-  
-                
-            } catch (final Throwable throwable) {
+            } catch (Throwable throwable) {
                 throwable.printStackTrace();
-                //如果有异常 当前项目事务进行回滚 ，同时通知tm 整个事务失败
                 platformTransactionManager.rollback(transactionStatus);
                 task.setAsyncCall(objects -> {
                     throw throwable;
@@ -81,18 +91,17 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                 task.signal();
             }
         });
+        
+        
         task.await();
-        LOGGER.info("actor tx-transaction-end:参与分布式模块执行完毕！");
+        LOGGER.info("参与分布式模块执行完毕,事务组id:{},方法名称:{},服务名:{}",
+            info.getTxGroupId(),info.getInvocation().getMethod(),info.getInvocation().getClass().toString());
         try {
             return task.getAsyncCall().callBack();
         } finally {
             BlockTaskHelper.getInstance().removeByKey(task.getKey());
         }
     }
-
-    
-    
-    
     
     /**
      * 功能描述: 提交或者超时回滚
@@ -104,19 +113,18 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
      * @param waitKey
      * @throws Throwable 
      */
-    private void commitOrTimeout(TransactionStatus transactionStatus,TxTransactionInfo info,BlockTask waitTask,String waitKey) throws Throwable{
+    private void commitOrRollback(TransactionStatus transactionStatus,TxTransactionInfo info,BlockTask waitTask,String waitKey) throws Throwable{
       final Integer status = (Integer) waitTask.getAsyncCall().callBack();
       if (TransactionStatusEnum.COMMIT.getCode() == status) {
           //提交事务
           platformTransactionManager.commit(transactionStatus);
-          //通知tm 自身事务已经完成
           //通知tm完成事务
           CompletableFuture.runAsync(() ->
                   txManagerMessageService
                           .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
                                   TransactionStatusEnum.COMMIT.getCode()));
 
-      } else if (NettyResultEnum.TIME_OUT.getCode() == status) {
+      } else if (TransactionStatusEnum.ROLLBACK.getCode()== status) {
           //如果超时了，就回滚当前事务
           platformTransactionManager.rollback(transactionStatus);
           //通知tm 自身事务需要回滚,不能提交
@@ -125,6 +133,7 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                           .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
                                   TransactionStatusEnum.ROLLBACK.getCode()));
       }
+      
     }
     
     
@@ -136,22 +145,20 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
      * @param waitTask
      */
     private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask){
-      //如果获取通知超时了，那么就去获取事务组的状态
+        //如果获取通知超时了，那么就去获取事务组的状态
         final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().socketTimeout());
         if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
                 TransactionStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
-            //如果事务组是预提交，或者是提交状态
-            //表明事务组是成功的，这时候就算超时也应该去提交
             LOGGER.info("事务组id：{}，自动超时，获取事务组状态为提交，进行提交!", info.getTxGroupId());
             waitTask.setAsyncCall(objects -> TransactionStatusEnum.COMMIT.getCode());
         } else {
             LOGGER.info("事务组id：{}，自动超时进行回滚!", info.getTxGroupId());
-            waitTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
+            waitTask.setAsyncCall(objects -> TransactionStatusEnum.ROLLBACK.getCode());
         }
         LOGGER.error("从redis查询事务状态为:{}", transactionGroupStatus);
-      
     }
 
+    
     /**
      * 功能描述: 开启事务
      * @author: chenjy
@@ -164,6 +171,7 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
       TransactionStatus transactionStatus = platformTransactionManager.getTransaction(def);
       return transactionStatus;
     }
+    
     
     /**
      * 功能描述: 添加事务组

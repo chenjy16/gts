@@ -16,6 +16,8 @@ public class TxTransactionInitialize {
     private static final Logger LOGGER = LoggerFactory.getLogger(TxTransactionInitialize.class);
     private final InitService initService;
     
+    
+    
     @Autowired
     public TxTransactionInitialize(InitService initService) {
         this.initService = initService;
@@ -28,6 +30,7 @@ public class TxTransactionInitialize {
      * @param txConfig
      */
     public void init(TxConfig txConfig) {
+      
         Runtime.getRuntime().addShutdownHook(new Thread(() -> LOGGER.error("系统关闭")));
         try {
             initService.initialization(txConfig);

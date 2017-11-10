@@ -8,6 +8,7 @@ public class TxTransactionInfo {
      * 补偿方法对象
      */
     private TransactionInvocation invocation;
+    
     /**
      * 分布式事务组
      */

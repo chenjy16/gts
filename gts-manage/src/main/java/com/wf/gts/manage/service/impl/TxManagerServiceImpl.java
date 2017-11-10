@@ -2,17 +2,13 @@ package com.wf.gts.manage.service.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
 import com.wf.gts.common.enums.TransactionRoleEnum;
@@ -99,7 +95,6 @@ public class TxManagerServiceImpl implements TxManagerService{
 
   @Override
   public List<List<TxTransactionItem>> listTxTransactionItem() {
-    
     Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
     List<List<TxTransactionItem>>  lists=Lists.newArrayList();
     keys.stream().forEach(key->{
@@ -109,29 +104,27 @@ public class TxManagerServiceImpl implements TxManagerService{
             .map(item->JSON.parseObject(item, TxTransactionItem.class))
             .collect(Collectors.toList());
         lists.add(items);
-     });
+     });  
     return lists;
   }
-
   
 
   @Override
   public void removeCommitTxGroup() {
     Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
-    keys.parallelStream().forEach(key -> {
+    keys.stream().forEach(key -> {
         final Map<String, String> entries = JedisUtils.getJedisInstance().execHgetAllToCache(key);
         final Collection<String> values = entries.values();
-        
         final Optional<TxTransactionItem> any =
                 values.stream().map(item->JSON.parseObject(item, TxTransactionItem.class))
                 .filter(item -> item.getRole() == TransactionRoleEnum.START.getCode()
-                        && item.getStatus() == TransactionStatusEnum.ROLLBACK.getCode())
+                     && item.getStatus() == TransactionStatusEnum.ROLLBACK.getCode())
                 .findAny();
-        
         if (any.isPresent()) {
-          JedisUtils.getJedisInstance().execDecrToCache(key);
+          JedisUtils.getJedisInstance().execDelToCache(key);
         }
     });
   }
+  
 
 }
