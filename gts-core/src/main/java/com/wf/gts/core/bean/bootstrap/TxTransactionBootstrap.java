@@ -1,5 +1,6 @@
 package com.wf.gts.core.bean.bootstrap;
 import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -20,13 +21,10 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
     /**
      * 初始化实体
      */
-    private final TxTransactionInitialize txTransactionInitialize;
+    @Autowired
+    private  TxTransactionInitialize txTransactionInitialize;
 
     
-    @Autowired
-    public TxTransactionBootstrap(TxTransactionInitialize txTransactionInitialize) {
-        this.txTransactionInitialize = txTransactionInitialize;
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -34,7 +32,6 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
         SpringBeanUtils.getInstance().setCfgContext(cfgContext);
         start(this);
     }
-    
     
     private void start(TxConfig txConfig) {
         if (!checkDataConfig(txConfig)) {
@@ -47,4 +44,16 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
     private boolean checkDataConfig(TxConfig txConfig) {
         return !StringUtils.isBlank(txConfig.getTxManagerUrl());
     }
+
+
+    public TxTransactionInitialize getTxTransactionInitialize() {
+      return txTransactionInitialize;
+    }
+
+
+    public void setTxTransactionInitialize(TxTransactionInitialize txTransactionInitialize) {
+      this.txTransactionInitialize = txTransactionInitialize;
+    }
+    
+    
 }

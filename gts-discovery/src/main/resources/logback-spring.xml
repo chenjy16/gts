@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- <property resource="resource1.properties" /> -->
-	<property name="LOG_HOME" value="/logs/java/gts-discovery/" />
+	<property name="LOG_HOME" value="/data/java/wufu-java/logs/gts-discovery" />
 	<property name="FILE_NAME" value="gts-discovery" />
 	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

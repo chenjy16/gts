@@ -10,7 +10,7 @@ import com.wf.gts.core.service.InitService;
 /**
  * 初始化类
  */
-@Component
+@Component("txTransactionInitialize")
 public class TxTransactionInitialize {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TxTransactionInitialize.class);

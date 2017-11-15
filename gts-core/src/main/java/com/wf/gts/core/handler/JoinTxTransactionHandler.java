@@ -10,7 +10,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import com.wf.gts.common.beans.TxTransactionItem;
-import com.wf.gts.common.enums.NettyResultEnum;
 import com.wf.gts.common.enums.TransactionRoleEnum;
 import com.wf.gts.common.enums.TransactionStatusEnum;
 import com.wf.gts.common.utils.IdWorkerUtils;
@@ -58,8 +57,10 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                     task.setAsyncCall(objects -> res);
                     task.signal();
                     try {
+                      
                         long nana=waitTask.await(info.getTxTransaction()
-                            .serviceTransTimeout()*Constant.CONSTANT_INT_THOUSAND*Constant.CONSTANT_INT_THOUSAND);
+                            .socketTimeout()*Constant.CONSTANT_INT_THOUSAND*Constant.CONSTANT_INT_THOUSAND);
+                        
                         if(nana<=0){
                           findTransactionGroupStatus(info, waitTask);
                         }
@@ -67,13 +68,6 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                         
                     } catch (Throwable throwable) {
                         platformTransactionManager.rollback(transactionStatus);
-                        
-                        //通知tm 自身事务需要回滚,不能提交
-                     /*   CompletableFuture.runAsync(() ->
-                                txManagerMessageService
-                                        .AsyncCompleteCommitTxTransaction(info.getTxGroupId(), waitKey,
-                                                TransactionStatusEnum.ROLLBACK.getCode()));*/
-                        
                         LOGGER.error("分布式事务参与方,事务提交异常:{},事务组id:{}",throwable.getMessage(),info.getTxGroupId());
                     } finally {
                         BlockTaskHelper.getInstance().removeByKey(waitKey);
@@ -91,8 +85,6 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                 task.signal();
             }
         });
-        
-        
         task.await();
         LOGGER.info("参与分布式模块执行完毕,事务组id:{},方法名称:{},服务名:{}",
             info.getTxGroupId(),info.getInvocation().getMethod(),info.getInvocation().getClass().toString());
@@ -143,8 +135,9 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
      * @date: 2017年9月18日 下午1:24:39 
      * @param info
      * @param waitTask
+     * @throws Throwable 
      */
-    private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask){
+    private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask) throws Throwable{
         //如果获取通知超时了，那么就去获取事务组的状态
         final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().socketTimeout());
         if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
@@ -180,8 +173,9 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
      * @param   waitKey
      * @param   info
      * @return
+     * @throws Throwable 
      */
-    private boolean addTxTransactionGroup(String waitKey,TxTransactionInfo info){
+    private boolean addTxTransactionGroup(String waitKey,TxTransactionInfo info) throws Throwable{
       TxTransactionItem item = new TxTransactionItem();
       item.setTaskKey(waitKey);
       item.setTransId(IdWorkerUtils.getInstance().createUUID());

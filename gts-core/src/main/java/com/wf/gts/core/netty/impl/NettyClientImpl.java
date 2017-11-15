@@ -67,6 +67,7 @@ public class NettyClientImpl implements NettyClient {
      */
     @Override
     public void start(TxConfig txConfig) {
+      
         this.txConfig = txConfig;
         SerializeProtocolEnum serializeProtocol =
                 SerializeProtocolEnum.acquireSerializeProtocol(txConfig.getNettySerializer());
@@ -101,7 +102,8 @@ public class NettyClientImpl implements NettyClient {
             workerGroup = new NioEventLoopGroup(workThreads);
             bootstrap.group(workerGroup);
             bootstrap.channel(NioSocketChannel.class);
-            bootstrap.option(ChannelOption.SO_BACKLOG, 1024)
+            bootstrap
+            //.option(ChannelOption.SO_BACKLOG, 1024)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.TCP_NODELAY, true)

@@ -14,6 +14,8 @@ import com.wf.gts.common.utils.IdWorkerUtils;
 import com.wf.gts.core.concurrent.BlockTask;
 import com.wf.gts.core.concurrent.BlockTaskHelper;
 import com.wf.gts.core.config.TxConfig;
+import com.wf.gts.core.constant.Constant;
+import com.wf.gts.core.exception.SocketTimeoutException;
 import com.wf.gts.core.netty.NettyClient;
 import com.wf.gts.core.util.SpringBeanUtils;
 import io.netty.channel.ChannelHandler;
@@ -24,12 +26,13 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
 
-
 @Component
 @ChannelHandler.Sharable
 public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
   
+  
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientMessageHandler.class);
+    
     /**
      * false 未链接
      * true 连接中
@@ -85,6 +88,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    
     private void receivedCommand(String key, int result) {
         final BlockTask blockTask = BlockTaskHelper.getInstance().getTask(key);
         if (Objects.nonNull(blockTask)) {
@@ -93,6 +97,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
@@ -148,28 +153,24 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
      * 向TxManager 发生消息
      * @param heartBeat 定义的数据传输对象
      * @return Object
+     * @throws Throwable 
      */
-    public Object sendTxManagerMessage(HeartBeat heartBeat,int timeout) {
+    public Object sendTxManagerMessage(HeartBeat heartBeat,long timeout) throws Throwable {
         if (ctx != null && ctx.channel() != null && ctx.channel().isActive()) {
             final String sendKey = IdWorkerUtils.getInstance().createTaskKey();
             BlockTask sendTask = BlockTaskHelper.getInstance().getTask(sendKey);
             heartBeat.setKey(sendKey);
             ctx.writeAndFlush(heartBeat);
-            //发送线程在此等待，等tm是否正确返回（正确返回唤醒） 
-            long nana=sendTask.await(timeout*1000*1000);
+            //发送线程在此等待，等tm是否正确返回（正确返回唤醒）
+            long nana=sendTask.await(timeout*Constant.CONSTANT_INT_THOUSAND*Constant.CONSTANT_INT_THOUSAND);
             if(nana<=0){
-                if (NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode()== heartBeat.getAction()) {
-                    sendTask.setAsyncCall(objects -> NettyResultEnum.TIME_OUT.getCode());
-                }else{
-                    sendTask.setAsyncCall(objects -> false);
-                }
+                sendTask.setAsyncCall(objects -> {
+                  throw new SocketTimeoutException("socket等待超时,超时时间"+timeout+"ms");
+                });
             }
             try {
                 return sendTask.getAsyncCall().callBack();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-                return null;
-            } finally {
+            }finally {
                 BlockTaskHelper.getInstance().removeByKey(sendKey);
             }
         } else {
@@ -178,7 +179,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
 
     }
 
-    
     
     /**
      * 向TxManager 异步发送消息
@@ -189,5 +189,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(heartBeat);
         }
     }
+    
+    
 
 }

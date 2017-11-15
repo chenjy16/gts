@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOG_HOME" value="/data/java/wufu-java/logs/gts-example-b" />
+	<property name="FILE_NAME" value="gts-example-b" />
+	<property name="ERROR_FILE_NAME" value="gts-example-b-error" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	    <layout class="ch.qos.logback.classic.PatternLayout">
+	      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line - %msg%n</Pattern>
+	    </layout>
+  	</appender>
+
+	<appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	    <file>${LOG_HOME}/${FILE_NAME}.log</file>
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_HOME}/${FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 1GB total size -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+      		<pattern>%d  %-4relative %-5level %logger{35} - %msg%n</pattern>
+    	</encoder>
+  </appender>
+  
+  <appender name="SQL_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	    <file>${LOG_HOME}/sql_${FILE_NAME}.log</file>
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_HOME}/sql_${FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 1GB total size -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+    	</rollingPolicy>
+		<encoder>
+      		<pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+    	</encoder>
+  </appender>
+
+	<!-- ERROR 输出配置 -->
+	<appender name="logErrorFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${LOG_HOME}/${ERROR_FILE_NAME}.log</File>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${ERROR_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+ 
+<!-- 日志配置 -->
+<logger name="dao" level="DEBUG">  
+    <appender-ref ref="FILE_APPENDER" />  
+</logger>  
+
+ <!-- -->
+    <logger name="org.apache.ibatis" level="DEBUG">  
+    <appender-ref ref="STDOUT"/>  
+    <appender-ref ref="SQL_FILE_APPENDER" />
+	</logger>
+		<logger name="org.mybatis">
+		<level value="DEBUG"/>
+		<appender-ref ref="SQL_FILE_APPENDER" />
+	</logger>
+	<logger name="java.sql">
+		<level value="DEBUG"/>
+		<appender-ref ref="SQL_FILE_APPENDER" />
+	</logger>
+	<logger name="com.wufumall.message.dao" level="DEBUG">
+		<appender-ref ref="SQL_FILE_APPENDER" />
+	</logger>
+
+	 <logger name="org.springframework.data" level="DEBUG">
+      <appender-ref ref="SQL_FILE_APPENDER" />
+  </logger>
+  
+  <logger name="com.wisers.labeltool.dao" level="DEBUG">
+      <appender-ref ref="SQL_FILE_APPENDER" />
+  </logger>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE_APPENDER" />
+    <appender-ref ref="logErrorFile" />
+  </root>
+
+</configuration>

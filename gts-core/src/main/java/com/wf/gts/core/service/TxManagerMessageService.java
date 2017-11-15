@@ -12,7 +12,7 @@ public interface TxManagerMessageService {
      * @param txTransactionGroup 事务组
      * @return true 成功 false 失败
      */
-    Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,int timeout);
+    Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,long timeout)throws Throwable;
 
 
     /**
@@ -21,7 +21,7 @@ public interface TxManagerMessageService {
      * @param txTransactionItem 子事务项
      * @return true 成功 false 失败
      */
-    Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,int timeout);
+    Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,long timeout)throws Throwable;
 
 
     /**
@@ -29,7 +29,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return 事务组状态
      */
-    int findTransactionGroupStatus(String txGroupId,int timeout);
+    int findTransactionGroupStatus(String txGroupId,long timeout)throws Throwable;
 
 
 
@@ -39,7 +39,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      */
-    Boolean rollBackTxTransaction(String txGroupId,int timeout);
+    Boolean rollBackTxTransaction(String txGroupId,long timeout)throws Throwable;
 
 
     /**
@@ -48,7 +48,7 @@ public interface TxManagerMessageService {
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      */
-    Boolean preCommitTxTransaction(String txGroupId,int timeout);
+    Boolean preCommitTxTransaction(String txGroupId,long timeout)throws Throwable;
 
 
 

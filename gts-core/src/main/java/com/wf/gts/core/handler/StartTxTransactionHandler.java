@@ -40,7 +40,6 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         this.platformTransactionManager = platformTransactionManager;
     }
 
-
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
       
@@ -71,9 +70,8 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
             } finally {
                 TxTransactionLocal.getInstance().removeTxGroupId();
             }
-        } else {
-            throw new RuntimeException("TxManager 连接异常！");
         }
+        return null;
     }
 
     /**
@@ -84,8 +82,9 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      * @param groupId
      * @param info
      * @param waitKey
+     * @throws Throwable 
      */
-    private void  commit(TransactionStatus transactionStatus,String groupId, TxTransactionInfo info,String waitKey){
+    private void  commit(TransactionStatus transactionStatus,String groupId, TxTransactionInfo info,String waitKey) throws Throwable{
         
         Boolean commit = txManagerMessageService.preCommitTxTransaction(groupId,info.getTxTransaction().socketTimeout());
         if (commit) {
@@ -107,8 +106,9 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
      * @date: 2017年9月18日 上午11:37:58 
      * @param transactionStatus
      * @param groupId
+     * @throws Throwable 
      */
-    private void rollbackForAll(TransactionStatus transactionStatus,String groupId,int timeout){
+    private void rollbackForAll(TransactionStatus transactionStatus,String groupId,long timeout) throws Throwable{
         //如果有异常 当前项目事务进行回滚 ，同时通知tm 整个事务失败
         platformTransactionManager.rollback(transactionStatus);
         //通知tm整个事务组失败，需要回滚，（回滚那些正常提交的模块，他们正在等待通知。。。。）

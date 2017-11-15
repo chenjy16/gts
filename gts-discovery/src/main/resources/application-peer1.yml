@@ -1,11 +1,12 @@
+spring:
+  application:
+    name: gts-discovery
+
 server:
-  port: ${PORT:8761}
+  port: ${PORT:11000}
 eureka:
+  instance:
+    hostname: 192.168.1.235
   client:
     serviceUrl:
-      defaultZone: http://192.168.4.240:8762/eureka/
-    registerWithEureka: false   #表示是否注册自身到eureka服务器
-    fetchRegistry: false    #fetchRegistry表示是否从eureka服务器获取注册信息
-  server:
-    waitTimeInMsWhenSyncEmpty: 0
-    enable-self-preservation: false
+      defaultZone: http://192.168.1.235:11001/eureka/

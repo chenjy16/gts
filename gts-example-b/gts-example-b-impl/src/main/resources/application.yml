@@ -1,0 +1,7 @@
+server:
+  port: ${PORT:11120}
+
+# 选择使用哪个环境的配置文件 
+spring:
+  profiles:
+    active: dev

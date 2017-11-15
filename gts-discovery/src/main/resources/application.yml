@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: gts-discovery
+
 server:
   port: ${PORT:11000}
 eureka:
@@ -6,3 +10,4 @@ eureka:
     fetchRegistry: false
   server:
     waitTimeInMsWhenSyncEmpty: 0
+    

@@ -1,0 +1,4 @@
+
+spring:
+  application:
+    name: example-a-service

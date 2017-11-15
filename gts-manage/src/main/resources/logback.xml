@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_HOME" value="/logs/java/gts-manage" />
+	<property name="LOG_HOME" value="/data/java/wufu-java/logs/gts-manage" />
 	<property name="FILE_NAME" value="gts-manage" />
 	<property name="ERROR_FILE_NAME" value="gts-manage-error" />
 

@@ -30,9 +30,10 @@ public class NettyMessageService implements TxManagerMessageService {
      * 保存事务组 在事务发起方的时候进行调用
      * @param txTransactionGroup 事务组
      * @return true 成功 false 失败
+     * @throws Throwable 
      */
     @Override
-    public Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,int timeout) {
+    public Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup,long timeout) throws Throwable {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.CREATE_GROUP.getCode());
         heartBeat.setTxTransactionGroup(txTransactionGroup);
@@ -49,9 +50,10 @@ public class NettyMessageService implements TxManagerMessageService {
      * @param txGroupId         事务组id
      * @param txTransactionItem 子事务项
      * @return true 成功 false 失败
+     * @throws Throwable 
      */
     @Override
-    public Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,int timeout) {
+    public Boolean addTxTransaction(String txGroupId, TxTransactionItem txTransactionItem,long timeout) throws Throwable {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.ADD_TRANSACTION.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
@@ -69,13 +71,15 @@ public class NettyMessageService implements TxManagerMessageService {
      * 获取事务组状态
      * @param txGroupId 事务组id
      * @return 事务组状态
+     * @throws Throwable 
      */
     @Override
-    public int findTransactionGroupStatus(String txGroupId,int timeout) {
+    public int findTransactionGroupStatus(String txGroupId,long timeout) throws Throwable {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.GET_TRANSACTION_GROUP_STATUS.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(txGroupId);
+        heartBeat.setTxTransactionGroup(txTransactionGroup);
         final Object object = nettyClientMessageHandler.sendTxManagerMessage(heartBeat,timeout);
         if (Objects.nonNull(object)) {
             return (Integer) object;
@@ -90,9 +94,10 @@ public class NettyMessageService implements TxManagerMessageService {
      * 通知tm 回滚整个事务组
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
+     * @throws Throwable 
      */
     @Override
-    public Boolean rollBackTxTransaction(String txGroupId,int timeout) {
+    public Boolean rollBackTxTransaction(String txGroupId,long timeout) throws Throwable {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.ROLLBACK.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
@@ -111,9 +116,10 @@ public class NettyMessageService implements TxManagerMessageService {
      * tm 收到后，进行pre_commit  再进行doCommit
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
+     * @throws Throwable 
      */
     @Override
-    public Boolean preCommitTxTransaction(String txGroupId,int timeout) {
+    public Boolean preCommitTxTransaction(String txGroupId,long timeout) throws Throwable {
         HeartBeat heartBeat = new HeartBeat();
         heartBeat.setAction(NettyMessageActionEnum.PRE_COMMIT.getCode());
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();

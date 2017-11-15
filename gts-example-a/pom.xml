@@ -1,0 +1,161 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+    <groupId>gts.example.a</groupId>
+    <artifactId>gts-example-a</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <spring-boot.version>1.5.2.RELEASE</spring-boot.version>
+        <spring.version>4.3.7.RELEASE</spring.version>
+        <mybatis.version>3.4.1</mybatis.version>
+        <mybatis-spring.version>1.3.0</mybatis-spring.version>
+        <mysql.version>5.1.39</mysql.version>
+        <httpclient.version>4.5.1</httpclient.version>
+        <logback.version>1.2.2</logback.version>
+        <guava.version>18.0</guava.version>
+        <lombok.version>1.16.4</lombok.version>
+        <spring.version>4.3.7.RELEASE</spring.version>
+        <hamcrest.core.version>1.3</hamcrest.core.version>
+        <mockito.core.version>1.9.5</mockito.core.version>
+        <javasimon.version>4.1.0</javasimon.version>
+        <spring.retry>1.1.4.RELEASE</spring.retry>
+    </properties>
+
+    <modules>
+        <module>gts-example-a-api</module>
+        <module>gts-example-a-impl</module>
+    </modules>
+
+    <parent> 
+      <groupId>com.wf.gts</groupId>
+	  <artifactId>gts</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>com.wufumall.user.impl</groupId>-->
+            <!--<artifactId>wf-user-impl</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.wufumall.user.api</groupId>-->
+            <!--<artifactId>wf-user-api</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+        <!-- guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>${hamcrest.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Core JAR is absolutely necessary to use Simons (Stopwatch, etc.) -->
+        <dependency>
+            <groupId>org.javasimon</groupId>
+            <artifactId>javasimon-core</artifactId>
+            <version>${javasimon.version}</version>
+        </dependency>
+        <!-- This one allows monitoring JDBC calls (proxy driver) -->
+        <dependency>
+            <groupId>org.javasimon</groupId>
+            <artifactId>javasimon-jdbc41</artifactId>
+            <version>${javasimon.version}</version>
+        </dependency>
+        <!-- JavaEE support, servlet filter, EJB/CDI interceptor -->
+        <dependency>
+            <groupId>org.javasimon</groupId>
+            <artifactId>javasimon-javaee</artifactId>
+            <version>${javasimon.version}</version>
+        </dependency>
+        <!-- Spring support, AOP interceptor, MVC handler interceptor -->
+        <dependency>
+            <groupId>org.javasimon</groupId>
+            <artifactId>javasimon-spring</artifactId>
+            <version>${javasimon.version}</version>
+        </dependency>
+        <!-- Embedded Java Simon web console -->
+        <dependency>
+            <groupId>org.javasimon</groupId>
+            <artifactId>javasimon-console-embed</artifactId>
+            <version>${javasimon.version}</version>
+        </dependency>
+
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <distributionManagement>
+        <repository>
+            <id>Releases</id>
+            <name>Releases</name>
+            <url>http://192.168.1.235:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>Snapshots</id>
+            <name>Snapshots</name>
+            <url>http://192.168.1.235:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>

@@ -35,6 +35,7 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
         this.txTransactionExecutor = txTransactionExecutor;
     }
 
+    
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HeartBeat hb = (HeartBeat) msg;
@@ -72,10 +73,12 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     }
                     break;
                 case GET_TRANSACTION_GROUP_STATUS:
+                  
                     final int status = txManagerService.findTxTransactionGroupStatus(txTransactionGroup.getId());
                     txTransactionGroup.setStatus(status);
                     hb.setTxTransactionGroup(txTransactionGroup);
                     ctx.writeAndFlush(hb);
+                    
                     break;
                 case ROLLBACK:
                     ctx.writeAndFlush(buildSendMessage(hb.getKey(), true));

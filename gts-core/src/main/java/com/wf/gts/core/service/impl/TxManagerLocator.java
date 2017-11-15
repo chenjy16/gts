@@ -26,9 +26,7 @@ public class TxManagerLocator {
         return TX_MANAGER_LOCATOR;
     }
     private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerLocator.class);
-
     private TxConfig txConfig;
-    
     private ScheduledExecutorService m_executorService;
     private AtomicReference<List<TxManagerServiceDTO>> m_configServices;
     private Type m_responseType;
@@ -45,7 +43,6 @@ public class TxManagerLocator {
                 TxTransactionThreadFactory.create("TxManagerLocator", true));
     }
 
-
     /**
      * 获取TxManager 服务信息
      * @return TxManagerServer
@@ -60,10 +57,11 @@ public class TxManagerLocator {
             List<TxManagerServiceDTO> randomServices = Lists.newLinkedList(txManagerService);
             Collections.shuffle(randomServices);
             for (TxManagerServiceDTO serviceDTO : randomServices) {
-                String url = String.join("", serviceDTO.getHomepageUrl(), Constant.TX_MANAGER_PRE, Constant.FIND_SERVER);
+                String url = String.join("", serviceDTO.getHomepageUrl(), "gtsManage/tx/manager", Constant.FIND_SERVER);
                 LOGGER.debug("Loading service from {}", url);
                 try {
-                    return OkHttpTools.getInstance().get(url, null, TxManagerServer.class);
+                  TxManagerServer server=OkHttpTools.getInstance().get(url, null, TxManagerServer.class);
+                  return server;
                 } catch (Throwable ex) {
                     ex.printStackTrace();
                     LOGGER.error("loadTxManagerServer fail exception:{}", ex.getMessage());

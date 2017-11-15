@@ -8,7 +8,6 @@ public class BlockTask {
 
     private Lock lock;
     private Condition condition;
-
     private AsyncCall asyncCall;
 
     /**
@@ -67,6 +66,7 @@ public class BlockTask {
           lock.lock();
           return condition.awaitNanos(nanosTimeout);
       } catch (Exception e) {
+        e.printStackTrace();
       } finally {
           lock.unlock();
       }
@@ -112,6 +112,5 @@ public class BlockTask {
     public void setState(int state) {
         this.state = state;
     }
-
 
 }

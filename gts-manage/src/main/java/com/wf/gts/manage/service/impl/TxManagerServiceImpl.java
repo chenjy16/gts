@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
@@ -20,6 +22,8 @@ import com.wufumall.redis.util.JedisUtils;
 @Service
 public class TxManagerServiceImpl implements TxManagerService{
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(TxManagerServiceImpl.class);
+  
   @Override
   public Boolean saveTxTransactionGroup(TxTransactionGroup txTransactionGroup) {
     try {
@@ -31,6 +35,8 @@ public class TxManagerServiceImpl implements TxManagerService{
             }
         }
     } catch (Exception e) {
+        e.printStackTrace();
+        LOGGER.error("保存事务组信息报错:{}",e);
         return false;
     }
     return true;
@@ -43,6 +49,8 @@ public class TxManagerServiceImpl implements TxManagerService{
       try {
         JedisUtils.getJedisInstance().execHsetToCache(cacheKey(txGroupId), txTransactionItem.getTaskKey(),JSON.toJSONString(txTransactionItem));
       } catch (Exception e) {
+          e.printStackTrace();
+          LOGGER.error("增加事务信息报错:{}",e);
           return false;
       }
       return true;
@@ -67,6 +75,8 @@ public class TxManagerServiceImpl implements TxManagerService{
         txTransactionItem.setStatus(status);
         JedisUtils.getJedisInstance().execHsetToCache(cacheKey(key), txTransactionItem.getTaskKey(),JSON.toJSONString(txTransactionItem));
       } catch (BeansException e) {
+          e.printStackTrace();
+          LOGGER.error("更新事务状态信息报错:{}",e);
           return false;
       }
       return true;

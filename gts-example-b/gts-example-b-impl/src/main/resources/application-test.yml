@@ -1,0 +1,70 @@
+
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.1.236:3306/wufuo2o?useUnicode=true&amp;characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: system
+    password: Wufu@201768
+    driverClassName: com.mysql.jdbc.Driver
+    # 最多连接数量
+    maxActive: 300 
+    # 没有使用时,回收的最长时间
+    maxWait : 10000
+    # 最多空闲连接数
+    maxIdle : 1000
+    # 最少空闲连接数
+    minIdle : 100
+    # 初始连接数
+    initialSize: 10
+    # 是否自动回收超时连接
+    removeAbandoned : true
+    # 超时时间(以秒数为单位)
+    removeAbandonedTimeout : 600
+    # 打开检查,用异步线程evict进行检查
+    testWhileIdle : true
+    # 获取连接前是否运行validationQuery,true=运行[默认],false=不运行
+    testOnBorrow : true
+    # 将连接归还连接池前是否运行validationQuery,true=运行,false=不运行[默认]
+    testOnReturn : false
+    # 检查连接,应用的SQL语句执行之前运行一次
+    validationQuery : select 1
+    # 回收资源的数量
+    numTestsPerEvictionRun : 20
+    # 资源最小空闲时间
+    minEvictableIdleTimeMillis : 1800000
+
+config:
+  jedis :
+    jedisShardInfo1 :  
+      host : 192.168.1.236
+      port : 6379
+    jedisShardInfo2 :  
+      host : 192.168.1.236
+      port : 6380
+    maxTotal: 1024
+    maxIdle: 250
+    maxWaitMillis : 2000
+    testOnBorrow: true
+    testOnReturn: true
+    seconds : 1800
+
+dubbo:
+  application:
+    name: example-b
+  annotation:
+    package: com.wufumall.example.b.facade.impl
+  protocol:
+    name: dubbo
+    port: 21893
+  provider:
+    timeout: 3000
+    retries: 1
+    delay: -1
+  registry:
+    protocol: zookeeper
+    address: 192.168.1.236:2181,192.168.1.236:2182,192.168.1.236:2183
+    
+tx:
+  txManagerUrl: http://192.168.1.236:11100
+  serializer: kryo
+  nettySerializer: kryo
+  blockingQueueType: Linked

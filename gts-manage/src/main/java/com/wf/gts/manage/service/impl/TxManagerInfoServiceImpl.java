@@ -19,6 +19,8 @@ import com.wf.gts.manage.entity.TxManagerInfo;
 import com.wf.gts.manage.service.DiscoveryService;
 import com.wf.gts.manage.service.TxManagerInfoService;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 @Service("txManagerInfoService")
 public class TxManagerInfoServiceImpl implements TxManagerInfoService {
 
@@ -47,9 +49,13 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
         if (CollectionUtils.isNotEmpty(manageService)) {
           
             final List<TxManagerInfo> txManagerInfos = manageService.stream().map(url ->
-            restTemplate.getForObject(url + "/tx/manager/findTxManagerInfo", TxManagerInfo.class))
+            restTemplate.getForObject(url + "gtsManage/tx/manager/findTxManagerInfo", TxManagerInfo.class))
             .collect(Collectors.toList());
-
+            
+            for(TxManagerInfo info : txManagerInfos){
+            	System.out.println(info.toString() + "gtsManage/tx/manager/findTxManagerInfo");
+            }
+            //System.out.println("findTxManagerInfo url:" + url);
             if (CollectionUtils.isNotEmpty(txManagerInfos)) {
               
                 //获取连接数最多的服务  想要把所有的业务长连接，连接到同一个tm，但是又不能超过最大的连接

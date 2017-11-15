@@ -13,13 +13,13 @@ import java.lang.annotation.Target;
 public @interface TxTransaction {
   
   //调用方事务超时时间
-  int clientTransTimeout() default 3000;
+  long clientTransTimeout() default 3000L;
   
   //被调用方事务超时时间
-  int serviceTransTimeout() default 3000;
+  long serviceTransTimeout() default 3000L;
   
   //被调用方事务超时时间
-  int socketTimeout() default 1000;
+  long socketTimeout() default 3000L;
   
   //是否通知
   boolean isNotice() default false;
