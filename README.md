@@ -25,20 +25,20 @@ int socketTimeout() default 1000;
  <!-- Aspect 切面配置，是否开启AOP切面-->
  <aop:aspectj-autoproxy expose-proxy="true"/>
  <!--扫描分布式事务的包-->
-   <context:component-scan base-package="com.xxx.xxx.*"/>
-   <!--启动类属性配置-->
-   <bean id="txTransactionBootstrap" class="com.wf.gts.core.bean.bootstrap.TxTransactionBootstrap">
-       <property name="txManagerUrl" value="http://192.168.1.66:8761"/>
-       <property name="serializer" value="kryo"/>
-       <property name="nettySerializer" value="kryo"/>
-       <property name="blockingQueueType" value="Linked"/>
-   </bean>
+ <context:component-scan base-package="com.xxx.xxx.*"/>
+ <!--启动类属性配置-->
+ <bean id="txTransactionBootstrap" class="com.wf.gts.core.bean.bootstrap.TxTransactionBootstrap">
+ <property name="txManagerUrl" value="http://192.168.1.66:8761"/>
+ <property name="serializer" value="kryo"/>
+ <property name="nettySerializer" value="kryo"/>
+ <property name="blockingQueueType" value="Linked"/>
+ </bean>
 
  
 3、引入依赖
-<dependency>
-<groupId>com.wf.gts</groupId>
-<artifactId>gts-dubbo</artifactId>
-<version>0.0.1-SNAPSHOT</version>
-</dependency>
+ <dependency>
+ <groupId>com.wf.gts</groupId>
+ <artifactId>gts-dubbo</artifactId>
+ <version>0.0.1-SNAPSHOT</version>
+ </dependency>
 
