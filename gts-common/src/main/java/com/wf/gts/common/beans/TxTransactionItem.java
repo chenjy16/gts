@@ -19,11 +19,21 @@ public class TxTransactionItem implements Serializable {
      * 事务状态
      */
     private int status;
+    
+    /**
+     * 事务状态 value
+     */
+    private String statusValue;
 
     /**
      * 事务角色 
      */
     private int role;
+    
+    /**
+     * 事务角色 value
+     */
+    private String roleValue;
 
     /**
      * 模块信息
@@ -100,6 +110,21 @@ public class TxTransactionItem implements Serializable {
         this.txGroupId = txGroupId;
     }
 
+	public String getStatusValue() {
+		return statusValue;
+	}
 
-    
+	public void setStatusValue(String statusValue) {
+		this.statusValue = statusValue;
+	}
+
+	public String getRoleValue() {
+		return roleValue;
+	}
+
+	public void setRoleValue(String roleValue) {
+		this.roleValue = roleValue;
+	}
+
+	
 }

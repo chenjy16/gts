@@ -1,12 +1,12 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.1.235:11000/eureka/
+      defaultZone: http://192.168.1.235:11000/eureka/,http://192.168.1.236:11000/eureka/
     registry-fetch-interval-seconds: 10  
     healthcheck:
       enabled: true  
   instance:
-    hostname: 192.168.1.126
+    hostname: 192.168.1.235
     lease-renewal-interval-in-seconds: 15      # 心跳时间，即服务续约间隔时间（缺省为30s）
     lease-expiration-duration-in-seconds: 30  # 发呆时间，即服务续约到期时间（缺省为90s）        
         
@@ -26,4 +26,13 @@ config:
     timeBetweenEvictionRunsMillis: 30000
     numTestsPerEvictionRun: 10
     minEvictableIdleTimeMillis: 60000
+    
+regCenter:
+  serverList: 192.168.1.235:2181,192.168.1.235:2182,192.168.1.235:2183
+  namespace: elastic_job_dev
+
+cleanCommitTxGroupJob: 
+  cron: 0 0/10 * * * ?
+  shardingTotalCount: 1
+  shardingItemParameters: 0=Beijing
 

@@ -3,10 +3,9 @@ package com.wf.gts.common.beans;
 import java.io.Serializable;
 
 /**
- * 事务补偿方法参数
+ * 事务方法参数
  */
 public class TransactionInvocation implements Serializable {
-  
 
     private static final long serialVersionUID = 9209965609104391346L;
     /**

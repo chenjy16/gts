@@ -136,5 +136,25 @@ public class TxManagerServiceImpl implements TxManagerService{
     });
   }
   
+  /**
+   * 
+  * 功能描述: <br>
+  * @author: xiongkun
+  * @date: 2017年11月16日 上午9:48:09
+   */
+  @Override
+  public void removeAllCommit() {
+	    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+	    keys.stream().forEach(key -> {
+	        final Map<String, String> entries = JedisUtils.getJedisInstance().execHgetAllToCache(key);
+	        final Collection<String> values = entries.values();
+	        boolean b = values.stream().map(item->JSON.parseObject(item, TxTransactionItem.class))
+	        		.allMatch(item -> item.getStatus() == TransactionStatusEnum.COMMIT.getCode());
+	        if(b){
+	        	JedisUtils.getJedisInstance().execDelToCache(key);
+	        }
+	    });
+	  }
+  
 
 }

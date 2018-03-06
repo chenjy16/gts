@@ -40,22 +40,22 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         this.platformTransactionManager = platformTransactionManager;
     }
 
+    
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
       
         LOGGER.info("tx-transaction start,事务发起类");
-        final String groupId = IdWorkerUtils.getInstance().createGroupId();
+        String groupId = IdWorkerUtils.getInstance().createGroupId();
         //设置事务组ID
         TxTransactionLocal.getInstance().setTxGroupId(groupId);
-        final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
+        String waitKey = IdWorkerUtils.getInstance().createTaskKey();
         //创建事务组信息
-        final Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey,info.getInvocation()),info.getTxTransaction().socketTimeout());
-       
+        Boolean success = txManagerMessageService.saveTxTransactionGroup(newTxTransactionGroup(groupId, waitKey,info.getInvocation()),info.getTxTransaction().socketTimeout());
         if (success) {
             TransactionStatus transactionStatus=createTransactionStatus();
             try {
                 long startTime = System.currentTimeMillis();
-                final Object res = point.proceed();
+                Object res = point.proceed();
                 long runTime = System.currentTimeMillis() - startTime;
                 if(info.getTxTransaction().clientTransTimeout()< runTime ){
                   throw new RuntimeException("方法执行超时");
@@ -63,9 +63,9 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
                 commit(transactionStatus, groupId, info,waitKey);
                 LOGGER.info("tx-transaction end,  事务发起类");
                 return res;
-            } catch (final Throwable throwable) {
+            } catch (Throwable throwable) {
                 rollbackForAll(transactionStatus, groupId,info.getTxTransaction().socketTimeout());
-                throwable.printStackTrace();
+                LOGGER.info("事务发起类报错:{}",throwable);
                 throw throwable;
             } finally {
                 TxTransactionLocal.getInstance().removeTxGroupId();
@@ -144,7 +144,6 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
         TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
         txTransactionGroup.setId(groupId);
         List<TxTransactionItem> items = new ArrayList<>(2);
-        
         //tmManager 用redis hash 结构来存储 整个事务组的状态做为hash结构的第一条数据
         TxTransactionItem groupItem = new TxTransactionItem();
         groupItem.setStatus(TransactionStatusEnum.BEGIN.getCode());//整个事务组状态为开始

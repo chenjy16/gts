@@ -71,4 +71,5 @@ public interface TxManagerService {
    */
   void removeCommitTxGroup();
 
+  void removeAllCommit();
 }

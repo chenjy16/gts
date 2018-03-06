@@ -30,11 +30,11 @@ public class TxManagerControllerTest extends BaseTest {
 	
 	@Test
 	public void testLoadTxManagerService() throws Exception {
-		ResultActions result = mockMvc.perform(post("/tx/manager/loadTxManagerService").accept(MediaType.APPLICATION_JSON)); // 请求
+		ResultActions result = mockMvc.perform(post("/gtsManage/tx/manager/loadTxManagerService").accept(MediaType.APPLICATION_JSON)); // 请求
 		result.andDo(new ResultHandler() {
 			@Override
 			public void handle(MvcResult result) throws Exception {
-				System.out.println(result.getResponse().getContentAsString());
+				System.out.println("返回结果" + result.getResponse().getContentAsString());
 			}
 		});
 	}

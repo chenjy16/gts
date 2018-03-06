@@ -57,7 +57,7 @@ public class TxManagerLocator {
             List<TxManagerServiceDTO> randomServices = Lists.newLinkedList(txManagerService);
             Collections.shuffle(randomServices);
             for (TxManagerServiceDTO serviceDTO : randomServices) {
-                String url = String.join("", serviceDTO.getHomepageUrl(), "gtsManage/tx/manager", Constant.FIND_SERVER);
+                String url = String.join("", serviceDTO.getHomepageUrl(), "/gtsManage/tx/manager", Constant.FIND_SERVER);
                 LOGGER.debug("Loading service from {}", url);
                 try {
                   TxManagerServer server=OkHttpTools.getInstance().get(url, null, TxManagerServer.class);

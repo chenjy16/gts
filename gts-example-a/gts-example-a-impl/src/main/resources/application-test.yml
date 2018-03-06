@@ -64,7 +64,7 @@ dubbo:
     address: 192.168.1.236:2181,192.168.1.236:2182,192.168.1.236:2183
 
 tx:
-  txManagerUrl: http://192.168.1.236:11100
+  txManagerUrl: http://192.168.1.235:40000
   serializer: kryo
   nettySerializer: kryo
   blockingQueueType: Linked

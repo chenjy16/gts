@@ -24,6 +24,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -87,30 +88,33 @@ public class NettyClientImpl implements NettyClient {
     }
 
     private void groups(Bootstrap bootstrap, int workThreads) {
-        /*if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
+        String osName =StandardSystemProperty.OS_NAME.value();
+        if (osName!=null&&osName.toLowerCase().contains("linux")&&Epoll.isAvailable()) {
             workerGroup = new EpollEventLoopGroup(workThreads);
             bootstrap.group(workerGroup);
             bootstrap.channel(EpollSocketChannel.class);
-            bootstrap.option(EpollChannelOption.TCP_CORK, true)
-                    .option(EpollChannelOption.SO_KEEPALIVE, true)
-                    .option(EpollChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
-                    .option(EpollChannelOption.SO_BACKLOG, 1024)
-                    .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            bootstrap
+                   // .option(EpollChannelOption.SO_BACKLOG, 1024)
+                    //.option(EpollChannelOption.TCP_CORK, true)
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    .option(EpollChannelOption.SO_KEEPALIVE, false)
+                    //.option(EpollChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
+                    //.option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(nettyClientHandlerInitializer);
-        } else {*/
+        } else {
             workerGroup = new NioEventLoopGroup(workThreads);
             bootstrap.group(workerGroup);
             bootstrap.channel(NioSocketChannel.class);
             bootstrap
-            //.option(ChannelOption.SO_BACKLOG, 1024)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    //.option(ChannelOption.SO_BACKLOG, 1024)
+                    //.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5)
                     .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.SO_KEEPALIVE, false)
+                    //.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(nettyClientHandlerInitializer);
-        //}
+        }
     }
 
 

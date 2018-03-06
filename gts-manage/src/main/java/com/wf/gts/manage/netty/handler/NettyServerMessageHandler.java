@@ -1,8 +1,12 @@
 package com.wf.gts.manage.netty.handler;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.beans.HeartBeat;
 import com.wf.gts.common.beans.TxTransactionGroup;
@@ -25,7 +29,8 @@ import io.netty.util.ReferenceCountUtil;
 @ChannelHandler.Sharable
 @Component
 public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
-
+  
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyServerMessageHandler.class);
     private final TxManagerService txManagerService;
     private final TxTransactionExecutor txTransactionExecutor;
 
@@ -36,8 +41,12 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     
+    /**
+     * 接收数据
+     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        LOGGER.info("gts接收指令:{}",JSON.toJSONString(msg));
         HeartBeat hb = (HeartBeat) msg;
         TxTransactionGroup txTransactionGroup = hb.getTxTransactionGroup();
         try {
@@ -73,12 +82,10 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     }
                     break;
                 case GET_TRANSACTION_GROUP_STATUS:
-                  
                     final int status = txManagerService.findTxTransactionGroupStatus(txTransactionGroup.getId());
                     txTransactionGroup.setStatus(status);
                     hb.setTxTransactionGroup(txTransactionGroup);
                     ctx.writeAndFlush(hb);
-                    
                     break;
                 case ROLLBACK:
                     ctx.writeAndFlush(buildSendMessage(hb.getKey(), true));
@@ -100,7 +107,7 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(hb);
                     break;
             }
-        } finally {
+        } finally {//关闭连接
             ReferenceCountUtil.release(msg);
         }
     }

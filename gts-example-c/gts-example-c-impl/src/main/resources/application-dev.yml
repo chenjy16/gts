@@ -57,7 +57,7 @@ dubbo:
     name: dubbo
     port: 21894
   provider:
-    timeout: 3000
+    timeout: 8000
     retries: 1
     delay: -1
   registry:
@@ -65,7 +65,7 @@ dubbo:
     address: 192.168.1.235:2181,192.168.1.235:2182,192.168.1.235:2183
     
 tx:
-  txManagerUrl: http://192.168.1.235:11100
+  txManagerUrl: http://192.168.1.235:40000
   serializer: kryo
   nettySerializer: kryo
   blockingQueueType: Linked

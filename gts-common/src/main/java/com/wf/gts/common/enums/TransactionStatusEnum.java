@@ -12,10 +12,7 @@ public enum TransactionStatusEnum {
     ROLLBACK(0, "回滚"),
     COMMIT(1, "已经提交"),
     BEGIN(2, "开始"),
-    RUNNING(3, "执行中"),
-    FAILURE(4, "失败"),
     PRE_COMMIT(5, "预提交");
-
 
     private int code;
 
@@ -26,14 +23,11 @@ public enum TransactionStatusEnum {
         this.desc = desc;
     }
 
-
     public static TransactionStatusEnum acquireByCode(int code) {
-      
         Optional<TransactionStatusEnum> transactionStatusEnum =
                 Arrays.stream(TransactionStatusEnum.values())
                         .filter(v -> Objects.equals(v.getCode(), code))
                         .findFirst();
-        
         return transactionStatusEnum.orElse(TransactionStatusEnum.BEGIN);
     }
 

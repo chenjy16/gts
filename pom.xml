@@ -5,7 +5,7 @@
 		  <groupId>com.wf.gts</groupId>
 		  <artifactId>gts</artifactId>
 		  <packaging>pom</packaging>
-		  <version>0.0.1-SNAPSHOT</version>
+		  <version>1.4.0-SNAPSHOT</version>
 	 
 		 <parent>
 			<groupId>org.springframework.boot</groupId>
@@ -18,7 +18,8 @@
 	        <module>gts-manage</module>
 	        <module>gts-dubbo</module>
 	        <module>gts-common</module>
-	        <module>gts-discovery</module>
+	        <module>gts-nameserver</module>
+	       	<module>gts-remoting</module>
 	        <module>gts-example-a</module>
 	        <module>gts-example-b</module>
 	        <module>gts-example-c</module>
@@ -33,12 +34,12 @@
 	      <mongo.driver.version>3.5.0</mongo.driver.version>
 	      <mysql-connector-java>5.1.40</mysql-connector-java>
 	      <commons-lang3.version>3.3.2</commons-lang3.version>
-	      <guava.version>21.0</guava.version>
+	      <guava.version>18.0</guava.version>
 	      <spring.data.mongodb.version>1.9.1.RELEASE</spring.data.mongodb.version>
 	      <hessian.version>4.0.38</hessian.version>
 	      <protostuff.version>1.0.8</protostuff.version>
 	      <kryo.version>4.0.0</kryo.version>
-	      <curator.version>2.9.1</curator.version>
+	      <curator.version>2.11.1</curator.version>
 	      <nettty.version>4.1.12.Final</nettty.version>
 	      <commons.httpclient.version>3.0.1</commons.httpclient.version>
 	      <httpclient.version>4.5.1</httpclient.version>

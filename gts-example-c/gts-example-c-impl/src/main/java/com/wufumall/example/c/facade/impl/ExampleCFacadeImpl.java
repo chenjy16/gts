@@ -75,7 +75,7 @@ public class ExampleCFacadeImpl implements ExampleCFacade{
 		
 		//模拟超时
         try {
-			Thread.sleep(10000);
+			Thread.sleep(4000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

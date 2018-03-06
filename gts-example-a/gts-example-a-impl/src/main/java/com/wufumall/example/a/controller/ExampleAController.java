@@ -22,56 +22,28 @@ public class ExampleAController {
     @RequestMapping(value = "/insert",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult insert(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.insert(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
+    	BaseCommonResult result = exampleAService.insert(request);    	
         return result;
     }
     
     @RequestMapping(value = "/insertAll",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult insertAll(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.insertAll(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
-      return result;
+    	BaseCommonResult result = exampleAService.insertAll(request);    	
+    	return result;
     }
     
     @RequestMapping(value = "/testBFail",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult testBFail(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.testBFail(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
+    	BaseCommonResult result = exampleAService.testBFail(request);
         return result;
     }
     
     @RequestMapping(value = "/testBTimeout",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult testBTimeout(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.testBTimeout(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
+    	BaseCommonResult result = exampleAService.testBTimeout(request);
         return result;
     }
     
@@ -79,28 +51,15 @@ public class ExampleAController {
     @RequestMapping(value = "/testCFail",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult testCFail(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.testCFail(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
+    	BaseCommonResult result = exampleAService.testCFail(request);
         return result;
     }
     
     @RequestMapping(value = "/testCTimeout",method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public BaseCommonResult testCTimeout(@RequestBody TxExampleA request) throws Exception{
-    	BaseCommonResult result = new BaseCommonResult();
-    	try{
-    		result = exampleAService.testCTimeout(request);
-    	}catch(Exception e){
-    		result.setCode(99999);
-    		result.setMsg(e.getMessage());
-    		e.printStackTrace();
-    	}
+    	BaseCommonResult result = exampleAService.testCTimeout(request);
+    
         return result;
     }
 }

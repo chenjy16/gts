@@ -4,22 +4,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.eureka.EurekaServerContextHolder;
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.entity.TxManagerServer;
 import com.wf.gts.common.entity.TxManagerServiceDTO;
+import com.wf.gts.manage.constant.Constant;
 import com.wf.gts.manage.domain.NettyParam;
 import com.wf.gts.manage.entity.TxManagerInfo;
 import com.wf.gts.manage.service.DiscoveryService;
 import com.wf.gts.manage.service.TxManagerInfoService;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Service("txManagerInfoService")
 public class TxManagerInfoServiceImpl implements TxManagerInfoService {
@@ -49,15 +50,10 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
         if (CollectionUtils.isNotEmpty(manageService)) {
           
             final List<TxManagerInfo> txManagerInfos = manageService.stream().map(url ->
-            restTemplate.getForObject(url + "gtsManage/tx/manager/findTxManagerInfo", TxManagerInfo.class))
+            restTemplate.getForObject(url + Constant.TX_MANAGER_INFO, TxManagerInfo.class))
             .collect(Collectors.toList());
             
-            for(TxManagerInfo info : txManagerInfos){
-            	System.out.println(info.toString() + "gtsManage/tx/manager/findTxManagerInfo");
-            }
-            //System.out.println("findTxManagerInfo url:" + url);
             if (CollectionUtils.isNotEmpty(txManagerInfos)) {
-              
                 //获取连接数最多的服务  想要把所有的业务长连接，连接到同一个tm，但是又不能超过最大的连接
                 final Optional<TxManagerInfo> txManagerInfoOptional =
                         txManagerInfos.stream().filter(Objects::nonNull)
@@ -118,8 +114,5 @@ public class TxManagerInfoServiceImpl implements TxManagerInfoService {
         final List<InstanceInfo> configServiceInstances = discoveryService.getManageServiceInstances();
         return configServiceInstances.stream().map(InstanceInfo::getHomePageUrl).collect(Collectors.toList());
     }
-    
-    
-    
     
 }

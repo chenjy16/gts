@@ -8,13 +8,10 @@ import io.netty.channel.Channel;
 
 
 public class SocketManager {
-  
-
   /**
    * 最大连接数
    */
-  private int maxConnection=50;
-
+  private int maxConnection=200;
   public void setMaxConnection(int maxConnection) {
       this.maxConnection = maxConnection;
   }

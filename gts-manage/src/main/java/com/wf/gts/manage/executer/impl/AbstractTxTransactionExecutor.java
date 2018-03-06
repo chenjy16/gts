@@ -21,11 +21,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTxTransactionExecutor.class);
 
-
     protected abstract void doRollBack(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems);
 
     protected abstract void doCommit(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems);
-
 
     private TxManagerService txManagerService;
 
@@ -36,7 +34,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
     /**
      * 回滚整个事务组
-     *
      * @param txGroupId 事务组id
      */
     @Override
@@ -62,7 +59,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
     /**
      * 事务预提交
-     *
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      */
@@ -70,9 +66,7 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
     public Boolean preCommit(String txGroupId) {
         txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.COMMIT.getCode());
         final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
-
         final Map<Boolean, List<TxTransactionItem>> listMap = filterData(txTransactionItems);
-
         if (Objects.isNull(listMap)) {
             LOGGER.info("事务组id:{},提交失败！数据不完整",txGroupId);
             return false;
@@ -87,7 +81,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
         final List<TxTransactionItem> currentItem = listMap.get(Boolean.TRUE);
         final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
-
         //检查各位channel 是否都激活，渠道状态不是回滚的
         final Boolean ok = checkChannel(currentItem);
         if (!ok) {
@@ -98,12 +91,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
         return true;
     }
 
-
-    
     
     private Boolean checkChannel(List<TxTransactionItem> txTransactionItems) {
         if (CollectionUtils.isNotEmpty(txTransactionItems)) {
-          
             final List<TxTransactionItem> collect = txTransactionItems.stream().filter(item -> {
                 Channel channel = SocketManager.getInstance().getChannelByModelName(item.getModelName());
                 return Objects.nonNull(channel) && (channel.isActive() || item.getStatus() != TransactionStatusEnum.ROLLBACK.getCode());
@@ -111,7 +101,6 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
             return txTransactionItems.size() == collect.size();
         }
         return true;
-
     }
 
     private Map<Boolean, List<TxTransactionItem>> filterData(List<TxTransactionItem> txTransactionItems){

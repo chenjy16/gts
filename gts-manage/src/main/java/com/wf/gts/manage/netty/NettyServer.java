@@ -1,17 +1,27 @@
 package com.wf.gts.manage.netty;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.google.common.base.StandardSystemProperty;
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.enums.SerializeProtocolEnum;
+import com.wf.gts.manage.config.BrokerConfig;
 import com.wf.gts.manage.domain.NettyParam;
 import com.wf.gts.manage.netty.handler.NettyServerHandlerInitializer;
-import com.wf.gts.manage.service.TxManagerService;
+import com.wf.gts.manage.out.BrokerOuterAPI;
+import com.wf.gts.remoting.protocol.RegisterBrokerResult;
+import com.wf.gts.remoting.util.ThreadFactoryImpl;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -29,23 +39,51 @@ public class NettyServer  {
     private EventLoopGroup workerGroup;
     private DefaultEventExecutorGroup servletExecutor;
     private static int MAX_THREADS = Runtime.getRuntime().availableProcessors() << 1;
-    private final TxManagerService txManagerService;
     private final NettyParam nettyConfig;
     private final NettyServerHandlerInitializer nettyServerHandlerInitializer;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
+        "GtsScheduledThread"));
+    private final BrokerOuterAPI brokerOuterAPI;
+    
+    private final BrokerConfig brokerConfig;
 
     @Autowired(required = false)
-    public NettyServer(TxManagerService txManagerService, NettyParam nettyConfig, NettyServerHandlerInitializer nettyServerHandlerInitializer) {
-        this.txManagerService = txManagerService;
+    public NettyServer(NettyParam nettyConfig, NettyServerHandlerInitializer nettyServerHandlerInitializer,BrokerConfig brokerConfig) {
+    
         this.nettyConfig = nettyConfig;
         this.nettyServerHandlerInitializer = nettyServerHandlerInitializer;
+        this.brokerConfig=brokerConfig;
+        //修改
+        this.brokerOuterAPI=new BrokerOuterAPI(null);
+     
     }
 
+    
+    
+    public boolean initialize(){
+      
+      this.brokerOuterAPI.updateNameServerAddressList(null);
+      this.registerBrokerAll(true, false);
+      
+      this.scheduledExecutorService.scheduleAtFixedRate(()->{
+          try {
+            NettyServer.this.registerBrokerAll(true, false);
+          } catch (Throwable e) {
+              LOGGER.error("registerBrokerAll Exception", e);
+          }
+      }, 1000 * 10, 1000 * 30, TimeUnit.MILLISECONDS);
+      return true;
+    }
+    
     
     
     /**
      * 启动netty服务
      */
     public void start() {
+      
+        initialize();
+      
         SocketManager.getInstance().setMaxConnection(nettyConfig.getMaxConnection());
         servletExecutor = new DefaultEventExecutorGroup(MAX_THREADS);
         if (nettyConfig.getMaxThreads() != 0) {
@@ -67,32 +105,28 @@ public class NettyServer  {
 
 
     private void groups(ServerBootstrap b, int workThreads) {
-  /*      if (Objects.equals(StandardSystemProperty.OS_NAME.value(), "Linux")) {
+      String osName =StandardSystemProperty.OS_NAME.value();
+      if (osName!=null&&osName.toLowerCase().contains("linux")&&Epoll.isAvailable()) {
             bossGroup = new EpollEventLoopGroup(1);
             workerGroup = new EpollEventLoopGroup(workThreads);
             b.group(bossGroup, workerGroup)
                     .channel(EpollServerSocketChannel.class)
-                    .option(EpollChannelOption.TCP_CORK, true)
-                    .option(EpollChannelOption.SO_KEEPALIVE, true)
                     .option(EpollChannelOption.SO_BACKLOG, 100)
-                    .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    .option(EpollChannelOption.SO_KEEPALIVE, false)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerHandlerInitializer);
-        } else {*/
+        } else {
             bossGroup = new NioEventLoopGroup();
             workerGroup = new NioEventLoopGroup(workThreads);
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .option(ChannelOption.SO_KEEPALIVE, false)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(nettyServerHandlerInitializer);
-       // }
+        }
     }
 
     
@@ -100,6 +134,8 @@ public class NettyServer  {
      * 关闭服务
      */
     public void stop() {
+      
+        unregisterBrokerAll();
         try {
             if (null != bossGroup) {
                 bossGroup.shutdownGracefully().await();
@@ -111,7 +147,45 @@ public class NettyServer  {
                 servletExecutor.shutdownGracefully().await();
             }
         } catch (InterruptedException e) {
-            LOGGER.info("netty服务关闭异常:{}",e);
+            LOGGER.error("netty服务关闭异常:{}",e);
         }
     }
+    
+    
+    
+    public synchronized void registerBrokerAll(final boolean checkOrderConfig, boolean oneway) {
+
+        RegisterBrokerResult registerBrokerResult = this.brokerOuterAPI.registerBrokerAll(
+            this.brokerConfig.getBrokerClusterName(),
+            this.getBrokerAddr(),
+            this.brokerConfig.getBrokerName(),
+            this.brokerConfig.getBrokerId(),
+            this.getHAServerAddr(),
+            oneway,
+            this.brokerConfig.getRegisterBrokerTimeoutMills());
+    }
+    
+    
+    
+    private void unregisterBrokerAll() {
+      this.brokerOuterAPI.unregisterBrokerAll(
+          this.brokerConfig.getBrokerClusterName(),
+          this.getBrokerAddr(),
+          this.brokerConfig.getBrokerName(),
+          this.brokerConfig.getBrokerId());
+    }
+
+    public String getBrokerAddr() {
+        return this.brokerConfig.getBrokerIP1() + ":" + this.brokerConfig.getListenPort();
+    }
+    
+    public String getHAServerAddr() {
+      return this.brokerConfig.getBrokerIP2() + ":" + this.brokerConfig.getHaListenPort();
+    }
+
+    public BrokerConfig getBrokerConfig() {
+      return brokerConfig;
+    }
+    
+    
 }

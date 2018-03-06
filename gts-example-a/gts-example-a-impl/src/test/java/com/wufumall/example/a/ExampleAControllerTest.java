@@ -1,25 +1,20 @@
 package com.wufumall.example.a;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.wufumall.SpringBootBaseTestCase;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import com.alibaba.fastjson.JSON;
-import com.wf.gts.core.concurrent.BlockTask;
-import com.wf.gts.core.concurrent.BlockTaskHelper;
 import com.wufumall.example.a.model.TxExampleA;
 import lombok.extern.slf4j.Slf4j;
 
+
+
 /**
- * 
  * @author xiong 20160609
- *
  */
 @Slf4j
 public class ExampleAControllerTest extends SpringBootBaseTestCase {
@@ -80,7 +75,7 @@ public class ExampleAControllerTest extends SpringBootBaseTestCase {
                 log.info("testBFail返回信息为：{}" , result.getResponse().getContentAsString());
             }
         });
-       // System.in.read();
+        System.in.read();
     } 
     
     //testBTimeout
@@ -115,6 +110,7 @@ public class ExampleAControllerTest extends SpringBootBaseTestCase {
                 log.info("testCFail返回信息为：{}" , result.getResponse().getContentAsString());
             }
         });
+       // System.in.read();
     } 
     
     //testCTimeout

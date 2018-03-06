@@ -31,8 +31,8 @@ public class ExampleAService{
 	@Reference(version="0.0.1")
 	private ExampleBFacade exampleBFacade;
 	
-/*	@Reference(version="0.0.1")
-	private ExampleCFacade exampleCFacade;*/
+	@Reference(version="0.0.1")
+	private ExampleCFacade exampleCFacade;
 	
 	/**
 	 * 
@@ -74,15 +74,15 @@ public class ExampleAService{
 		BaseCommonResult resultB = exampleBFacade.insert(requestB);
 		log.info("调用A服务结束,返回结果为：{}",resultB);
 		
-		/*ExampleCInsertRequest requestC = new ExampleCInsertRequest();
+		ExampleCInsertRequest requestC = new ExampleCInsertRequest();
 		requestC.setNumber("23");
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用A服务开始,请求参数为：{}",requestC);
 		BaseCommonResult resultC = exampleCFacade.insert(requestC);
-		log.info("调用A服务结束,返回结果为：{}",resultC);*/
+		log.info("调用A服务结束,返回结果为：{}",resultC);
 		
-		
+		//int i = 12/0;   //主服务异常
 		log.info("主流程接口结束,返回结果为：{}", result);
 		return result;
 	}
@@ -108,13 +108,13 @@ public class ExampleAService{
 		BaseCommonResult resultB = exampleBFacade.fail(requestB);
 		log.info("调用B fail服务结束,返回结果为：{}",resultB);
 		
-	/*	ExampleCInsertRequest requestC = new ExampleCInsertRequest();
+		ExampleCInsertRequest requestC = new ExampleCInsertRequest();
 		requestC.setNumber("23");
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
 		BaseCommonResult resultC = exampleCFacade.insert(requestC);
-		log.info("调用C insert服务结束,返回结果为：{}",resultC);*/
+		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
 		return result;
@@ -122,7 +122,7 @@ public class ExampleAService{
 
 	/**
 	 * 
-	* 功能描述: b超时
+	* 功能描述: b超时,可通过设置调用方事务超时时间clientTransTimeout=20000
 	* @author: xiongkun
 	* @date: 2017年11月13日 下午1:54:07 
 	* @param request
@@ -141,13 +141,13 @@ public class ExampleAService{
 		BaseCommonResult resultB = exampleBFacade.timeout(requestB);
 		log.info("调用B timeout服务结束,返回结果为：{}",resultB);
 		
-	/*	ExampleCInsertRequest requestC = new ExampleCInsertRequest();
+		ExampleCInsertRequest requestC = new ExampleCInsertRequest();
 		requestC.setNumber("23");
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
 		BaseCommonResult resultC = exampleCFacade.insert(requestC);
-		log.info("调用C insert服务结束,返回结果为：{}",resultC);*/
+		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
 		return result;
@@ -174,13 +174,13 @@ public class ExampleAService{
 		BaseCommonResult resultB = exampleBFacade.insert(requestB);
 		log.info("调用B fail服务结束,返回结果为：{}",resultB);
 		
-	/*	ExampleCInsertRequest requestC = new ExampleCInsertRequest();
+		ExampleCInsertRequest requestC = new ExampleCInsertRequest();
 		//requestC.setNumber("23");
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
 		BaseCommonResult resultC = exampleCFacade.fail(requestC);
-		log.info("调用C insert服务结束,返回结果为：{}",resultC);*/
+		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
 		return result;
@@ -188,7 +188,7 @@ public class ExampleAService{
 
 	/**
 	 * 
-	* 功能描述: b超时
+	* 功能描述: b超时 可通过设置调用方事务超时时间clientTransTimeout=20000
 	* @author: xiongkun
 	* @date: 2017年11月13日 下午1:54:07 
 	* @param request
@@ -207,13 +207,13 @@ public class ExampleAService{
 		BaseCommonResult resultB = exampleBFacade.insert(requestB);
 		log.info("调用B insert服务结束,返回结果为：{}",resultB);
 		
-	/*	ExampleCInsertRequest requestC = new ExampleCInsertRequest();
+		ExampleCInsertRequest requestC = new ExampleCInsertRequest();
 		requestC.setNumber("23");
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C timeout服务开始,请求参数为：{}",requestC);
 		BaseCommonResult resultC = exampleCFacade.timeout(requestC);
-		log.info("调用C timeout服务结束,返回结果为：{}",resultC);*/
+		log.info("调用C timeout服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
 		return result;

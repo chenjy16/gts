@@ -34,14 +34,12 @@ public class AspectTransactionServiceImpl implements AspectTransactionService {
         Object[] args = point.getArgs();
         Method thisMethod = clazz.getMethod(method.getName(), method.getParameterTypes());
         
-        
         TransactionInvocation invocation = new TransactionInvocation(clazz, thisMethod.getName(), args, method.getParameterTypes());
         TxTransaction  txTransaction=getTxTransaction(thisMethod);
         TxTransactionInfo info = new TxTransactionInfo(txTransaction, transactionGroupId, invocation);
         final Class c = txTransactionFactoryService.factoryOf(info);
         final TxTransactionHandler txTransactionHandler =
         (TxTransactionHandler) SpringBeanUtils.getInstance().getBean(c);
-
         return txTransactionHandler.handler(point, info);
     }
     
