@@ -13,6 +13,8 @@ import com.wf.gts.manage.config.BrokerConfig;
 import com.wf.gts.manage.domain.NettyParam;
 import com.wf.gts.manage.netty.handler.NettyServerHandlerInitializer;
 import com.wf.gts.manage.out.BrokerOuterAPI;
+import com.wf.gts.remoting.RemotingClient;
+import com.wf.gts.remoting.netty.NettyClientConfig;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.util.ThreadFactoryImpl;
 import io.netty.bootstrap.ServerBootstrap;
@@ -41,28 +43,25 @@ public class NettyServer  {
     private static int MAX_THREADS = Runtime.getRuntime().availableProcessors() << 1;
     private final NettyParam nettyConfig;
     private final NettyServerHandlerInitializer nettyServerHandlerInitializer;
+    
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
         "GtsScheduledThread"));
-    private final BrokerOuterAPI brokerOuterAPI;
     
+    private final BrokerOuterAPI brokerOuterAPI;
     private final BrokerConfig brokerConfig;
 
     @Autowired(required = false)
     public NettyServer(NettyParam nettyConfig, NettyServerHandlerInitializer nettyServerHandlerInitializer,BrokerConfig brokerConfig) {
-    
         this.nettyConfig = nettyConfig;
         this.nettyServerHandlerInitializer = nettyServerHandlerInitializer;
         this.brokerConfig=brokerConfig;
-        //修改
-        this.brokerOuterAPI=new BrokerOuterAPI(null);
-     
+        this.brokerOuterAPI=new BrokerOuterAPI(new NettyClientConfig());
     }
 
     
     
     public boolean initialize(){
-      
-      this.brokerOuterAPI.updateNameServerAddressList(null);
+      this.brokerOuterAPI.updateNameServerAddressList(brokerConfig.getNamesrvAddr());
       this.registerBrokerAll(true, false);
       
       this.scheduledExecutorService.scheduleAtFixedRate(()->{
@@ -81,7 +80,7 @@ public class NettyServer  {
      * 启动netty服务
      */
     public void start() {
-      
+        brokerOuterAPI.start();
         initialize();
       
         SocketManager.getInstance().setMaxConnection(nettyConfig.getMaxConnection());
@@ -134,7 +133,6 @@ public class NettyServer  {
      * 关闭服务
      */
     public void stop() {
-      
         unregisterBrokerAll();
         try {
             if (null != bossGroup) {
@@ -146,6 +144,9 @@ public class NettyServer  {
             if (null != servletExecutor) {
                 servletExecutor.shutdownGracefully().await();
             }
+            if (this.brokerOuterAPI != null) {
+              this.brokerOuterAPI.shutdown();
+            }
         } catch (InterruptedException e) {
             LOGGER.error("netty服务关闭异常:{}",e);
         }
@@ -156,7 +157,6 @@ public class NettyServer  {
     public synchronized void registerBrokerAll(final boolean checkOrderConfig, boolean oneway) {
 
         RegisterBrokerResult registerBrokerResult = this.brokerOuterAPI.registerBrokerAll(
-            this.brokerConfig.getBrokerClusterName(),
             this.getBrokerAddr(),
             this.brokerConfig.getBrokerName(),
             this.brokerConfig.getBrokerId(),
@@ -169,7 +169,6 @@ public class NettyServer  {
     
     private void unregisterBrokerAll() {
       this.brokerOuterAPI.unregisterBrokerAll(
-          this.brokerConfig.getBrokerClusterName(),
           this.getBrokerAddr(),
           this.brokerConfig.getBrokerName(),
           this.brokerConfig.getBrokerId());

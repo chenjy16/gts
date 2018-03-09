@@ -7,7 +7,6 @@ import com.wf.gts.remoting.util.MixAll;
 
 
 public class BrokerData implements Comparable<BrokerData> {
-  private String cluster;
   private String brokerName;
   private HashMap<Long/* brokerId */, String/* broker address */> brokerAddrs;
 
@@ -17,8 +16,7 @@ public class BrokerData implements Comparable<BrokerData> {
 
   }
 
-  public BrokerData(String cluster, String brokerName, HashMap<Long, String> brokerAddrs) {
-      this.cluster = cluster;
+  public BrokerData( String brokerName, HashMap<Long, String> brokerAddrs) {
       this.brokerName = brokerName;
       this.brokerAddrs = brokerAddrs;
   }
@@ -48,13 +46,7 @@ public class BrokerData implements Comparable<BrokerData> {
       this.brokerAddrs = brokerAddrs;
   }
 
-  public String getCluster() {
-      return cluster;
-  }
 
-  public void setCluster(String cluster) {
-      this.cluster = cluster;
-  }
 
   @Override
   public int hashCode() {

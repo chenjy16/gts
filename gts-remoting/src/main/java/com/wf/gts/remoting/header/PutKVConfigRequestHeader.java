@@ -1,14 +1,15 @@
-package com.wf.gts.nameserver.header;
-
+package com.wf.gts.remoting.header;
 import com.wf.gts.remoting.CommandCustomHeader;
 import com.wf.gts.remoting.annotation.CFNotNull;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 
-public class DeleteKVConfigRequestHeader implements CommandCustomHeader {
+public class PutKVConfigRequestHeader implements CommandCustomHeader {
     @CFNotNull
     private String namespace;
     @CFNotNull
     private String key;
+    @CFNotNull
+    private String value;
 
     @Override
     public void checkFields() throws RemotingCommandException {
@@ -28,5 +29,13 @@ public class DeleteKVConfigRequestHeader implements CommandCustomHeader {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

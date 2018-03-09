@@ -1,4 +1,6 @@
 package com.wf.gts.core.config;
+import com.wf.gts.remoting.netty.TlsSystemConfig;
+import com.wf.gts.remoting.util.RemotingUtil;
 
 /**
  * TxTransaction 事务基本信息配置类
@@ -55,6 +57,13 @@ public class TxConfig {
     private String txManagerUrl;
 
 
+    
+    private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
+    private boolean useTLS = TlsSystemConfig.tlsEnable;
+    private String namesrvAddr;
+    private String clientIP = RemotingUtil.getLocalAddress();
+    
+    
 
     public String getSerializer() {
         return serializer;
@@ -139,4 +148,38 @@ public class TxConfig {
     public void setRefreshInterval(int refreshInterval) {
         this.refreshInterval = refreshInterval;
     }
+
+    public int getClientCallbackExecutorThreads() {
+      return clientCallbackExecutorThreads;
+    }
+
+    public void setClientCallbackExecutorThreads(int clientCallbackExecutorThreads) {
+      this.clientCallbackExecutorThreads = clientCallbackExecutorThreads;
+    }
+
+    public boolean isUseTLS() {
+      return useTLS;
+    }
+
+    public void setUseTLS(boolean useTLS) {
+      this.useTLS = useTLS;
+    }
+
+    public String getNamesrvAddr() {
+      return namesrvAddr;
+    }
+
+    public void setNamesrvAddr(String namesrvAddr) {
+      this.namesrvAddr = namesrvAddr;
+    }
+
+    public String getClientIP() {
+      return clientIP;
+    }
+
+    public void setClientIP(String clientIP) {
+      this.clientIP = clientIP;
+    }
+    
+    
 }

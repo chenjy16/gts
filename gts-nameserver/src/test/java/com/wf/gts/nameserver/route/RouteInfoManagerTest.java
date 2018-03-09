@@ -29,12 +29,12 @@ public class RouteInfoManagerTest {
 
     @After
     public void terminate() {
-        routeInfoManager.unregisterBroker("default-cluster", "127.0.0.1:10911", "default-broker", 1234);
+        routeInfoManager.unregisterBroker("127.0.0.1:10911", "default-broker", 1234);
     }
 
     @Test
     public void testGetAllClusterInfo() {
-        byte[] clusterInfo = routeInfoManager.getAllClusterInfo();
+        byte[] clusterInfo = routeInfoManager.getGtsManagerInfo();
         assertThat(clusterInfo).isNotNull();
     }
 
@@ -52,18 +52,13 @@ public class RouteInfoManagerTest {
         topicConfigConcurrentHashMap.put("unit-test", topicConfig);
         topicConfigSerializeWrapper.setTopicConfigTable(topicConfigConcurrentHashMap);
         Channel channel = mock(Channel.class);
-        RegisterBrokerResult registerBrokerResult = routeInfoManager.registerBroker("default-cluster", "127.0.0.1:10911", "default-broker", 1234, "127.0.0.1:1001",
-            topicConfigSerializeWrapper, new ArrayList<String>(), channel);
+        RegisterBrokerResult registerBrokerResult = routeInfoManager.registerBroker("127.0.0.1:10911", "default-broker", 1234, "127.0.0.1:1001",
+            topicConfigSerializeWrapper, channel);
         assertThat(registerBrokerResult).isNotNull();
     }
 
  
 
-    @Test
-    public void testPickupTopicRouteData() {
-        TopicRouteData result = routeInfoManager.pickupTopicRouteData("unit_test");
-        assertThat(result).isNull();
-    }
 
  
   

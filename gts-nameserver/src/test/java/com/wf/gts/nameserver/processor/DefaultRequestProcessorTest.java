@@ -1,6 +1,5 @@
 package com.wf.gts.nameserver.processor;
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,16 +9,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.assertj.core.util.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
+
 import com.wf.gts.nameserver.NamesrvConfig;
 import com.wf.gts.nameserver.NamesrvController;
-import com.wf.gts.nameserver.header.PutKVConfigRequestHeader;
-import com.wf.gts.nameserver.header.RegisterBrokerRequestHeader;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.exception.RemotingCommandException;
+import com.wf.gts.remoting.header.PutKVConfigRequestHeader;
+import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 import com.wf.gts.remoting.protocol.BrokerData;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
@@ -28,6 +29,7 @@ import com.wf.gts.remoting.protocol.RequestCode;
 import com.wf.gts.remoting.protocol.ResponseCode;
 import com.wf.gts.remoting.protocol.TopicConfig;
 import com.wf.gts.remoting.protocol.TopicConfigSerializeWrapper;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -200,8 +202,8 @@ public class DefaultRequestProcessorTest {
         topicConfigConcurrentHashMap.put("unit-test", topicConfig);
         topicConfigSerializeWrapper.setTopicConfigTable(topicConfigConcurrentHashMap);
         Channel channel = mock(Channel.class);
-        RegisterBrokerResult registerBrokerResult = routeInfoManager.registerBroker("default-cluster", "127.0.0.1:10911", "default-broker", 1234, "127.0.0.1:1001",
-            topicConfigSerializeWrapper, new ArrayList<String>(), channel);
+        RegisterBrokerResult registerBrokerResult = routeInfoManager.registerBroker("127.0.0.1:10911", "default-broker", 1234, "127.0.0.1:1001",
+            topicConfigSerializeWrapper, channel);
 
     }
 }

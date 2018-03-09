@@ -3,6 +3,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import com.wf.gts.manage.domain.NettyParam;
 
 
@@ -16,4 +17,11 @@ public class NettyConfig {
       return new NettyParam();
   }
 
+  
+  @Bean
+  //@ConfigurationProperties("tx.manager.netty")
+  public BrokerConfig getBrokerConfig() {
+      return new BrokerConfig();
+  }
+  
 }

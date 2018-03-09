@@ -1,4 +1,4 @@
-package com.wf.gts.manage.config;
+/*package com.wf.gts.manage.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
@@ -15,3 +15,4 @@ public class RegistryCenterConfig {
       return new ZookeeperRegistryCenter(new ZookeeperConfiguration(serverList, namespace));
   }
 }
+*/

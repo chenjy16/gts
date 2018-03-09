@@ -1,9 +1,10 @@
-package com.wf.gts.nameserver.header;
+package com.wf.gts.remoting.header;
+
 import com.wf.gts.remoting.CommandCustomHeader;
 import com.wf.gts.remoting.annotation.CFNotNull;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 
-public class GetKVConfigRequestHeader implements CommandCustomHeader {
+public class DeleteKVConfigRequestHeader implements CommandCustomHeader {
     @CFNotNull
     private String namespace;
     @CFNotNull

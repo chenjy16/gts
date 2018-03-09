@@ -1,5 +1,4 @@
 package com.wf.gts.core.netty;
-
 import com.wf.gts.core.config.TxConfig;
 
 
@@ -24,9 +23,5 @@ public interface NettyClient {
     void restart();
 
 
-    /**
-     * 检查状态
-     * @return TRUE 正常
-     */
-    boolean checkState();
+
 }

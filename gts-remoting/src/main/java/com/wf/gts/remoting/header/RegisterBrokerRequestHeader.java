@@ -1,15 +1,17 @@
-package com.wf.gts.nameserver.header;
+package com.wf.gts.remoting.header;
 import com.wf.gts.remoting.CommandCustomHeader;
 import com.wf.gts.remoting.annotation.CFNotNull;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 
-public class UnRegisterBrokerRequestHeader implements CommandCustomHeader {
+public class RegisterBrokerRequestHeader implements CommandCustomHeader {
     @CFNotNull
     private String brokerName;
     @CFNotNull
     private String brokerAddr;
     @CFNotNull
     private String clusterName;
+    @CFNotNull
+    private String haServerAddr;
     @CFNotNull
     private Long brokerId;
 
@@ -39,6 +41,14 @@ public class UnRegisterBrokerRequestHeader implements CommandCustomHeader {
 
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
+    }
+
+    public String getHaServerAddr() {
+        return haServerAddr;
+    }
+
+    public void setHaServerAddr(String haServerAddr) {
+        this.haServerAddr = haServerAddr;
     }
 
     public Long getBrokerId() {

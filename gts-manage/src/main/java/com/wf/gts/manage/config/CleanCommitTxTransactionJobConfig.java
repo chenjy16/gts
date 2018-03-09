@@ -1,4 +1,4 @@
-package com.wf.gts.manage.config;
+/*package com.wf.gts.manage.config;
 
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
@@ -43,4 +43,4 @@ public class CleanCommitTxTransactionJobConfig {
                 jobClass.getCanonicalName()))
                 .overwrite(true).build();//true表示本地配置覆盖zk配置
     }
-}
+}*/

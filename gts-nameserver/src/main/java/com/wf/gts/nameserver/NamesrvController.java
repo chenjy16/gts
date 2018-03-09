@@ -1,14 +1,10 @@
 package com.wf.gts.nameserver;
 import java.util.concurrent.ExecutorService;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.wf.gts.nameserver.kvconfig.Configuration;
 import com.wf.gts.nameserver.processor.DefaultRequestProcessor;
 import com.wf.gts.nameserver.route.BrokerHousekeepingService;
 import com.wf.gts.nameserver.route.RouteInfoManager;
@@ -31,22 +27,14 @@ public class NamesrvController {
   private RemotingServer remotingServer;
   private BrokerHousekeepingService brokerHousekeepingService;
   private ExecutorService remotingExecutor;
-  private Configuration configuration;
 
   
   
   public NamesrvController(NamesrvConfig namesrvConfig, NettyServerConfig nettyServerConfig) {
       this.namesrvConfig = namesrvConfig;
       this.nettyServerConfig = nettyServerConfig;
-   
       this.routeInfoManager = new RouteInfoManager();
       this.brokerHousekeepingService = new BrokerHousekeepingService(this);
-      this.configuration = new Configuration(
-          log,
-          this.namesrvConfig, this.nettyServerConfig
-      );
-      
-      this.configuration.setStorePathFromConfig(this.namesrvConfig, "configStorePath");
   }
 
   
@@ -119,8 +107,5 @@ public class NamesrvController {
       this.remotingServer = remotingServer;
   }
 
-  public Configuration getConfiguration() {
-      return configuration;
-  }
 
 }

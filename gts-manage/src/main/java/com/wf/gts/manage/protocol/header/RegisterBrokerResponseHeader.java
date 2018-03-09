@@ -1,4 +1,4 @@
-package com.wf.gts.nameserver.header;
+package com.wf.gts.manage.protocol.header;
 import com.wf.gts.remoting.CommandCustomHeader;
 import com.wf.gts.remoting.annotation.CFNullable;
 import com.wf.gts.remoting.exception.RemotingCommandException;

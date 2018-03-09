@@ -1,19 +1,13 @@
 package com.wf.gts.nameserver;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-
 import com.wf.gts.nameserver.util.ServerUtil;
 import com.wf.gts.nameserver.util.ShutdownHookThread;
 import com.wf.gts.remoting.netty.NettyServerConfig;
-import com.wf.gts.remoting.util.MixAll;
 
 
 public class NamesrvStartup {
@@ -33,14 +27,12 @@ public class NamesrvStartup {
               System.exit(-1);
               return null;
           }
-
           final NamesrvConfig namesrvConfig = new NamesrvConfig();
           final NettyServerConfig nettyServerConfig = new NettyServerConfig();
-          
           //配置
           nettyServerConfig.setListenPort(9876);
           
-          if (commandLine.hasOption('c')) {
+     /*     if (commandLine.hasOption('c')) {
               String file = commandLine.getOptionValue('c');
               if (file != null) {
                   InputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -52,20 +44,18 @@ public class NamesrvStartup {
                   System.out.printf("load config properties file OK, " + file + "%n");
                   in.close();
               }
-          }
+          }*/
 
-          if (commandLine.hasOption('p')) {
+          /*if (commandLine.hasOption('p')) {
               System.exit(0);
-          }
-          MixAll.properties2Object(ServerUtil.commandLine2Properties(commandLine), namesrvConfig);
+          }*/
+        /*  MixAll.properties2Object(ServerUtil.commandLine2Properties(commandLine), namesrvConfig);
           if (null == namesrvConfig.getRocketmqHome()) {
               System.out.printf("Please set the %s variable in your environment to match the location of the RocketMQ installation%n", MixAll.ROCKETMQ_HOME_ENV);
               System.exit(-2);
-          }
+          }*/
 
           final NamesrvController controller = new NamesrvController(namesrvConfig, nettyServerConfig);
-          // remember all configs to prevent discard
-          controller.getConfiguration().registerConfig(properties);
           boolean initResult = controller.initialize();
           if (!initResult) {
               controller.shutdown();
@@ -78,15 +68,12 @@ public class NamesrvStartup {
                   return null;
               }
           }));
-
           controller.start();
-
           return controller;
       } catch (Throwable e) {
           e.printStackTrace();
           System.exit(-1);
       }
-
       return null;
   }
 

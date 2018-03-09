@@ -12,33 +12,16 @@
     <packaging>jar</packaging>
 
   <dependencies>
-     <dependency>
-       <groupId>com.wf.gts</groupId>
-	   <artifactId>gts-common</artifactId>
-	   <version>1.4.0-SNAPSHOT</version>
+     	<dependency>
+	       <groupId>com.wf.gts</groupId>
+		   <artifactId>gts-common</artifactId>
+		   <version>1.4.0-SNAPSHOT</version>
         </dependency>
-		<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>
+         <dependency>
+           <groupId>com.wf.gts</groupId>
+		   <artifactId>gts-remoting</artifactId>
+		   <version>1.4.0-SNAPSHOT</version>
+         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
@@ -53,47 +36,14 @@
             <version>3.4.6</version>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
             <version>1.7.5.RELEASE</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-        
-         <!-- sl4j + logback start-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-        <!-- sl4j + logback end-->
   </dependencies>
   
    <build>
