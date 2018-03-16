@@ -1,11 +1,9 @@
 package com.wf.gts.remoting.protocol;
-
-
-
 import com.alibaba.fastjson.JSON;
 import java.nio.charset.Charset;
 
 public abstract class RemotingSerializable {
+  
     private final static Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     public static byte[] encode(final Object obj) {

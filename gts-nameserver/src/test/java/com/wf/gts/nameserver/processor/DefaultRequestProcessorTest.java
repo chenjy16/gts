@@ -1,11 +1,11 @@
 package com.wf.gts.nameserver.processor;
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +19,6 @@ import com.wf.gts.nameserver.NamesrvConfig;
 import com.wf.gts.nameserver.NamesrvController;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.exception.RemotingCommandException;
-import com.wf.gts.remoting.header.PutKVConfigRequestHeader;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 import com.wf.gts.remoting.protocol.BrokerData;
@@ -73,22 +72,6 @@ public class DefaultRequestProcessorTest {
     
     
     
-
-    @Test
-    public void testProcessRequest_PutKVConfig() throws RemotingCommandException {
-        PutKVConfigRequestHeader header = new PutKVConfigRequestHeader();
-        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.PUT_KV_CONFIG,
-            header);
-        request.addExtField("namespace", "namespace");
-        request.addExtField("key", "key");
-        request.addExtField("value", "value");
-
-        RemotingCommand response = defaultRequestProcessor.processRequest(null, request);
-
-        assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);
-        assertThat(response.getRemark()).isNull();
-
-    }
 
    
 

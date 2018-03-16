@@ -24,11 +24,9 @@ import com.wf.gts.remoting.util.KVTable;
 
 public class BrokerOuterAPI {
   
-    private static final Logger log = LoggerFactory.getLogger(BrokerOuterAPI.class);
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrokerOuterAPI.class);
     private final RemotingClient remotingClient;
-    
-    public BrokerOuterAPI(final NettyClientConfig nettyClientConfigs) {
+    public BrokerOuterAPI(NettyClientConfig nettyClientConfigs) {
         this.remotingClient = new NettyRemotingClient(nettyClientConfigs);
     }
     
@@ -48,7 +46,7 @@ public class BrokerOuterAPI {
      * @date: 2018年3月6日 上午11:31:33 
      * @param addrs
      */
-    public void updateNameServerAddressList(final String addrs) {
+    public void updateNameServerAddressList(String addrs) {
         List<String> lst = new ArrayList<String>();
         String[] addrArray = addrs.split(";");
         for (String addr : addrArray) {
@@ -71,15 +69,7 @@ public class BrokerOuterAPI {
      * @param timeoutMills
      * @return
      */
-    public RegisterBrokerResult registerBrokerAll(
-        final String brokerAddr,
-        final String brokerName,
-        final long brokerId,
-        final String haServerAddr,
-        final boolean oneway,
-        final int timeoutMills) {
-      
-      
+    public RegisterBrokerResult registerBrokerAll(String brokerAddr,String brokerName,long brokerId,String haServerAddr,boolean oneway,int timeoutMills) {
         RegisterBrokerResult registerBrokerResult = null;
         List<String> nameServerAddressList = this.remotingClient.getNameServerAddressList();
         if (nameServerAddressList != null) {
@@ -90,9 +80,9 @@ public class BrokerOuterAPI {
                     if (result != null) {
                         registerBrokerResult = result;
                     }
-                    log.info("register broker to name server {} OK", namesrvAddr);
+                    LOGGER.info("register broker to name server {} OK", namesrvAddr);
                 } catch (Exception e) {
-                    log.warn("registerBroker Exception, {}", namesrvAddr, e);
+                  LOGGER.warn("registerBroker Exception, {}", namesrvAddr, e);
                 }
             }
         }
@@ -121,15 +111,8 @@ public class BrokerOuterAPI {
      * @throws RemotingTimeoutException
      * @throws InterruptedException
      */
-    private RegisterBrokerResult registerBroker(
-        final String namesrvAddr,
-        final String brokerAddr,
-        final String brokerName,
-        final long brokerId,
-        final String haServerAddr,
-        final boolean oneway,
-        final int timeoutMills
-    ) throws RemotingCommandException, MQBrokerException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
+    private RegisterBrokerResult registerBroker(String namesrvAddr,String brokerAddr,String brokerName,long brokerId,
+        String haServerAddr,boolean oneway,int timeoutMills) throws RemotingCommandException, MQBrokerException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
         InterruptedException {
       
         RegisterBrokerRequestHeader requestHeader = new RegisterBrokerRequestHeader();
@@ -167,30 +150,21 @@ public class BrokerOuterAPI {
         throw new MQBrokerException(response.getCode(), response.getRemark());
     }
     
-    public void unregisterBrokerAll(
-        final String brokerAddr,
-        final String brokerName,
-        final long brokerId
-    ) {
+    public void unregisterBrokerAll(String brokerAddr,String brokerName,long brokerId) {
         List<String> nameServerAddressList = this.remotingClient.getNameServerAddressList();
         if (nameServerAddressList != null) {
             for (String namesrvAddr : nameServerAddressList) {
                 try {
                     this.unregisterBroker(namesrvAddr, brokerAddr, brokerName, brokerId);
-                    log.info("unregisterBroker OK, NamesrvAddr: {}", namesrvAddr);
+                    LOGGER.info("unregisterBroker OK, NamesrvAddr: {}", namesrvAddr);
                 } catch (Exception e) {
-                    log.warn("unregisterBroker Exception, {}", namesrvAddr, e);
+                  LOGGER.warn("unregisterBroker Exception, {}", namesrvAddr, e);
                 }
             }
         }
     }
     
-    public void unregisterBroker(
-        final String namesrvAddr,
-        final String brokerAddr,
-        final String brokerName,
-        final long brokerId
-    ) throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
+    public void unregisterBroker(String namesrvAddr,String brokerAddr,String brokerName,long brokerId) throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
         UnRegisterBrokerRequestHeader requestHeader = new UnRegisterBrokerRequestHeader();
         requestHeader.setBrokerAddr(brokerAddr);
         requestHeader.setBrokerId(brokerId);

@@ -15,7 +15,6 @@ public interface NettyClient {
     void stop();
 
 
-    void doConnect();
 
     /**
      * 重启

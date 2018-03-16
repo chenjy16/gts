@@ -64,12 +64,7 @@ public class NamesrvController {
   }
 
   private void registerProcessor() {
- /*     if (namesrvConfig.isClusterTest()) {
-          this.remotingServer.registerDefaultProcessor(new ClusterTestRequestProcessor(this, namesrvConfig.getProductEnvName()),
-              this.remotingExecutor);
-      } else {*/
-          this.remotingServer.registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
-  //    }
+      this.remotingServer.registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
   }
 
   

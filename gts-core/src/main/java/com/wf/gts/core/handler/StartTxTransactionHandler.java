@@ -29,7 +29,6 @@ import com.wf.gts.core.util.TxTransactionLocal;
 @Component
 public class StartTxTransactionHandler implements TxTransactionHandler {
 
-  
     private static final Logger LOGGER = LoggerFactory.getLogger(StartTxTransactionHandler.class);
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;

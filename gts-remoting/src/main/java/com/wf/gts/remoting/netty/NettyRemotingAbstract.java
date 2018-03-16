@@ -160,8 +160,9 @@ public abstract class NettyRemotingAbstract {
                         if (rpcHook != null) {
                             rpcHook.doBeforeRequest(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), cmd);
                         }
-
+                        
                         final RemotingCommand response = pair.getObject1().processRequest(ctx, cmd);
+                        
                         if (rpcHook != null) {
                             rpcHook.doAfterResponse(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), cmd, response);
                         }
@@ -177,8 +178,6 @@ public abstract class NettyRemotingAbstract {
                                     log.error(cmd.toString());
                                     log.error(response.toString());
                                 }
-                            } else {
-
                             }
                         }
                     } catch (Throwable e) {
@@ -349,11 +348,23 @@ public abstract class NettyRemotingAbstract {
 
     
     
-    public RemotingCommand invokeSyncImpl(final Channel channel, final RemotingCommand request,
-        final long timeoutMillis)
+    
+    
+    /**
+     * 功能描述: 同步发送客户端请求
+     * @author: chenjy
+     * @date: 2018年3月12日 下午5:36:46 
+     * @param channel
+     * @param request
+     * @param timeoutMillis
+     * @return
+     * @throws InterruptedException
+     * @throws RemotingSendRequestException
+     * @throws RemotingTimeoutException
+     */
+    public RemotingCommand invokeSyncImpl(final Channel channel, final RemotingCommand request,final long timeoutMillis)
         throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
         final int opaque = request.getOpaque();
-
         try {
             final ResponseFuture responseFuture = new ResponseFuture(opaque, timeoutMillis, null, null);
             this.responseTable.put(opaque, responseFuture);
@@ -384,13 +395,27 @@ public abstract class NettyRemotingAbstract {
                     throw new RemotingSendRequestException(RemotingHelper.parseSocketAddressAddr(addr), responseFuture.getCause());
                 }
             }
-
             return responseCommand;
         } finally {
             this.responseTable.remove(opaque);
         }
     }
 
+    
+    
+    /**
+     * 功能描述: 异步发送客户端请求
+     * @author: chenjy
+     * @date: 2018年3月12日 下午5:38:43 
+     * @param channel
+     * @param request
+     * @param timeoutMillis
+     * @param invokeCallback
+     * @throws InterruptedException
+     * @throws RemotingTooMuchRequestException
+     * @throws RemotingTimeoutException
+     * @throws RemotingSendRequestException
+     */
     public void invokeAsyncImpl(final Channel channel, final RemotingCommand request, final long timeoutMillis,
         final InvokeCallback invokeCallback)
         throws InterruptedException, RemotingTooMuchRequestException, RemotingTimeoutException, RemotingSendRequestException {
@@ -405,13 +430,13 @@ public abstract class NettyRemotingAbstract {
                 channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture f) throws Exception {
-                        if (f.isSuccess()) {
+                     
+                        if (f.isSuccess()) {// 发送成功设置ResponseFuture发送成功，退出监听器
                             responseFuture.setSendRequestOK(true);
                             return;
                         } else {
                             responseFuture.setSendRequestOK(false);
                         }
-
                         responseFuture.putResponse(null);
                         responseTable.remove(opaque);
                         try {
@@ -446,6 +471,26 @@ public abstract class NettyRemotingAbstract {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * 功能描述:  单向请求
+     * @author: chenjy
+     * @date: 2018年3月13日 上午9:11:59 
+     * @param channel
+     * @param request
+     * @param timeoutMillis
+     * @throws InterruptedException
+     * @throws RemotingTooMuchRequestException
+     * @throws RemotingTimeoutException
+     * @throws RemotingSendRequestException
+     */
     public void invokeOnewayImpl(final Channel channel, final RemotingCommand request, final long timeoutMillis)
         throws InterruptedException, RemotingTooMuchRequestException, RemotingTimeoutException, RemotingSendRequestException {
         request.markOnewayRPC();

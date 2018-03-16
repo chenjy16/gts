@@ -1,5 +1,6 @@
 package com.wf.gts.manage.executer.impl;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,8 +18,14 @@ import com.wf.gts.common.beans.TxTransactionItem;
 import com.wf.gts.common.enums.TransactionStatusEnum;
 import com.wf.gts.common.utils.ExecutorMessageTool;
 import com.wf.gts.common.utils.OkHttpTools;
+import com.wf.gts.manage.client.ClientChannelInfo;
 import com.wf.gts.manage.constant.Constant;
 import com.wf.gts.manage.service.TxManagerService;
+import com.wf.gts.remoting.RemotingServer;
+import com.wf.gts.remoting.exception.RemotingSendRequestException;
+import com.wf.gts.remoting.exception.RemotingTimeoutException;
+
+import io.netty.channel.Channel;
 
 @Component
 public class TxTransactionExecutorService extends AbstractTxTransactionExecutor {
@@ -40,7 +47,7 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
      * @param elseItems          连接到其他tm的channel信息
      */
     @Override
-    protected void doRollBack(String txGroupId, List<TxTransactionItem> txTransactionItems, List<TxTransactionItem> elseItems) {
+    protected void doRollBack(String txGroupId, List<TxTransactionItem> txTransactionItems, List<TxTransactionItem> elseItems,HashMap<String,ClientChannelInfo> channels,RemotingServer remotingServer) {
         try {
             if (CollectionUtils.isNotEmpty(txTransactionItems)) {
               
@@ -49,15 +56,21 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
                         .map(item ->
                                 CompletableFuture.runAsync(() -> {
                                   
-                                    ChannelSender channelSender = new ChannelSender();
-                                    HeartBeat heartBeat = ExecutorMessageTool.buildMessage(item, channelSender,
-                                            TransactionStatusEnum.ROLLBACK);
+                                    ClientChannelInfo channelinfo=channels.get(item.getModelName());
+                                    try {
+                                      remotingServer.invokeSync(channelinfo.getChannel(), null, 10);
+                                    } catch (RemotingSendRequestException | RemotingTimeoutException
+                                        | InterruptedException e1) {
+                                      LOGGER.error("txManger rollback指令失败，channel为空，事务组id：{}, 事务taskId为:{}",txGroupId, item.getTaskKey());
+                                    }
+                                    
+                                    
+                                /*    HeartBeat heartBeat = ExecutorMessageTool.buildMessage(item, channelSender,TransactionStatusEnum.ROLLBACK);
                                     if (Objects.nonNull(channelSender.getChannel())) {
                                         channelSender.getChannel().writeAndFlush(heartBeat);
                                     } else {
-                                        LOGGER.error("txManger rollback指令失败，channel为空，事务组id：{}, 事务taskId为:{}",
-                                                txGroupId, item.getTaskKey());
-                                    }
+                                        LOGGER.error("txManger rollback指令失败，channel为空，事务组id：{}, 事务taskId为:{}",txGroupId, item.getTaskKey());
+                                    }*/
                                     
                                 }).whenComplete((v, e) ->
                                     LOGGER.info("txManger 成功发送rollback指令 事务taskId为：{}", item.getTaskKey())
@@ -88,17 +101,28 @@ public class TxTransactionExecutorService extends AbstractTxTransactionExecutor 
      * @param elseItems          连接到其他tm的channel信息
      */
     @Override
-    protected void doCommit(String txGroupId, List<TxTransactionItem> txTransactionItems, List<TxTransactionItem> elseItems) {
+    protected void doCommit(String txGroupId, List<TxTransactionItem> txTransactionItems, List<TxTransactionItem> elseItems,HashMap<String,ClientChannelInfo> channels,RemotingServer remotingServer) {
         try {
             txTransactionItems.forEach(item -> {
-                ChannelSender sender = new ChannelSender();
+                ClientChannelInfo channelinfo=channels.get(item.getModelName());
+                try {
+                  remotingServer.invokeSync(channelinfo.getChannel(), null, 10);
+                } catch (RemotingSendRequestException | RemotingTimeoutException
+                    | InterruptedException e1) {
+                  LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
+                }
+              
+               /* ChannelSender sender = new ChannelSender();
                 HeartBeat heartBeat = ExecutorMessageTool.buildMessage(item, sender, TransactionStatusEnum.COMMIT);
                 if (Objects.nonNull(sender.getChannel())) {
                     sender.getChannel().writeAndFlush(heartBeat);
                     LOGGER.info("txManger 成功发送doCommit指令 事务taskId为：{}", item.getTaskKey());
                 } else {
-                    LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
-                }
+                   
+                }*/
+                
+                
+                
             });
             httpExecute(elseItems, TransactionStatusEnum.COMMIT);
 

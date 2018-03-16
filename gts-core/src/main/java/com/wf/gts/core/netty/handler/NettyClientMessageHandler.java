@@ -1,5 +1,6 @@
 package com.wf.gts.core.netty.handler;
 import java.util.List;
+
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,6 @@ import io.netty.util.ReferenceCountUtil;
 @ChannelHandler.Sharable
 public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
   
-  
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientMessageHandler.class);
     
     /**
@@ -53,6 +53,7 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
         LOGGER.debug("接收服务端据命令为,执行的动作为:{}", heartBeat.getAction());
         final NettyMessageActionEnum actionEnum = NettyMessageActionEnum.acquireByCode(heartBeat.getAction());
         try {
+          
             switch (actionEnum) {
                 case HEART://心跳动作
                     break;
@@ -98,56 +99,6 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ctx.close();
-    }
-
-    
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
-  
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("与服务器断开连接服务器");
-        super.channelInactive(ctx);
-        SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
-
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-        NettyClientMessageHandler.ctx = ctx;
-        LOGGER.info("建立链接-->" + ctx);
-        net_state = true;
-    }
-
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        //心跳配置
-        if (IdleStateEvent.class.isAssignableFrom(evt.getClass())) {
-            IdleStateEvent event = (IdleStateEvent) evt;
-            if (event.state() == IdleState.READER_IDLE) {
-                //表示已经多久没有收到数据了
-                SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
-            } else if (event.state() == IdleState.WRITER_IDLE) {
-                //表示已经多久没有发送数据了
-                heartBeat.setAction(NettyMessageActionEnum.HEART.getCode());
-                ctx.writeAndFlush(heartBeat);
-                LOGGER.debug("向服务端发送的心跳，动作为:{}", heartBeat.getAction());
-            } else if (event.state() == IdleState.ALL_IDLE) {
-                //表示已经多久既没有收到也没有发送数据了
-                SpringBeanUtils.getInstance().getBean(NettyClient.class).doConnect();
-            }
-        }
-    }
-
 
     /**
      * 向TxManager 发生消息
@@ -189,7 +140,5 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(heartBeat);
         }
     }
-    
-    
 
 }

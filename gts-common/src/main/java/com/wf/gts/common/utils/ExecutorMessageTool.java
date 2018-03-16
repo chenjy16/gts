@@ -16,7 +16,9 @@ public class ExecutorMessageTool {
   public  static HeartBeat buildMessage(TxTransactionItem item, ChannelSender channelSender, TransactionStatusEnum transactionStatusEnum) {
      
      HeartBeat heartBeat = new HeartBeat();
+     
      Channel channel = SocketManager.getInstance().getChannelByModelName(item.getModelName());
+     
      if (Objects.nonNull(channel)) {
          if (channel.isActive()) {
              channelSender.setChannel(channel);

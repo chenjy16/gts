@@ -1,18 +1,24 @@
 package com.wf.gts.manage.executer.impl;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.wf.gts.common.SocketManager;
 import com.wf.gts.common.beans.TxTransactionItem;
 import com.wf.gts.common.enums.TransactionRoleEnum;
 import com.wf.gts.common.enums.TransactionStatusEnum;
+import com.wf.gts.manage.ManageController;
+import com.wf.gts.manage.client.ClientChannelInfo;
 import com.wf.gts.manage.domain.Address;
 import com.wf.gts.manage.executer.TxTransactionExecutor;
 import com.wf.gts.manage.service.TxManagerService;
+import com.wf.gts.remoting.RemotingServer;
 
 import io.netty.channel.Channel;
 
@@ -21,9 +27,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTxTransactionExecutor.class);
 
-    protected abstract void doRollBack(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems);
+    protected abstract void doRollBack(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems,HashMap<String, ClientChannelInfo> channels,RemotingServer remotingServer);
 
-    protected abstract void doCommit(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems);
+    protected abstract void doCommit(String txGroupId, List<TxTransactionItem> txTransactionItems,List<TxTransactionItem> elseItems,HashMap<String, ClientChannelInfo> channels,RemotingServer remotingServer);
 
     private TxManagerService txManagerService;
 
@@ -37,9 +43,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
      * @param txGroupId 事务组id
      */
     @Override
-    public void rollBack(String txGroupId) {
-     
+    public void rollBack(String txGroupId,ManageController manageController) {
         txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.ROLLBACK.getCode());
+       
         final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
         if (CollectionUtils.isNotEmpty(txTransactionItems)) {
             final Map<Boolean, List<TxTransactionItem>> listMap = filterData(txTransactionItems);
@@ -49,7 +55,9 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
             }
             final List<TxTransactionItem> currentItem = listMap.get(Boolean.TRUE);
             final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
-            doRollBack(txGroupId, currentItem,elseItems);
+            HashMap<String,ClientChannelInfo> channels=manageController.getProducerManager().getGroupChannelTable();
+            RemotingServer remotingServer=manageController.getRemotingServer();
+            doRollBack(txGroupId, currentItem,elseItems,channels,remotingServer);
         }
      
     }
@@ -63,7 +71,8 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
      * @return true 成功 false 失败
      */
     @Override
-    public Boolean preCommit(String txGroupId) {
+    public Boolean preCommit(String txGroupId,ManageController manageController) {
+      
         txManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransactionStatusEnum.COMMIT.getCode());
         final List<TxTransactionItem> txTransactionItems = txManagerService.listByTxGroupId(txGroupId);
         final Map<Boolean, List<TxTransactionItem>> listMap = filterData(txTransactionItems);
@@ -83,10 +92,12 @@ public abstract class AbstractTxTransactionExecutor implements TxTransactionExec
         final List<TxTransactionItem> elseItems = listMap.get(Boolean.FALSE);
         //检查各位channel 是否都激活，渠道状态不是回滚的
         final Boolean ok = checkChannel(currentItem);
+        HashMap<String,ClientChannelInfo> channels=manageController.getProducerManager().getGroupChannelTable();
+        RemotingServer remotingServer=manageController.getRemotingServer();
         if (!ok) {
-            doRollBack(txGroupId, currentItem,elseItems);
+            doRollBack(txGroupId, currentItem,elseItems,channels,remotingServer);
         } else {
-            doCommit(txGroupId, currentItem,elseItems);
+            doCommit(txGroupId, currentItem,elseItems,channels,remotingServer);
         }
         return true;
     }

@@ -1,5 +1,6 @@
 package com.wf.gts.manage.netty.handler;
 import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.wf.gts.common.enums.NettyResultEnum;
 import com.wf.gts.manage.domain.Address;
 import com.wf.gts.manage.executer.TxTransactionExecutor;
 import com.wf.gts.manage.service.TxManagerService;
+
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -91,11 +93,11 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(buildSendMessage(hb.getKey(), true));
                     //收到客户端的回滚通知  此通知为事务发起（start）里面通知的
                     final String groupId = txTransactionGroup.getId();
-                    txTransactionExecutor.rollBack(groupId);
+                    txTransactionExecutor.rollBack(groupId,null);
                     break;
                 case PRE_COMMIT:
                     ctx.writeAndFlush(buildSendMessage(hb.getKey(), true));
-                    txTransactionExecutor.preCommit(txTransactionGroup.getId());
+                    txTransactionExecutor.preCommit(txTransactionGroup.getId(),null);
                     break;
                 case COMPLETE_COMMIT:
                     final List<TxTransactionItem> its = txTransactionGroup.getItemList();
@@ -126,6 +128,8 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
             ctx.close();
         }
     }
+    
+    
     
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
