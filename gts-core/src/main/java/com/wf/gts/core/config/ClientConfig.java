@@ -1,6 +1,6 @@
 package com.wf.gts.core.config;
+import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.netty.TlsSystemConfig;
-import com.wf.gts.remoting.util.RemotingUtil;
 
 public class ClientConfig extends TxConfig{
   

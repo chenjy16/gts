@@ -8,11 +8,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.protocol.BrokerLiveInfo;
 import com.wf.gts.remoting.protocol.ClusterInfo;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.TopicConfigSerializeWrapper;
-import com.wf.gts.remoting.util.RemotingUtil;
+
 import io.netty.channel.Channel;
 
 

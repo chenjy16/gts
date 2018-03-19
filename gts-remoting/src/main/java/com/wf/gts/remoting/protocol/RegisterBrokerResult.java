@@ -1,5 +1,5 @@
 package com.wf.gts.remoting.protocol;
-import com.wf.gts.remoting.util.KVTable;
+import com.wf.gts.remoting.core.KVTable;
 
 public class RegisterBrokerResult {
   

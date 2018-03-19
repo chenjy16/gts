@@ -1,6 +1,7 @@
 package com.wf.gts.nameserver;
 import java.io.File;
-import com.wf.gts.remoting.util.MixAll;
+
+import com.wf.gts.remoting.core.MixAll;
 
 
 public class NamesrvConfig {

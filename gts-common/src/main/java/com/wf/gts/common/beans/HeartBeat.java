@@ -1,6 +1,7 @@
 package com.wf.gts.common.beans;
-
 import java.io.Serializable;
+
+
 
 /**
  * netty客户端与服务端数据交换对象
@@ -8,7 +9,6 @@ import java.io.Serializable;
 public class HeartBeat implements Serializable {
 
     private static final long serialVersionUID = 4183978848464761529L;
-
     /**
      * 执行动作 
      */

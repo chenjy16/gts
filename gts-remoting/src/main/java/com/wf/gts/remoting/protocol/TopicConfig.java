@@ -1,7 +1,7 @@
 package com.wf.gts.remoting.protocol;
 
-import com.wf.gts.remoting.util.PermName;
-import com.wf.gts.remoting.util.TopicFilterType;
+import com.wf.gts.remoting.core.PermName;
+import com.wf.gts.remoting.core.TopicFilterType;
 
 public class TopicConfig {
   

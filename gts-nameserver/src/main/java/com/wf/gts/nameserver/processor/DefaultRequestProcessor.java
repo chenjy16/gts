@@ -3,6 +3,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wf.gts.nameserver.NamesrvController;
+import com.wf.gts.remoting.core.RemotingHelper;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
 import com.wf.gts.remoting.header.RegisterBrokerResponseHeader;
@@ -13,7 +14,7 @@ import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RequestCode;
 import com.wf.gts.remoting.protocol.ResponseCode;
-import com.wf.gts.remoting.util.RemotingHelper;
+
 import io.netty.channel.ChannelHandlerContext;
 
 

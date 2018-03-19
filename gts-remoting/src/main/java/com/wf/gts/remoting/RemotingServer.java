@@ -1,12 +1,12 @@
 package com.wf.gts.remoting;
 import java.util.concurrent.ExecutorService;
 
+import com.wf.gts.remoting.core.Pair;
 import com.wf.gts.remoting.exception.RemotingSendRequestException;
 import com.wf.gts.remoting.exception.RemotingTimeoutException;
 import com.wf.gts.remoting.exception.RemotingTooMuchRequestException;
 import com.wf.gts.remoting.netty.NettyRequestProcessor;
 import com.wf.gts.remoting.protocol.RemotingCommand;
-import com.wf.gts.remoting.util.Pair;
 
 import io.netty.channel.Channel;
 

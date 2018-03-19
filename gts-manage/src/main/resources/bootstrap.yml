@@ -1,2 +1,6 @@
-
+server:
+  port: 11100
+spring:
+  application:
+     name:  gts-manager
 

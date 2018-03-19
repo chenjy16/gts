@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wf.gts.remoting.core.RemotingHelper;
+import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.protocol.RemotingCommand;
-import com.wf.gts.remoting.util.RemotingHelper;
-import com.wf.gts.remoting.util.RemotingUtil;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

@@ -10,8 +10,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 
+import com.wf.gts.remoting.core.MixAll;
 import com.wf.gts.remoting.protocol.DataVersion;
-import com.wf.gts.remoting.util.MixAll;
 
 public class Configuration {
   

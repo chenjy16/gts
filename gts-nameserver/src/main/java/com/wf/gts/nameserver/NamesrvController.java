@@ -9,9 +9,9 @@ import com.wf.gts.nameserver.processor.DefaultRequestProcessor;
 import com.wf.gts.nameserver.route.BrokerHousekeepingService;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.RemotingServer;
+import com.wf.gts.remoting.core.ThreadFactoryImpl;
 import com.wf.gts.remoting.netty.NettyRemotingServer;
 import com.wf.gts.remoting.netty.NettyServerConfig;
-import com.wf.gts.remoting.util.ThreadFactoryImpl;
 
 
 public class NamesrvController {

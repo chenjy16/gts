@@ -2,6 +2,7 @@ package com.wf.gts.core.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wf.gts.core.client.processor.ClientRemotingProcessor;
 import com.wf.gts.core.exception.MQBrokerException;
 import com.wf.gts.core.exception.MQClientException;
 import com.wf.gts.remoting.InvokeCallback;

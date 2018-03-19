@@ -3,6 +3,7 @@ package com.wf.gts.remoting.netty;
 
 
 public class NettyServerConfig implements Cloneable {
+  
     private int listenPort = 8888;
     private int serverWorkerThreads = 8;
     private int serverCallbackExecutorThreads = 0;
@@ -10,11 +11,11 @@ public class NettyServerConfig implements Cloneable {
     private int serverOnewaySemaphoreValue = 256;
     private int serverAsyncSemaphoreValue = 64;
     private int serverChannelMaxIdleTimeSeconds = 120;
-
-    private int serverSocketSndBufSize = NettySystemConfig.socketSndbufSize;
-    private int serverSocketRcvBufSize = NettySystemConfig.socketRcvbufSize;
+    private int serverSocketSndBufSize = 65535;
+    private int serverSocketRcvBufSize = 65535;
     private boolean serverPooledByteBufAllocatorEnable = true;
 
+    
     /**
      * make make install
      * ../glibc-2.10.1/configure \ --prefix=/usr \ --with-headers=/usr/include \

@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import com.wf.gts.remoting.util.MixAll;
+
+import com.wf.gts.remoting.core.MixAll;
 
 
 public class BrokerData implements Comparable<BrokerData> {

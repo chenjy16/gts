@@ -4,7 +4,7 @@ package com.wf.gts.remoting.netty;
 
 
 
-import com.wf.gts.remoting.util.TlsMode;
+import com.wf.gts.remoting.core.TlsMode;
 
 import io.netty.handler.ssl.SslContext;
 

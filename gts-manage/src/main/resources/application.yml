@@ -23,3 +23,46 @@ cleanCommitTxGroupJob:
   cron: 0 0/10 * * * ?
   shardingTotalCount: 1
   shardingItemParameters: 0=Beijing
+
+  
+gts:
+  manage:
+    namesrvAddr:  localhost:9876
+    manageName: gtsmanage
+    manageId: 1
+    registerBrokerTimeoutMills: 6000
+    manageAddr: localhost:9877
+    haServerAddr: localhost:9878
+    defaultThreadPoolNums:  10
+    clientManageThreadPoolNums: 10
+    clientManagerThreadPoolQueueCapacity: 3000
+  netty:
+    server:
+        listenPort: 9877
+        serverWorkerThreads:  10
+        serverCallbackExecutorThreads:  10
+        serverSelectorThreads:  10
+        serverOnewaySemaphoreValue: 10
+        serverAsyncSemaphoreValue:  10
+        serverChannelMaxIdleTimeSeconds:  60
+        serverSocketSndBufSize: 65535
+        serverSocketRcvBufSize: 65535
+        #serverPooledByteBufAllocatorEnable:
+    client:
+        clientWorkerThreads:  10
+        clientCallbackExecutorThreads:  10
+        clientOnewaySemaphoreValue: 10
+        clientAsyncSemaphoreValue:  10
+        connectTimeoutMillis: 60
+        channelNotActiveInterval: 30
+        clientChannelMaxIdleTimeSeconds:  60
+        clientSocketSndBufSize: 65535
+        clientSocketRcvBufSize: 65535
+        #clientPooledByteBufAllocatorEnable:
+        #clientCloseSocketIfTimeout:
+        #useTLS:
+        
+        
+        
+               
+  

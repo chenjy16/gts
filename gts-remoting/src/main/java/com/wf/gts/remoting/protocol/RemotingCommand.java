@@ -15,6 +15,8 @@ import com.wf.gts.remoting.exception.RemotingCommandException;
 
 
 public class RemotingCommand {
+  
+  
     public static final String SERIALIZE_TYPE_PROPERTY = "rocketmq.serialize.type";
     public static final String SERIALIZE_TYPE_ENV = "ROCKETMQ_SERIALIZE_TYPE";
     public static final String REMOTING_VERSION_KEY = "rocketmq.remoting.version";

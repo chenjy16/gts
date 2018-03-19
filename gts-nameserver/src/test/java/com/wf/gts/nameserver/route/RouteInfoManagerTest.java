@@ -1,19 +1,14 @@
 package com.wf.gts.nameserver.route;
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.TopicConfig;
 import com.wf.gts.remoting.protocol.TopicConfigSerializeWrapper;
-import com.wf.gts.remoting.protocol.TopicRouteData;
 
 import io.netty.channel.Channel;
 

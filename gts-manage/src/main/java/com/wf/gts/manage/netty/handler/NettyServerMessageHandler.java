@@ -1,4 +1,4 @@
-package com.wf.gts.manage.netty.handler;
+/*package com.wf.gts.manage.netty.handler;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -25,9 +25,9 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
-/**
+*//**
  * netty服务端接收消息
- */
+ *//*
 @ChannelHandler.Sharable
 @Component
 public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
@@ -43,9 +43,9 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     
-    /**
+    *//**
      * 接收数据
-     */
+     *//*
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         LOGGER.info("gts接收指令:{}",JSON.toJSONString(msg));
@@ -115,9 +115,9 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
     }
 
     
-    /**
+    *//**
      * 建立连接
-     */
+     *//*
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
@@ -142,9 +142,9 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
         super.channelUnregistered(ctx);
     }
 
-    /**
+    *//**
      * 读完成
-     */
+     *//*
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.flush();
@@ -179,4 +179,4 @@ public class NettyServerMessageHandler extends ChannelInboundHandlerAdapter {
         return HB;
     }
 
-}
+}*/

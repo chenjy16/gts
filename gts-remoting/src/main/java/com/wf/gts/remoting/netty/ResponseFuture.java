@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.wf.gts.remoting.InvokeCallback;
+import com.wf.gts.remoting.core.SemaphoreReleaseOnlyOnce;
 import com.wf.gts.remoting.protocol.RemotingCommand;
-import com.wf.gts.remoting.util.SemaphoreReleaseOnlyOnce;
 
 
 
