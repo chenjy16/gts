@@ -12,7 +12,9 @@ public class TxTransactionFactoryServiceImpl implements TxTransactionFactoryServ
     
     @Override
     public Class factoryOf(TxTransactionInfo info) throws Throwable {
+      
         if (StringUtils.isBlank(info.getTxGroupId())) {
+          
             return StartTxTransactionHandler.class;
         } else {
             return JoinTxTransactionHandler.class;

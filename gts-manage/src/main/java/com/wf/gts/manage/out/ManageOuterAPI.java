@@ -75,6 +75,7 @@ public class ManageOuterAPI {
      */
     public RegisterBrokerResult registerBrokerAll(String brokerAddr,String brokerName,long brokerId,String haServerAddr,boolean oneway,int timeoutMills) {
         RegisterBrokerResult registerBrokerResult = null;
+        
         List<String> nameServerAddressList = this.remotingClient.getNameServerAddressList();
         if (nameServerAddressList != null) {
             for (String namesrvAddr : nameServerAddressList) {

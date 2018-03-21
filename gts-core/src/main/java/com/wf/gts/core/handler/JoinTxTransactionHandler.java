@@ -29,6 +29,7 @@ import com.wf.gts.core.util.ThreadPoolManager;
 public class JoinTxTransactionHandler implements TxTransactionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JoinTxTransactionHandler.class);
+    
     private final TxManagerMessageService txManagerMessageService;
     private final PlatformTransactionManager platformTransactionManager;
 
@@ -38,11 +39,14 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
         this.txManagerMessageService = txManagerMessageService;
     }
 
+    
+    
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
       
         LOGGER.info("分布式事务参与方，开始执行,事务组id:{},方法名称:{},服务名:{}",
             info.getTxGroupId(),info.getInvocation().getMethod(),info.getInvocation().getClass().toString());
+        
         final String taskKey = IdWorkerUtils.getInstance().createTaskKey();
         final BlockTask task = BlockTaskHelper.getInstance().getTask(taskKey);
         
@@ -59,7 +63,7 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
                     task.setAsyncCall(objects -> res);
                     task.signal();
                     try {
-                      
+                        //等待gtsManage通知
                         long nana=waitTask.await(info.getTxTransaction()
                             .socketTimeout()*Constant.CONSTANT_INT_THOUSAND*Constant.CONSTANT_INT_THOUSAND);
                         
@@ -142,6 +146,7 @@ public class JoinTxTransactionHandler implements TxTransactionHandler {
     private void  findTransactionGroupStatus(TxTransactionInfo info,BlockTask waitTask) throws Throwable{
         //如果获取通知超时了，那么就去获取事务组的状态
         final int transactionGroupStatus = txManagerMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().socketTimeout());
+        
         if (TransactionStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
                 TransactionStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
             LOGGER.info("事务组id：{}，自动超时，获取事务组状态为提交，进行提交!", info.getTxGroupId());

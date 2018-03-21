@@ -1,16 +1,15 @@
 package com.wf.gts.nameserver.processor;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.assertj.core.util.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
 import com.wf.gts.remoting.netty.NettyServerConfig;
-import com.wf.gts.remoting.protocol.BrokerData;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RequestCode;
@@ -62,7 +60,7 @@ public class DefaultRequestProcessorTest {
         field.set(namesrvController, routeInfoManager);
         defaultRequestProcessor = new DefaultRequestProcessor(namesrvController);
 
-        registerRouteInfoManager();
+      
 
         logger = mock(Logger.class);
         when(logger.isInfoEnabled()).thenReturn(false);
@@ -76,58 +74,6 @@ public class DefaultRequestProcessorTest {
    
 
 
-    @Test
-    public void testProcessRequest_RegisterBroker() throws RemotingCommandException,
-        NoSuchFieldException, IllegalAccessException {
-        RemotingCommand request = genSampleRegisterCmd(true);
-
-        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
-        when(ctx.channel()).thenReturn(null);
-
-        RemotingCommand response = defaultRequestProcessor.processRequest(ctx, request);
-
-        assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);
-        assertThat(response.getRemark()).isNull();
-
-        RouteInfoManager routes = namesrvController.getRouteInfoManager();
-        Field brokerAddrTable = RouteInfoManager.class.getDeclaredField("brokerAddrTable");
-        brokerAddrTable.setAccessible(true);
-
-        BrokerData broker = new BrokerData();
-        broker.setBrokerName("broker");
-        broker.setBrokerAddrs((HashMap) Maps.newHashMap(new Long(2333), "10.10.1.1"));
-
-        assertThat((Map) brokerAddrTable.get(routes))
-            .contains(new HashMap.SimpleEntry("broker", broker));
-    }
-
-    @Test
-    public void testProcessRequest_RegisterBrokerWithFilterServer() throws RemotingCommandException,
-        NoSuchFieldException, IllegalAccessException {
-        RemotingCommand request = genSampleRegisterCmd(true);
-
-        // version >= MQVersion.Version.V3_0_11.ordinal() to register with filter server
-        request.setVersion(100);
-
-        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
-        when(ctx.channel()).thenReturn(null);
-
-        RemotingCommand response = defaultRequestProcessor.processRequest(ctx, request);
-
-        assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);
-        assertThat(response.getRemark()).isNull();
-
-        RouteInfoManager routes = namesrvController.getRouteInfoManager();
-        Field brokerAddrTable = RouteInfoManager.class.getDeclaredField("brokerAddrTable");
-        brokerAddrTable.setAccessible(true);
-
-        BrokerData broker = new BrokerData();
-        broker.setBrokerName("broker");
-        broker.setBrokerAddrs((HashMap) Maps.newHashMap(new Long(2333), "10.10.1.1"));
-
-        assertThat((Map) brokerAddrTable.get(routes))
-            .contains(new HashMap.SimpleEntry("broker", broker));
-    }
 
     @Test
     public void testProcessRequest_UnregisterBroker() throws RemotingCommandException, NoSuchFieldException, IllegalAccessException {
@@ -173,20 +119,5 @@ public class DefaultRequestProcessorTest {
         field.set(null, newValue);
     }
 
-    private void registerRouteInfoManager() {
-        TopicConfigSerializeWrapper topicConfigSerializeWrapper = new TopicConfigSerializeWrapper();
-        ConcurrentHashMap<String, TopicConfig> topicConfigConcurrentHashMap = new ConcurrentHashMap<>();
-        TopicConfig topicConfig = new TopicConfig();
-        topicConfig.setWriteQueueNums(8);
-        topicConfig.setTopicName("unit-test");
-        topicConfig.setPerm(6);
-        topicConfig.setReadQueueNums(8);
-        topicConfig.setOrder(false);
-        topicConfigConcurrentHashMap.put("unit-test", topicConfig);
-        topicConfigSerializeWrapper.setTopicConfigTable(topicConfigConcurrentHashMap);
-        Channel channel = mock(Channel.class);
-        RegisterBrokerResult registerBrokerResult = routeInfoManager.registerBroker("127.0.0.1:10911", "default-broker", 1234, "127.0.0.1:1001",
-            topicConfigSerializeWrapper, channel);
 
-    }
 }

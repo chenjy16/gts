@@ -73,7 +73,4 @@ public class GtsManageConfig {
   public void setClientManagerThreadPoolQueueCapacity(int clientManagerThreadPoolQueueCapacity) {
     this.clientManagerThreadPoolQueueCapacity = clientManagerThreadPoolQueueCapacity;
   }
-  
-  
-
 }

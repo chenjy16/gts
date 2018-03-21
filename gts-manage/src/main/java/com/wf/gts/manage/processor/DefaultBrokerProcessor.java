@@ -2,7 +2,6 @@ package com.wf.gts.manage.processor;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
 import com.wf.gts.manage.ManageController;
@@ -18,7 +17,6 @@ import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RemotingSerializable;
 import com.wf.gts.remoting.protocol.RequestCode;
 import com.wf.gts.remoting.protocol.ResponseCode;
-
 import io.netty.channel.ChannelHandlerContext;
 
 
@@ -28,9 +26,9 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
    
    private ManageController manageController;
    
-    public DefaultBrokerProcessor(ManageController manageController) {
-            this.manageController = manageController;
-    }
+   public DefaultBrokerProcessor(ManageController manageController) {
+          this.manageController = manageController;
+   }
 
     @Override
     public RemotingCommand processRequest(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
@@ -88,7 +86,7 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
               }
           }
         } catch (Exception e) {
-            log.error("Failed to produce a proper response", e);
+            log.error("创建事务组异常:{}", e);
         }
         return null;
     }
@@ -150,10 +148,6 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
       return null;
   }
     
-    
-   
-   
-   
    
    
    /**
@@ -168,8 +162,10 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
    private RemotingCommand rollback(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
      
      RemotingCommand response = RemotingCommand.createResponseCommand(null);
-     
      RollBackTransGroupRequestHeader header=(RollBackTransGroupRequestHeader)request.decodeCommandCustomHeader(RollBackTransGroupRequestHeader.class);
+     
+     //????此处需要考虑一下如何更好处理
+     
      //收到客户端的回滚通知  此通知为事务发起（start）里面通知的,发送给其它的客户端
      manageController.getTxTransactionExecutor().rollBack(header.getTxGroupId(),manageController);
      
@@ -178,6 +174,9 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
      ctx.writeAndFlush(response);
      return null;
    }
+   
+   
+   
    
    
    /**
@@ -192,9 +191,8 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
    private RemotingCommand preCommit(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
      RemotingCommand response = RemotingCommand.createResponseCommand(null);
      PreCommitRequestHeader header=(PreCommitRequestHeader)request.decodeCommandCustomHeader(PreCommitRequestHeader.class);
-     
+     //????此处需要考虑一下如何更好处理
      manageController.getTxTransactionExecutor().preCommit(header.getTxGroupId(),manageController);
-     
      
      response.setCode(ResponseCode.SUCCESS);
      response.setOpaque(request.getOpaque());

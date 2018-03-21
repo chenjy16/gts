@@ -3,6 +3,7 @@ package com.wf.gts.remoting.netty;
 
 
 public class NettyClientConfig {
+  
     /**
      * Worker thread number
      */
@@ -13,17 +14,13 @@ public class NettyClientConfig {
     private int connectTimeoutMillis = 3000;
     private long channelNotActiveInterval = 1000 * 60;
 
-    /**
-     * IdleStateEvent will be triggered when neither read nor write was performed for
-     * the specified period of this time. Specify {@code 0} to disable
-     */
     private int clientChannelMaxIdleTimeSeconds = 120;
-
-    private int clientSocketSndBufSize = 65535;
-    private int clientSocketRcvBufSize = 65535;
+    
+    private int clientSocketSndBufSize = 65535; //64K
+    private int clientSocketRcvBufSize = 65535; //64K
+    
     private boolean clientPooledByteBufAllocatorEnable = false;
     private boolean clientCloseSocketIfTimeout = false;
-
     private boolean useTLS;
 
     public boolean isClientCloseSocketIfTimeout() {
@@ -121,4 +118,6 @@ public class NettyClientConfig {
     public void setUseTLS(boolean useTLS) {
         this.useTLS = useTLS;
     }
+
+    
 }

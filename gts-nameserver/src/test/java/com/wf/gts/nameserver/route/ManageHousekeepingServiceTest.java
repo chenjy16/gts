@@ -7,9 +7,9 @@ import com.wf.gts.nameserver.NamesrvConfig;
 import com.wf.gts.nameserver.NamesrvController;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 
-public class BrokerHousekeepingServiceTest {
+public class ManageHousekeepingServiceTest {
   
-    private static BrokerHousekeepingService brokerHousekeepingService;
+    private static ManageHousekeepingService brokerHousekeepingService;
 
     @BeforeClass
     public static void setup() {
@@ -17,7 +17,7 @@ public class BrokerHousekeepingServiceTest {
             new NamesrvConfig(),
             new NettyServerConfig()
         );
-        brokerHousekeepingService = new BrokerHousekeepingService(namesrvController);
+        brokerHousekeepingService = new ManageHousekeepingService(namesrvController);
     }
 
     @AfterClass

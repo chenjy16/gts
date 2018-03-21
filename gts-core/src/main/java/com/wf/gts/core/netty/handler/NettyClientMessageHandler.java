@@ -14,7 +14,7 @@ import com.wf.gts.common.enums.NettyResultEnum;
 import com.wf.gts.common.utils.IdWorkerUtils;
 import com.wf.gts.core.concurrent.BlockTask;
 import com.wf.gts.core.concurrent.BlockTaskHelper;
-import com.wf.gts.core.config.TxConfig;
+import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.constant.Constant;
 import com.wf.gts.core.exception.SocketTimeoutException;
 import com.wf.gts.core.netty.NettyClient;
@@ -40,9 +40,9 @@ public class NettyClientMessageHandler extends ChannelInboundHandlerAdapter {
     public volatile static boolean net_state = false;
     private static volatile ChannelHandlerContext ctx;
     private static final HeartBeat heartBeat = new HeartBeat();
-    private TxConfig txConfig;
+    private ClientConfig txConfig;
     
-    public void setTxConfig(TxConfig txConfig) {
+    public void setTxConfig(ClientConfig txConfig) {
         this.txConfig = txConfig;
     }
     

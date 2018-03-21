@@ -42,7 +42,6 @@ public class StartTxTransactionHandler implements TxTransactionHandler {
     
     @Override
     public Object handler(ProceedingJoinPoint point, TxTransactionInfo info) throws Throwable {
-      
         LOGGER.info("tx-transaction start,事务发起类");
         String groupId = IdWorkerUtils.getInstance().createGroupId();
         //设置事务组ID

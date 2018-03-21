@@ -12,10 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.wf.gts.remoting.ChannelEventListener;
 import com.wf.gts.remoting.InvokeCallback;
 import com.wf.gts.remoting.RPCHook;
@@ -28,28 +26,24 @@ import com.wf.gts.remoting.exception.RemotingTimeoutException;
 import com.wf.gts.remoting.exception.RemotingTooMuchRequestException;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RemotingSysResponseCode;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslHandler;
+
 
 public abstract class NettyRemotingAbstract {
 
-    /**
-     * Remoting logger instance.
-     */
     private static final Logger log = LoggerFactory.getLogger(NettyRemotingAbstract.class);
 
     /**
-     * Semaphore to limit maximum number of on-going one-way requests, which protects system memory footprint.
+     * 限制单向请求最大数量
      */
     protected final Semaphore semaphoreOneway;
 
     /**
-     * Semaphore to limit maximum number of on-going asynchronous requests, which protects system memory footprint.
+     * 限制异步请求最大数量
      */
     protected final Semaphore semaphoreAsync;
 
@@ -65,62 +59,32 @@ public abstract class NettyRemotingAbstract {
      */
     protected final HashMap<Integer/* request code */, Pair<NettyRequestProcessor, ExecutorService>> processorTable =
         new HashMap<Integer, Pair<NettyRequestProcessor, ExecutorService>>(64);
-
-    /**
-     * Executor to feed netty events to user defined {@link ChannelEventListener}.
-     */
+    
     protected final NettyEventExecutor nettyEventExecutor = new NettyEventExecutor();
-
-    /**
-     * The default request processor to use in case there is no exact match in {@link #processorTable} per request code.
-     */
     protected Pair<NettyRequestProcessor, ExecutorService> defaultRequestProcessor;
-
-    /**
-     * SSL context via which to create {@link SslHandler}.
-     */
     protected SslContext sslContext;
 
-    /**
-     * Constructor, specifying capacity of one-way and asynchronous semaphores.
-     *
-     * @param permitsOneway Number of permits for one-way requests.
-     * @param permitsAsync Number of permits for asynchronous requests.
-     */
+    
     public NettyRemotingAbstract(final int permitsOneway, final int permitsAsync) {
         this.semaphoreOneway = new Semaphore(permitsOneway, true);
         this.semaphoreAsync = new Semaphore(permitsAsync, true);
     }
 
-    /**
-     * Custom channel event listener.
-     *
-     * @return custom channel event listener if defined; null otherwise.
-     */
+
     public abstract ChannelEventListener getChannelEventListener();
 
-    /**
-     * Put a netty event to the executor.
-     *
-     * @param event Netty event instance.
-     */
+  
     public void putNettyEvent(final NettyEvent event) {
         this.nettyEventExecutor.putNettyEvent(event);
     }
 
     /**
-     * Entry of incoming command processing.
-     * <p>
-     * <strong>Note:</strong>
-     * The incoming remoting command may be
-     * <ul>
-     * <li>An inquiry request from a remote peer component;</li>
-     * <li>A response to a previous request issued by this very participant.</li>
-     * </ul>
-     * </p>
-     * @param ctx Channel handler context.
-     * @param msg incoming remoting command.
-     * @throws Exception if there were any error while processing the incoming command.
+     * 功能描述: 处理接收到消息
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:20:58 
+     * @param ctx
+     * @param msg
+     * @throws Exception
      */
     public void processMessageReceived(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
         final RemotingCommand cmd = msg;
@@ -141,16 +105,17 @@ public abstract class NettyRemotingAbstract {
     
     
     /**
-     * Process incoming request command issued by remote peer.
-     * @param ctx channel handler context.
-     * @param cmd request command.
+     * 功能描述: 处理请求
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:22:07 
+     * @param ctx
+     * @param cmd
      */
     public void processRequestCommand(final ChannelHandlerContext ctx, final RemotingCommand cmd) {
       
         final Pair<NettyRequestProcessor, ExecutorService> matched = this.processorTable.get(cmd.getCode());
         final Pair<NettyRequestProcessor, ExecutorService> pair = null == matched ? this.defaultRequestProcessor : matched;
         final int opaque = cmd.getOpaque();
-
         if (pair != null) {
             Runnable run = new Runnable() {
                 @Override
@@ -167,6 +132,7 @@ public abstract class NettyRemotingAbstract {
                             rpcHook.doAfterResponse(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), cmd, response);
                         }
 
+                        
                         if (!cmd.isOnewayRPC()) {
                             if (response != null) {
                                 response.setOpaque(opaque);
@@ -174,14 +140,14 @@ public abstract class NettyRemotingAbstract {
                                 try {
                                     ctx.writeAndFlush(response);
                                 } catch (Throwable e) {
-                                    log.error("process request over, but response failed", e);
+                                    log.error("请求处理完成,但是响应失败", e);
                                     log.error(cmd.toString());
                                     log.error(response.toString());
                                 }
                             }
                         }
                     } catch (Throwable e) {
-                        log.error("process request exception", e);
+                        log.error("处理请求异常", e);
                         log.error(cmd.toString());
 
                         if (!cmd.isOnewayRPC()) {
@@ -205,8 +171,10 @@ public abstract class NettyRemotingAbstract {
             try {
                 final RequestTask requestTask = new RequestTask(run, ctx.channel(), cmd);
                 pair.getObject2().submit(requestTask);
+                
             } catch (RejectedExecutionException e) {
                 if ((System.currentTimeMillis() % 10000) == 0) {
+                  
                     log.warn(RemotingHelper.parseChannelRemoteAddr(ctx.channel())
                         + ", too many requests and system thread pool busy, RejectedExecutionException "
                         + pair.getObject2().toString()
@@ -214,6 +182,7 @@ public abstract class NettyRemotingAbstract {
                 }
 
                 if (!cmd.isOnewayRPC()) {
+                  
                     final RemotingCommand response = RemotingCommand.createResponseCommand(RemotingSysResponseCode.SYSTEM_BUSY,
                         "[OVERLOAD]system busy, start flow control for a while");
                     response.setOpaque(opaque);
@@ -235,9 +204,11 @@ public abstract class NettyRemotingAbstract {
     
     
     /**
-     * Process response from remote peer to the previous issued requests.
-     * @param ctx channel handler context.
-     * @param cmd response command instance.
+     * 功能描述: 处理响应
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:22:27 
+     * @param ctx
+     * @param cmd
      */
     public void processResponseCommand(ChannelHandlerContext ctx, RemotingCommand cmd) {
         final int opaque = cmd.getOpaque();
@@ -254,7 +225,7 @@ public abstract class NettyRemotingAbstract {
                 responseFuture.release();
             }
         } else {
-            log.warn("receive response, but not matched any request, " + RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
+            log.warn("接收到响应,但是不能匹配任何请求: " + RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
             log.warn(cmd.toString());
         }
     }
@@ -264,7 +235,10 @@ public abstract class NettyRemotingAbstract {
     
     
     /**
-     * Execute callback in callback executor. If callback executor is null, run directly in current thread
+     * 功能描述: 异步请求回调执行
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:22:47 
+     * @param responseFuture
      */
     private void executeInvokeCallback(final ResponseFuture responseFuture) {
         boolean runInThisThread = false;
@@ -277,7 +251,7 @@ public abstract class NettyRemotingAbstract {
                         try {
                             responseFuture.executeInvokeCallback();
                         } catch (Throwable e) {
-                            log.warn("execute callback in executor exception, and callback throw", e);
+                            log.warn("执行回调方法异常", e);
                         } finally {
                             responseFuture.release();
                         }
@@ -285,7 +259,7 @@ public abstract class NettyRemotingAbstract {
                 });
             } catch (Exception e) {
                 runInThisThread = true;
-                log.warn("execute callback in executor exception, maybe executor busy", e);
+                log.warn("执行回调方法异常, 可能线程忙", e);
             }
         } else {
             runInThisThread = true;
@@ -295,32 +269,30 @@ public abstract class NettyRemotingAbstract {
             try {
                 responseFuture.executeInvokeCallback();
             } catch (Throwable e) {
-                log.warn("executeInvokeCallback Exception", e);
+                log.warn("执行回调方法异常", e);
             } finally {
                 responseFuture.release();
             }
         }
     }
 
+ 
     /**
-     * Custom RPC hook.
-     *
-     * @return RPC hook if specified; null otherwise.
+     * 功能描述: rpc回调
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:23:25 
+     * @return
      */
     public abstract RPCHook getRPCHook();
 
-    /**
-     * This method specifies thread pool to use while invoking callback methods.
-     *
-     * @return Dedicated thread pool instance if specified; or null if the callback is supposed to be executed in the
-     * netty event-loop thread.
-     */
+   
     public abstract ExecutorService getCallbackExecutor();
 
+    
     /**
-     * <p>
-     * This method is periodically invoked to scan and expire deprecated request.
-     * </p>
+     * 功能描述: 扫描移除过期请求
+     * @author: chenjy
+     * @date: 2018年3月21日 下午4:24:05
      */
     public void scanResponseTable() {
         final List<ResponseFuture> rfList = new LinkedList<ResponseFuture>();
@@ -333,7 +305,7 @@ public abstract class NettyRemotingAbstract {
                 rep.release();
                 it.remove();
                 rfList.add(rep);
-                log.warn("remove timeout request, " + rep);
+                log.warn("移除超时请求: " + rep);
             }
         }
 
@@ -528,7 +500,11 @@ public abstract class NettyRemotingAbstract {
         }
     }
 
+    
+    
+    
     class NettyEventExecutor extends ServiceThread {
+      
         private final LinkedBlockingQueue<NettyEvent> eventQueue = new LinkedBlockingQueue<NettyEvent>();
         private final int maxSize = 10000;
 
@@ -542,7 +518,7 @@ public abstract class NettyRemotingAbstract {
 
         @Override
         public void run() {
-            log.info(this.getServiceName() + " service started");
+            log.info(this.getServiceName() + " 服务开始");
 
             final ChannelEventListener listener = NettyRemotingAbstract.this.getChannelEventListener();
 
@@ -569,11 +545,11 @@ public abstract class NettyRemotingAbstract {
                         }
                     }
                 } catch (Exception e) {
-                    log.warn(this.getServiceName() + " service has exception. ", e);
+                    log.warn(this.getServiceName() + "服务异常 ", e);
                 }
             }
 
-            log.info(this.getServiceName() + " service end");
+            log.info(this.getServiceName() + "服务结束");
         }
 
         @Override

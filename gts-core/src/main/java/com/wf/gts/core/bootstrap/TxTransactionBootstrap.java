@@ -1,13 +1,11 @@
 package com.wf.gts.core.bootstrap;
-import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import com.wf.gts.core.config.TxConfig;
+import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.util.SpringBeanUtils;
 
 
@@ -15,7 +13,8 @@ import com.wf.gts.core.util.SpringBeanUtils;
  * TxTransaction 启动类
  */
 @Component
-public class TxTransactionBootstrap extends TxConfig implements ApplicationContextAware {
+public class TxTransactionBootstrap extends ClientConfig implements ApplicationContextAware {
+  
   
     private ConfigurableApplicationContext cfgContext;
     /**
@@ -32,19 +31,11 @@ public class TxTransactionBootstrap extends TxConfig implements ApplicationConte
         start(this);
     }
     
-    private void start(TxConfig txConfig) {
-        if (!checkDataConfig(txConfig)) {
-            throw new RuntimeException("分布式事务配置信息不完整！");
-        }
-        txTransactionInitialize.init(txConfig);
+    private void start(ClientConfig config) {
+        txTransactionInitialize.init(config);
     }
 
     
-    private boolean checkDataConfig(TxConfig txConfig) {
-        return !StringUtils.isBlank(txConfig.getTxManagerUrl());
-    }
-
-
     public TxTransactionInitialize getTxTransactionInitialize() {
       return txTransactionInitialize;
     }

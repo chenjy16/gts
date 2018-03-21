@@ -2,18 +2,18 @@ package com.wf.gts.core.exception;
 
 
 
-public class MQClientException extends Exception {
+public class GtsClientException extends Exception {
     private static final long serialVersionUID = -5758410930844185841L;
     private int responseCode;
     private String errorMessage;
 
-    public MQClientException(String errorMessage, Throwable cause) {
+    public GtsClientException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
         this.responseCode = -1;
         this.errorMessage = errorMessage;
     }
 
-    public MQClientException(int responseCode, String errorMessage) {
+    public GtsClientException(int responseCode, String errorMessage) {
         super(errorMessage);
         this.responseCode = responseCode;
         this.errorMessage = errorMessage;
@@ -23,7 +23,7 @@ public class MQClientException extends Exception {
         return responseCode;
     }
 
-    public MQClientException setResponseCode(final int responseCode) {
+    public GtsClientException setResponseCode(final int responseCode) {
         this.responseCode = responseCode;
         return this;
     }

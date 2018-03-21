@@ -1,10 +1,11 @@
 package com.wf.gts.core.service.impl;
 import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.wf.gts.common.beans.TxTransactionGroup;
 import com.wf.gts.common.beans.TxTransactionItem;
-import com.wf.gts.core.client.MQClientInstance;
-import com.wf.gts.core.client.MQClientManager;
+import com.wf.gts.core.client.ClientInstance;
+import com.wf.gts.core.exception.GtsManageException;
 import com.wf.gts.core.service.TxManagerMessageService;
 import com.wf.gts.remoting.exception.RemotingConnectException;
 import com.wf.gts.remoting.exception.RemotingException;
@@ -27,12 +28,10 @@ import com.wf.gts.remoting.protocol.ResponseCode;
 @Service
 public class NettyMessageService implements TxManagerMessageService {
   
-    private final  MQClientInstance  clientInstance;
+    @Autowired
+    private  ClientInstance clientInstance;
     
-    public NettyMessageService() {
-        this.clientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(null);
-    }
-
+    
     
     /**
      * 保存事务组 在事务发起方的时候进行调用
@@ -45,7 +44,7 @@ public class NettyMessageService implements TxManagerMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.SAVE_TRANSGROUP, null);
         byte[] body = RemotingSerializable.encode(tx);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getmQClientAPIImpl().sendMessageSync("", timeout, request);
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -66,7 +65,7 @@ public class NettyMessageService implements TxManagerMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ADD_TRANS, header);
         byte[] body = RemotingSerializable.encode(txTransactionItem);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getmQClientAPIImpl().sendMessageSync("", timeout, request);
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -85,12 +84,12 @@ public class NettyMessageService implements TxManagerMessageService {
       FindTransGroupStatusRequestHeader header=new FindTransGroupStatusRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.FIND_TRANSGROUP_STATUS,header);
-      RemotingCommand res=clientInstance.getmQClientAPIImpl().sendMessageSync("", timeout, request);
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
       if(res.getCode()==ResponseCode.SUCCESS){
         FindTransGroupStatusResponseHeader resHeader=(FindTransGroupStatusResponseHeader)res.decodeCommandCustomHeader(FindTransGroupStatusResponseHeader.class);
         return resHeader.getStatus();
       }
-      throw new Exception();
+      throw new GtsManageException(res.getCode(), res.getRemark());
     }
 
  
@@ -106,7 +105,7 @@ public class NettyMessageService implements TxManagerMessageService {
       RollBackTransGroupRequestHeader  header=new RollBackTransGroupRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, header);
-      RemotingCommand res=clientInstance.getmQClientAPIImpl().sendMessageSync("", timeout, request); 
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request); 
       if(res.getCode()==ResponseCode.SUCCESS){
         return true;
       }
@@ -128,7 +127,7 @@ public class NettyMessageService implements TxManagerMessageService {
         PreCommitRequestHeader header=new PreCommitRequestHeader();
         header.setTxGroupId(txGroupId);
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.PRE_COMMIT_TRANS, header);
-        RemotingCommand res=clientInstance.getmQClientAPIImpl().sendMessageSync("", timeout, request); 
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request); 
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -151,6 +150,7 @@ public class NettyMessageService implements TxManagerMessageService {
           RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.COMMIT_TRANS, null);
           TxTransactionGroup tx = new TxTransactionGroup();
           tx.setId(txGroupId);
+          
           TxTransactionItem item = new TxTransactionItem();
           item.setTaskKey(taskKey);
           item.setStatus(status);
@@ -158,12 +158,11 @@ public class NettyMessageService implements TxManagerMessageService {
           byte[] body = RemotingSerializable.encode(tx);
           request.setBody(body);
           try {
-            clientInstance.getmQClientAPIImpl().invokeOnewayImpl("",request ,0);
+            clientInstance.getClientAPIImpl().invokeOnewayImpl(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(),request ,3000);
           } catch (RemotingConnectException | RemotingTooMuchRequestException | RemotingTimeoutException
               | RemotingSendRequestException | InterruptedException e) {
             e.printStackTrace();
           }
     }
-
 
 }

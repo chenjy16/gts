@@ -6,11 +6,11 @@ import io.netty.channel.Channel;
 
 
 
-public class BrokerHousekeepingService implements ChannelEventListener{
+public class ManageHousekeepingService implements ChannelEventListener{
     
     private final NamesrvController namesrvController;
 
-    public BrokerHousekeepingService(NamesrvController namesrvController) {
+    public ManageHousekeepingService(NamesrvController namesrvController) {
         this.namesrvController = namesrvController;
     }
 

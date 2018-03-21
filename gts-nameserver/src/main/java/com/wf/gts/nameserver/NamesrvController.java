@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wf.gts.nameserver.processor.DefaultRequestProcessor;
-import com.wf.gts.nameserver.route.BrokerHousekeepingService;
+import com.wf.gts.nameserver.route.ManageHousekeepingService;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.RemotingServer;
 import com.wf.gts.remoting.core.ThreadFactoryImpl;
@@ -25,7 +25,7 @@ public class NamesrvController {
   
   private final RouteInfoManager routeInfoManager;
   private RemotingServer remotingServer;
-  private BrokerHousekeepingService brokerHousekeepingService;
+  private ManageHousekeepingService brokerHousekeepingService;
   private ExecutorService remotingExecutor;
 
   
@@ -34,14 +34,12 @@ public class NamesrvController {
       this.namesrvConfig = namesrvConfig;
       this.nettyServerConfig = nettyServerConfig;
       this.routeInfoManager = new RouteInfoManager();
-      this.brokerHousekeepingService = new BrokerHousekeepingService(this);
+      this.brokerHousekeepingService = new ManageHousekeepingService(this);
   }
 
   
   
   public boolean initialize() {
-
-
 
       this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
 

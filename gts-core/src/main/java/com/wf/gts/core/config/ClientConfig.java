@@ -2,19 +2,27 @@ package com.wf.gts.core.config;
 import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.netty.TlsSystemConfig;
 
-public class ClientConfig extends TxConfig{
-  
+/**
+ * TxTransaction 事务基本信息配置类
+ */
+public class ClientConfig {
+
   private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
   private boolean useTLS = TlsSystemConfig.tlsEnable;
-  private String namesrvAddr;
+  private String namesrvAddr;//
   private String clientIP = RemotingUtil.getLocalAddress();
+  private String instanceName ="DEFAULT";
+  private int pollNameServerInterval = 1000 * 30;
+  private int heartbeatBrokerInterval = 1000 * 30;
+  private long timeoutMillis=3000L;
   
   
   public String buildMQClientId() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(this.getClientIP());
-    sb.append("@");
-    return sb.toString();
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.getClientIP());
+      sb.append("@");
+      sb.append(this.getInstanceName());
+      return sb.toString();
   }
 
   
@@ -56,5 +64,52 @@ public class ClientConfig extends TxConfig{
   public void setClientIP(String clientIP) {
     this.clientIP = clientIP;
   }
+
+
+  public String getInstanceName() {
+    return instanceName;
+  }
+
+
+
+  public void setInstanceName(String instanceName) {
+    this.instanceName = instanceName;
+  }
+
+
+
+  public int getPollNameServerInterval() {
+    return pollNameServerInterval;
+  }
+
+
+
+  public void setPollNameServerInterval(int pollNameServerInterval) {
+    this.pollNameServerInterval = pollNameServerInterval;
+  }
+
+
+
+  public int getHeartbeatBrokerInterval() {
+    return heartbeatBrokerInterval;
+  }
+
+
+
+  public void setHeartbeatBrokerInterval(int heartbeatBrokerInterval) {
+    this.heartbeatBrokerInterval = heartbeatBrokerInterval;
+  }
+
+
+
+  public long getTimeoutMillis() {
+    return timeoutMillis;
+  }
+
+
+  public void setTimeoutMillis(long timeoutMillis) {
+    this.timeoutMillis = timeoutMillis;
+  }
   
+    
 }

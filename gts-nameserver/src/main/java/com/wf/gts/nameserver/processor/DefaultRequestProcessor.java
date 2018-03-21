@@ -85,9 +85,10 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
             requestHeader.getBrokerAddr(),
             requestHeader.getBrokerName(),
             requestHeader.getBrokerId(),
-            requestHeader.getHaServerAddr(),
             registerBrokerBody.getTopicConfigSerializeWrapper(),
             ctx.channel());
+        
+        
         responseHeader.setHaServerAddr(result.getHaServerAddr());
         responseHeader.setMasterAddr(result.getMasterAddr());
         response.setCode(ResponseCode.SUCCESS);

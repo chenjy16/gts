@@ -6,12 +6,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.wf.gts.manage.client.ClientHousekeepingService;
 import com.wf.gts.manage.client.ProducerManager;
 import com.wf.gts.manage.config.GtsManageConfig;
@@ -33,7 +31,6 @@ import com.wf.gts.remoting.protocol.RequestCode;
 public class ManageController  {
   
     private static final Logger LOGGER = LoggerFactory.getLogger(ManageController.class);
-    
     
     private RemotingServer remotingServer;
     private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("GtsScheduledThread"));
@@ -67,20 +64,19 @@ public class ManageController  {
      * @return
      */
     private boolean initialize(){
-      this.defaultExecutor=Executors.newFixedThreadPool(gtsManageCfg.getDefaultThreadPoolNums() , new ThreadFactoryImpl("defaultThread_"));
-      this.clientManagerThreadPoolQueue = new LinkedBlockingQueue<Runnable>(gtsManageCfg.getClientManagerThreadPoolQueueCapacity());
-      
-      this.clientManageExecutor = new ThreadPoolExecutor(
+      defaultExecutor=Executors.newFixedThreadPool(gtsManageCfg.getDefaultThreadPoolNums() , new ThreadFactoryImpl("defaultThread_"));
+      clientManagerThreadPoolQueue = new LinkedBlockingQueue<Runnable>(gtsManageCfg.getClientManagerThreadPoolQueueCapacity());
+      clientManageExecutor = new ThreadPoolExecutor(
           gtsManageCfg.getClientManageThreadPoolNums(),
           gtsManageCfg.getClientManageThreadPoolNums(),
           1000 * 60,TimeUnit.MILLISECONDS, 
-          this.clientManagerThreadPoolQueue,
+          clientManagerThreadPoolQueue,
           new ThreadFactoryImpl("ClientManageThread_"));
       
-      this.manageOuterAPI=new ManageOuterAPI(nettyClientConfig);
-      this.producerManager = new ProducerManager();
-      this.clientHousekeepingService= new ClientHousekeepingService(this.producerManager);
-      this.remotingServer = new NettyRemotingServer(nettyServerConfig,this.clientHousekeepingService);
+      manageOuterAPI=new ManageOuterAPI(nettyClientConfig);
+      producerManager = new ProducerManager();
+      clientHousekeepingService= new ClientHousekeepingService(producerManager);
+      remotingServer = new NettyRemotingServer(nettyServerConfig,clientHousekeepingService);
       registerProcessor();
       return true;
     }
@@ -88,10 +84,10 @@ public class ManageController  {
     
     
     private void registerProcessor() {
-      ClientManageProcessor clientProcessor = new ClientManageProcessor(this.producerManager);
-      this.remotingServer.registerProcessor(RequestCode.HEART_BEAT, clientProcessor, this.clientManageExecutor);
-      this.remotingServer.registerProcessor(RequestCode.UNREGISTER_CLIENT, clientProcessor, this.clientManageExecutor);
-      this.remotingServer.registerDefaultProcessor(new DefaultBrokerProcessor(this), this.defaultExecutor);
+      ClientManageProcessor clientProcessor = new ClientManageProcessor(producerManager);
+      remotingServer.registerProcessor(RequestCode.HEART_BEAT, clientProcessor,clientManageExecutor);
+      remotingServer.registerProcessor(RequestCode.UNREGISTER_CLIENT, clientProcessor, clientManageExecutor);
+      remotingServer.registerDefaultProcessor(new DefaultBrokerProcessor(this), defaultExecutor);
   }
 
     
@@ -102,15 +98,15 @@ public class ManageController  {
      */
     public void start() {
         initialize();
-        this.manageOuterAPI.start();
-        this.remotingServer.start();
-        this.manageOuterAPI.updateNameServerAddressList(gtsManageCfg.getNamesrvAddr());
-        this.registerBrokerAll(true, false);
-        this.scheduledExecutorService.scheduleAtFixedRate(()->{
+        manageOuterAPI.start();
+        remotingServer.start();
+        manageOuterAPI.updateNameServerAddressList(gtsManageCfg.getNamesrvAddr());
+        registerBrokerAll(true, false);
+        scheduledExecutorService.scheduleAtFixedRate(()->{
             try {
               ManageController.this.registerBrokerAll(true, false);
             } catch (Throwable e) {
-                LOGGER.error("registerBrokerAll Exception", e);
+                LOGGER.error("registerBrokerAll Exception",e);
             }
         }, 1000 * 10, 1000 * 30, TimeUnit.MILLISECONDS);
     }
@@ -124,23 +120,21 @@ public class ManageController  {
      */
     public void stop() {
       
-        if (this.clientHousekeepingService != null) {
-          this.clientHousekeepingService.shutdown();
+        if (clientHousekeepingService != null) {
+          clientHousekeepingService.shutdown();
         }
-        
-        if (this.remotingServer != null) {
-          this.remotingServer.shutdown();
+        if (remotingServer != null) {
+          remotingServer.shutdown();
         }
-        
-        this.scheduledExecutorService.shutdown();
+        scheduledExecutorService.shutdown();
         try {
-            this.scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
+            scheduledExecutorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
           
         }
         unregisterBrokerAll();
-        if (this.manageOuterAPI != null) {
-          this.manageOuterAPI.shutdown();
+        if (manageOuterAPI != null) {
+          manageOuterAPI.shutdown();
         }
       
     }
@@ -153,7 +147,7 @@ public class ManageController  {
      * @param oneway
      */
     public synchronized void registerBrokerAll(final boolean checkOrderConfig, boolean oneway) {
-        RegisterBrokerResult registerBrokerResult = this.manageOuterAPI.registerBrokerAll(
+        RegisterBrokerResult registerBrokerResult = manageOuterAPI.registerBrokerAll(
             gtsManageCfg.getManageAddr(),
             gtsManageCfg.getManageName(),
             gtsManageCfg.getManageId(),
@@ -161,9 +155,6 @@ public class ManageController  {
             oneway,
             gtsManageCfg.getRegisterBrokerTimeoutMills());
     }
-    
-    
-    
     
     
     /**
@@ -176,22 +167,19 @@ public class ManageController  {
           gtsManageCfg.getManageName(),
           gtsManageCfg.getManageId());
     }
+
+
     
     
     
-    public ProducerManager getProducerManager() {
-      return producerManager;
-    }
-
-
-    public void setProducerManager(ProducerManager producerManager) {
-      this.producerManager = producerManager;
-    }
-
+    
+    
+    
 
     public RemotingServer getRemotingServer() {
       return remotingServer;
     }
+
 
 
     public void setRemotingServer(RemotingServer remotingServer) {
@@ -199,9 +187,11 @@ public class ManageController  {
     }
 
 
+
     public ScheduledExecutorService getScheduledExecutorService() {
       return scheduledExecutorService;
     }
+
 
 
     public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
@@ -209,19 +199,23 @@ public class ManageController  {
     }
 
 
-    public ManageOuterAPI getBrokerOuterAPI() {
+
+    public ManageOuterAPI getManageOuterAPI() {
       return manageOuterAPI;
     }
 
 
-    public void setBrokerOuterAPI(ManageOuterAPI manageOuterAPI) {
+
+    public void setManageOuterAPI(ManageOuterAPI manageOuterAPI) {
       this.manageOuterAPI = manageOuterAPI;
     }
+
 
 
     public ExecutorService getDefaultExecutor() {
       return defaultExecutor;
     }
+
 
 
     public void setDefaultExecutor(ExecutorService defaultExecutor) {
@@ -235,9 +229,11 @@ public class ManageController  {
     }
 
 
+
     public void setClientManagerThreadPoolQueue(BlockingQueue<Runnable> clientManagerThreadPoolQueue) {
       this.clientManagerThreadPoolQueue = clientManagerThreadPoolQueue;
     }
+
 
 
     public ExecutorService getClientManageExecutor() {
@@ -245,9 +241,23 @@ public class ManageController  {
     }
 
 
+
     public void setClientManageExecutor(ExecutorService clientManageExecutor) {
       this.clientManageExecutor = clientManageExecutor;
     }
+
+
+
+    public ProducerManager getProducerManager() {
+      return producerManager;
+    }
+
+
+
+    public void setProducerManager(ProducerManager producerManager) {
+      this.producerManager = producerManager;
+    }
+
 
 
     public ClientHousekeepingService getClientHousekeepingService() {
@@ -255,9 +265,11 @@ public class ManageController  {
     }
 
 
+
     public void setClientHousekeepingService(ClientHousekeepingService clientHousekeepingService) {
       this.clientHousekeepingService = clientHousekeepingService;
     }
+
 
 
     public TxManagerService getTxManagerService() {
@@ -265,17 +277,57 @@ public class ManageController  {
     }
 
 
+
     public void setTxManagerService(TxManagerService txManagerService) {
       this.txManagerService = txManagerService;
     }
 
 
+
     public TxTransactionExecutor getTxTransactionExecutor() {
       return txTransactionExecutor;
     }
+
+
+
     public void setTxTransactionExecutor(TxTransactionExecutor txTransactionExecutor) {
       this.txTransactionExecutor = txTransactionExecutor;
     }
- 
+
+
+
+    public NettyServerConfig getNettyServerConfig() {
+      return nettyServerConfig;
+    }
+
+
+
+    public void setNettyServerConfig(NettyServerConfig nettyServerConfig) {
+      this.nettyServerConfig = nettyServerConfig;
+    }
+
+
+
+    public NettyClientConfig getNettyClientConfig() {
+      return nettyClientConfig;
+    }
+
+
+
+    public void setNettyClientConfig(NettyClientConfig nettyClientConfig) {
+      this.nettyClientConfig = nettyClientConfig;
+    }
+
+
+
+    public GtsManageConfig getGtsManageCfg() {
+      return gtsManageCfg;
+    }
+
+
+
+    public void setGtsManageCfg(GtsManageConfig gtsManageCfg) {
+      this.gtsManageCfg = gtsManageCfg;
+    }
     
 }

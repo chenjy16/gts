@@ -1,17 +1,19 @@
 package com.wf.gts.nameserver.route;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wf.gts.remoting.core.MixAll;
 import com.wf.gts.remoting.core.RemotingUtil;
-import com.wf.gts.remoting.protocol.BrokerLiveInfo;
-import com.wf.gts.remoting.protocol.ClusterInfo;
+import com.wf.gts.remoting.protocol.GtsManageLiveInfo;
+import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.TopicConfigSerializeWrapper;
 
@@ -23,11 +25,11 @@ public class RouteInfoManager {
   private static final Logger log = LoggerFactory.getLogger(RouteInfoManager.class);
   private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;//两分钟
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
-  private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
-
+  private final HashMap<String/* brokerAddr */, GtsManageLiveInfo> liveTable;
+  
   
   public RouteInfoManager() {
-      this.brokerLiveTable = new HashMap<String, BrokerLiveInfo>(256);
+      this.liveTable = new HashMap<String, GtsManageLiveInfo>(256);
   }
   
   /**
@@ -37,10 +39,15 @@ public class RouteInfoManager {
    * @return
    */
   public byte[] getGtsManagerInfo() {
-      ClusterInfo clusterInfoSerializeWrapper = new ClusterInfo();
-      Collection<BrokerLiveInfo> brokerLiveSet=this.brokerLiveTable.values();
-      clusterInfoSerializeWrapper.setBrokerLiveSet(brokerLiveSet);
-      return clusterInfoSerializeWrapper.encode();
+      LiveManageInfo liveManageInfo = new LiveManageInfo();
+      Optional<GtsManageLiveInfo> brokerLive=this.liveTable.values().stream()
+          .filter(item->Objects.nonNull(item)&&item.getGtsManageId()==MixAll.MASTER_ID)
+          .findFirst();
+      if(!brokerLive.isPresent()){
+        brokerLive=this.liveTable.values().stream().filter(item->Objects.nonNull(item)).findFirst();
+      }
+      liveManageInfo.setManageLiveInfo(brokerLive.get());
+      return liveManageInfo.encode();
   }
 
   
@@ -56,17 +63,17 @@ public class RouteInfoManager {
    * @param channel
    * @return
    */
-  public RegisterBrokerResult registerBroker(final String brokerAddr,final String brokerName,final long brokerId,final String haServerAddr,final TopicConfigSerializeWrapper topicConfigWrapper,final Channel channel) {
+  public RegisterBrokerResult registerBroker( String brokerAddr, String brokerName, long brokerId, TopicConfigSerializeWrapper topicConfigWrapper, Channel channel) {
       RegisterBrokerResult result = new RegisterBrokerResult();
       try {
             this.lock.writeLock().lockInterruptibly();
-            //记录gtsmanage地址和ha地址
-            BrokerLiveInfo prevBrokerLiveInfo = this.brokerLiveTable.put(brokerAddr,new BrokerLiveInfo(brokerId,System.currentTimeMillis(),topicConfigWrapper.getDataVersion(),channel,haServerAddr,brokerName,brokerAddr));
+            //记录gtsmanage地址
+            GtsManageLiveInfo prevBrokerLiveInfo = this.liveTable.put(brokerAddr,new GtsManageLiveInfo(brokerId,System.currentTimeMillis(),topicConfigWrapper.getDataVersion(),channel,brokerName,brokerAddr));
             if (Objects.isNull(prevBrokerLiveInfo)) {
-                log.info("new broker registered, {} HAServer: {}", brokerAddr, haServerAddr);
+                log.info("new Manage registered, {} ", brokerAddr);
             }
       } catch (Exception e) {
-          log.error("registerBroker Exception", e);
+          log.error("registerManage Exception", e);
       }finally {
         this.lock.writeLock().unlock();
       }
@@ -86,13 +93,13 @@ public class RouteInfoManager {
    * @param brokerName
    * @param brokerId
    */
-  public void unregisterBroker(final String brokerAddr,final String brokerName,final long brokerId) {
+  public void unregisterBroker( String brokerAddr, String brokerName, long brokerId) {
       try {
             this.lock.writeLock().lockInterruptibly();
-            BrokerLiveInfo brokerLiveInfo = this.brokerLiveTable.remove(brokerAddr);
-            log.info("unregisterBroker, remove from brokerLiveTable {}, {}",brokerLiveInfo != null ? "OK" : "Failed",brokerAddr);
+            GtsManageLiveInfo brokerLiveInfo = this.liveTable.remove(brokerAddr);
+            log.info("unregisterManage, remove from liveTable {}, {}",brokerLiveInfo != null ? "OK" : "Failed",brokerAddr);
       } catch (Exception e) {
-            log.error("unregisterBroker Exception", e);
+            log.error("unregisterManage Exception", e);
       }finally {
             this.lock.writeLock().unlock();
       }
@@ -105,14 +112,14 @@ public class RouteInfoManager {
    * @date: 2018年3月8日 下午1:35:37
    */
   public void scanNotActiveBroker() {
-      Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
+      Iterator<Entry<String, GtsManageLiveInfo>> it = this.liveTable.entrySet().iterator();
       while (it.hasNext()) {
-          Entry<String, BrokerLiveInfo> next = it.next();
+          Entry<String, GtsManageLiveInfo> next = it.next();
           long last = next.getValue().getLastUpdateTimestamp();
           if ((last + BROKER_CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
               RemotingUtil.closeChannel(next.getValue().getChannel());
               it.remove();
-              log.warn("The broker channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
+              log.warn("The manage channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
               this.onChannelDestroy(next.getKey(), next.getValue().getChannel());
           }
       }
@@ -132,9 +139,9 @@ public class RouteInfoManager {
         if (Objects.nonNull(channel)) {
               try {
                     this.lock.readLock().lockInterruptibly();
-                    Iterator<Entry<String, BrokerLiveInfo>> itBrokerLiveTable =this.brokerLiveTable.entrySet().iterator();
+                    Iterator<Entry<String, GtsManageLiveInfo>> itBrokerLiveTable =this.liveTable.entrySet().iterator();
                     while (itBrokerLiveTable.hasNext()) {
-                        Entry<String, BrokerLiveInfo> entry = itBrokerLiveTable.next();
+                        Entry<String, GtsManageLiveInfo> entry = itBrokerLiveTable.next();
                         if (entry.getValue().getChannel() == channel) {
                             brokerAddrFound = entry.getKey();
                             break;
@@ -149,12 +156,12 @@ public class RouteInfoManager {
         if (Objects.isNull(brokerAddrFound)) {
             brokerAddrFound = remoteAddr;
         } else {
-            log.info("the broker's channel destroyed, {}, clean it's data structure at once", brokerAddrFound);
+            log.info("the manage channel destroyed, {}, clean it's data structure at once", brokerAddrFound);
         }
         if (Objects.nonNull(brokerAddrFound)&& brokerAddrFound.length() > 0) {
               try {
                     this.lock.writeLock().lockInterruptibly();
-                    this.brokerLiveTable.remove(brokerAddrFound);
+                    this.liveTable.remove(brokerAddrFound);
               } catch (Exception e) {
                   log.error("onChannelDestroy Exception", e);
               }finally {
