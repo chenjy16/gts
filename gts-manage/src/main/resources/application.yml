@@ -1,3 +1,5 @@
+server:
+  port: ${PORT:11100}
 config:
   jedis:
     pool:
@@ -27,18 +29,16 @@ cleanCommitTxGroupJob:
   
 gts:
   manage:
-    namesrvAddr:  localhost:9876  #ip:port,ip:port
+    namesrvAddr:  localhost:8000  #ip:port;ip:port
     manageName: gtsmanage
     manageId: 1
     registerBrokerTimeoutMills: 6000
-    manageAddr: localhost:9877
-    haServerAddr: localhost:9878
     defaultThreadPoolNums:  10
     clientManageThreadPoolNums: 10
     clientManagerThreadPoolQueueCapacity: 3000
   netty:
     server:
-        listenPort: 9877
+        listenPort: 9876
         serverWorkerThreads:  10
         serverCallbackExecutorThreads:  10
         serverSelectorThreads:  10

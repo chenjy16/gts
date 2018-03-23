@@ -1,9 +1,9 @@
 package com.wf.gts.nameserver.route;
 import org.junit.AfterClass;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.wf.gts.nameserver.NamesrvConfig;
 import com.wf.gts.nameserver.NamesrvController;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 
@@ -14,7 +14,6 @@ public class ManageHousekeepingServiceTest {
     @BeforeClass
     public static void setup() {
         NamesrvController namesrvController = new NamesrvController(
-            new NamesrvConfig(),
             new NettyServerConfig()
         );
         brokerHousekeepingService = new ManageHousekeepingService(namesrvController);

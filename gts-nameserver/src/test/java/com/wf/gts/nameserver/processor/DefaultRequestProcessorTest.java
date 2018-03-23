@@ -2,32 +2,26 @@ package com.wf.gts.nameserver.processor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import com.wf.gts.nameserver.NamesrvConfig;
 import com.wf.gts.nameserver.NamesrvController;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
 import com.wf.gts.remoting.netty.NettyServerConfig;
-import com.wf.gts.remoting.protocol.RegisterBrokerResult;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RequestCode;
 import com.wf.gts.remoting.protocol.ResponseCode;
-import com.wf.gts.remoting.protocol.TopicConfig;
-import com.wf.gts.remoting.protocol.TopicConfigSerializeWrapper;
-
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 
@@ -39,7 +33,6 @@ public class DefaultRequestProcessorTest {
 
     private NamesrvController namesrvController;
 
-    private NamesrvConfig namesrvConfig;
 
     private NettyServerConfig nettyServerConfig;
 
@@ -49,12 +42,11 @@ public class DefaultRequestProcessorTest {
 
     @Before
     public void init() throws Exception {
-        namesrvConfig = new NamesrvConfig();
         nettyServerConfig = new NettyServerConfig();
         
         routeInfoManager = new RouteInfoManager();
         
-        namesrvController = new NamesrvController(namesrvConfig, nettyServerConfig);
+        namesrvController = new NamesrvController(nettyServerConfig);
         Field field = NamesrvController.class.getDeclaredField("routeInfoManager");
         field.setAccessible(true);
         field.set(namesrvController, routeInfoManager);

@@ -13,11 +13,11 @@ public class ClientHousekeepingService implements ChannelEventListener {
   
     private static final Logger log = LoggerFactory.getLogger(ClientHousekeepingService.class);
     
-    private final ProducerManager producerManager;
+    private final ClientChannelManager producerManager;
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("ClientHousekeepingScheduledThread"));
 
-    public ClientHousekeepingService(final ProducerManager producerManager) {
+    public ClientHousekeepingService(final ClientChannelManager producerManager) {
         this.producerManager = producerManager;
     }
 

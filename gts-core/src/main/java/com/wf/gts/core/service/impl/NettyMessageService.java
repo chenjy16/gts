@@ -44,7 +44,7 @@ public class NettyMessageService implements TxManagerMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.SAVE_TRANSGROUP, null);
         byte[] body = RemotingSerializable.encode(tx);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -65,7 +65,7 @@ public class NettyMessageService implements TxManagerMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ADD_TRANS, header);
         byte[] body = RemotingSerializable.encode(txTransactionItem);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -84,7 +84,7 @@ public class NettyMessageService implements TxManagerMessageService {
       FindTransGroupStatusRequestHeader header=new FindTransGroupStatusRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.FIND_TRANSGROUP_STATUS,header);
-      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request);
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
       if(res.getCode()==ResponseCode.SUCCESS){
         FindTransGroupStatusResponseHeader resHeader=(FindTransGroupStatusResponseHeader)res.decodeCommandCustomHeader(FindTransGroupStatusResponseHeader.class);
         return resHeader.getStatus();
@@ -105,7 +105,7 @@ public class NettyMessageService implements TxManagerMessageService {
       RollBackTransGroupRequestHeader  header=new RollBackTransGroupRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, header);
-      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request); 
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request); 
       if(res.getCode()==ResponseCode.SUCCESS){
         return true;
       }
@@ -127,7 +127,7 @@ public class NettyMessageService implements TxManagerMessageService {
         PreCommitRequestHeader header=new PreCommitRequestHeader();
         header.setTxGroupId(txGroupId);
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.PRE_COMMIT_TRANS, header);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(), timeout, request); 
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request); 
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -158,7 +158,7 @@ public class NettyMessageService implements TxManagerMessageService {
           byte[] body = RemotingSerializable.encode(tx);
           request.setBody(body);
           try {
-            clientInstance.getClientAPIImpl().invokeOnewayImpl(clientInstance.getLiveManageRef().get().getManageLiveInfo().getGtsManageAddr(),request ,3000);
+            clientInstance.getClientAPIImpl().invokeOnewayImpl(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(),request ,3000);
           } catch (RemotingConnectException | RemotingTooMuchRequestException | RemotingTimeoutException
               | RemotingSendRequestException | InterruptedException e) {
             e.printStackTrace();

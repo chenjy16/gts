@@ -1,17 +1,15 @@
 package com.wf.gts.manage;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
 import com.wf.gts.manage.ManageController;
 
 
 @Component
-public class GtsManagerBootstrap implements ApplicationContextAware {
+public class GtsManagerBootstrap  {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GtsManagerBootstrap.class);
   
@@ -20,8 +18,8 @@ public class GtsManagerBootstrap implements ApplicationContextAware {
     private  ManageController manageController;
 
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    @PostConstruct
+    public void start() throws BeansException {
         try {
           manageController.start();
         } catch (Exception e) {

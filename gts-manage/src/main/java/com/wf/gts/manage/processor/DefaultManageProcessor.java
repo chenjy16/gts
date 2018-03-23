@@ -20,13 +20,13 @@ import com.wf.gts.remoting.protocol.ResponseCode;
 import io.netty.channel.ChannelHandlerContext;
 
 
-public class DefaultBrokerProcessor implements NettyRequestProcessor {
+public class DefaultManageProcessor implements NettyRequestProcessor {
   
-   private static final Logger log = LoggerFactory.getLogger(DefaultBrokerProcessor.class);
+   private static final Logger log = LoggerFactory.getLogger(DefaultManageProcessor.class);
    
    private ManageController manageController;
    
-   public DefaultBrokerProcessor(ManageController manageController) {
+   public DefaultManageProcessor(ManageController manageController) {
           this.manageController = manageController;
    }
 
@@ -63,10 +63,9 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
      * @throws RemotingCommandException
      */
     private RemotingCommand createGroup(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
-        try {
-          RemotingCommand response = RemotingCommand.createResponseCommand(null);
+      RemotingCommand response = RemotingCommand.createResponseCommand(null);  
+      try {
           byte[] body = request.getBody();
-          if (body != null) {
               TxTransactionGroup tx =RemotingSerializable.decode(body, TxTransactionGroup.class);
               if (CollectionUtils.isNotEmpty(tx.getItemList())) {
                   String modelName = ctx.channel().remoteAddress().toString();
@@ -78,17 +77,15 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
               Boolean success = manageController.getTxManagerService().saveTxTransactionGroup(tx);
               if(success){
                 response.setCode(ResponseCode.SUCCESS);
-                response.setOpaque(request.getOpaque());
-                ctx.writeAndFlush(response);
+            
               }else{
                 response.setCode(ResponseCode.SYSTEM_ERROR);
-                return response;
               }
-          }
         } catch (Exception e) {
+            response.setCode(ResponseCode.SYSTEM_ERROR);
             log.error("创建事务组异常:{}", e);
         }
-        return null;
+        return response;
     }
     
     
@@ -105,14 +102,17 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
      */
     private RemotingCommand getTransactionGroupStatus(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
         RemotingCommand response = RemotingCommand.createResponseCommand(FindTransGroupStatusResponseHeader.class);
-        FindTransGroupStatusResponseHeader resHeader=(FindTransGroupStatusResponseHeader)response.readCustomHeader();
-        FindTransGroupStatusRequestHeader header=(FindTransGroupStatusRequestHeader)request.decodeCommandCustomHeader(FindTransGroupStatusRequestHeader.class);
-        int status = manageController.getTxManagerService().findTxTransactionGroupStatus(header.getTxGroupId());
-        resHeader.setStatus(status);
-        response.setCode(ResponseCode.SUCCESS);
-        response.setOpaque(request.getOpaque());
-        ctx.writeAndFlush(response);
-        return null;
+        try {
+          FindTransGroupStatusResponseHeader resHeader=(FindTransGroupStatusResponseHeader)response.readCustomHeader();
+          FindTransGroupStatusRequestHeader header=(FindTransGroupStatusRequestHeader)request.decodeCommandCustomHeader(FindTransGroupStatusRequestHeader.class);
+          int status = manageController.getTxManagerService().findTxTransactionGroupStatus(header.getTxGroupId());
+          resHeader.setStatus(status);
+          response.setCode(ResponseCode.SUCCESS);
+        } catch (Exception e) {
+          response.setCode(ResponseCode.SYSTEM_ERROR);
+          e.printStackTrace();
+        }
+        return response;
     }
     
     
@@ -129,23 +129,22 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
    private RemotingCommand addTrans(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
       RemotingCommand response = RemotingCommand.createResponseCommand(null);
       AddTransRequestHeader header=(AddTransRequestHeader)request.decodeCommandCustomHeader(AddTransRequestHeader.class);
-     
-      byte[] body = request.getBody();
-      if (body != null) {
-            TxTransactionItem item =RemotingSerializable.decode(body, TxTransactionItem.class);
-            item.setModelName(ctx.channel().remoteAddress().toString());
-            item.setTmDomain(Address.getInstance().getDomain());
-            Boolean success =  manageController.getTxManagerService().addTxTransaction(header.getTxGroupId(), item);
-            if(success){
-              response.setCode(ResponseCode.SUCCESS);
-              response.setOpaque(request.getOpaque());
-              ctx.writeAndFlush(response);
-            }else{
-              response.setCode(ResponseCode.SYSTEM_ERROR);
-              return response;
-            }
+      try {
+          byte[] body = request.getBody();
+          TxTransactionItem item =RemotingSerializable.decode(body, TxTransactionItem.class);
+          item.setModelName(ctx.channel().remoteAddress().toString());
+          item.setTmDomain(Address.getInstance().getDomain());
+          Boolean success =  manageController.getTxManagerService().addTxTransaction(header.getTxGroupId(), item);
+          if(success){
+            response.setCode(ResponseCode.SUCCESS);
+          }else{
+            response.setCode(ResponseCode.SYSTEM_ERROR);
+          }
+      } catch (Exception e) {
+        response.setCode(ResponseCode.SYSTEM_ERROR);
+        e.printStackTrace();
       }
-      return null;
+      return response;
   }
     
    
@@ -163,16 +162,16 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
      
      RemotingCommand response = RemotingCommand.createResponseCommand(null);
      RollBackTransGroupRequestHeader header=(RollBackTransGroupRequestHeader)request.decodeCommandCustomHeader(RollBackTransGroupRequestHeader.class);
-     
-     //????此处需要考虑一下如何更好处理
-     
-     //收到客户端的回滚通知  此通知为事务发起（start）里面通知的,发送给其它的客户端
-     manageController.getTxTransactionExecutor().rollBack(header.getTxGroupId(),manageController);
-     
-     response.setCode(ResponseCode.SUCCESS);
-     response.setOpaque(request.getOpaque());
-     ctx.writeAndFlush(response);
-     return null;
+     try {
+      //????此处需要考虑一下如何更好处理
+       //收到客户端的回滚通知  此通知为事务发起（start）里面通知的,发送给其它的客户端
+       manageController.getTxTransactionExecutor().rollBack(header.getTxGroupId(),manageController);
+       response.setCode(ResponseCode.SUCCESS);
+     } catch (Exception e) {
+      response.setCode(ResponseCode.SYSTEM_ERROR);
+      e.printStackTrace();
+    }
+     return response;
    }
    
    
@@ -192,12 +191,14 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
      RemotingCommand response = RemotingCommand.createResponseCommand(null);
      PreCommitRequestHeader header=(PreCommitRequestHeader)request.decodeCommandCustomHeader(PreCommitRequestHeader.class);
      //????此处需要考虑一下如何更好处理
-     manageController.getTxTransactionExecutor().preCommit(header.getTxGroupId(),manageController);
-     
-     response.setCode(ResponseCode.SUCCESS);
-     response.setOpaque(request.getOpaque());
-     ctx.writeAndFlush(response);
-     return null;
+     try {
+       manageController.getTxTransactionExecutor().preCommit(header.getTxGroupId(),manageController);
+       response.setCode(ResponseCode.SUCCESS);
+    } catch (Exception e) {
+      response.setCode(ResponseCode.SYSTEM_ERROR);
+      e.printStackTrace();
+    }
+     return response;
    }
    
    
@@ -214,16 +215,17 @@ public class DefaultBrokerProcessor implements NettyRequestProcessor {
    private RemotingCommand completeCommit(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
      RemotingCommand response = RemotingCommand.createResponseCommand(null);
      byte[] body = request.getBody();
-     if (body != null) {
+     try {
          TxTransactionGroup tx =RemotingSerializable.decode(body, TxTransactionGroup.class);
          if (CollectionUtils.isNotEmpty(tx.getItemList())) {
            manageController.getTxManagerService().updateTxTransactionItemStatus(tx.getId(), tx.getItemList().get(0).getTaskKey(),tx.getItemList().get(0).getStatus());
          }
          response.setCode(ResponseCode.SUCCESS);
-         response.setOpaque(request.getOpaque());
-         ctx.writeAndFlush(response);
-     }
-     return null;
+      } catch (Exception e) {
+          response.setCode(ResponseCode.SYSTEM_ERROR);
+          e.printStackTrace();
+      }
+     return response;
    }
    
    

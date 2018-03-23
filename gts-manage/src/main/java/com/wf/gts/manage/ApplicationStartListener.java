@@ -16,8 +16,10 @@ public class ApplicationStartListener implements ApplicationListener<EmbeddedSer
     public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
         int port = event.getEmbeddedServletContainer().getPort();
         final String host = getHost();
+        
         Address.getInstance().setHost(host).setPort(port)
         .setDomain(String.join(":", host, String.valueOf(port)));
+        
     }
 
 

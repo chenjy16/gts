@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.wf.gts.remoting.core.MixAll;
 import com.wf.gts.remoting.core.RemotingUtil;
+import com.wf.gts.remoting.protocol.GtsManageLiveAddr;
 import com.wf.gts.remoting.protocol.GtsManageLiveInfo;
 import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.RegisterBrokerResult;
@@ -23,10 +24,9 @@ import io.netty.channel.Channel;
 public class RouteInfoManager {
   
   private static final Logger log = LoggerFactory.getLogger(RouteInfoManager.class);
-  private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;//两分钟
+  private final static long CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;//两分钟
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private final HashMap<String/* brokerAddr */, GtsManageLiveInfo> liveTable;
-  
   
   public RouteInfoManager() {
       this.liveTable = new HashMap<String, GtsManageLiveInfo>(256);
@@ -40,13 +40,17 @@ public class RouteInfoManager {
    */
   public byte[] getGtsManagerInfo() {
       LiveManageInfo liveManageInfo = new LiveManageInfo();
-      Optional<GtsManageLiveInfo> brokerLive=this.liveTable.values().stream()
-          .filter(item->Objects.nonNull(item)&&item.getGtsManageId()==MixAll.MASTER_ID)
-          .findFirst();
-      if(!brokerLive.isPresent()){
-        brokerLive=this.liveTable.values().stream().filter(item->Objects.nonNull(item)).findFirst();
+      Optional<GtsManageLiveAddr> brokerLiveAddr=this.liveTable.values().stream().
+      filter(item->Objects.nonNull(item)&&item.getGtsManageId()==MixAll.MASTER_ID).
+      map(item-> new GtsManageLiveAddr(item.getGtsManageId(), item.getLastUpdateTimestamp(),item.getGtsManageName(), item.getGtsManageAddr())).
+      findFirst();
+      if(!brokerLiveAddr.isPresent()){
+        brokerLiveAddr=this.liveTable.values().stream().
+        filter(item->Objects.nonNull(item)).
+        map(item-> new GtsManageLiveAddr(item.getGtsManageId(), item.getLastUpdateTimestamp(),item.getGtsManageName(), item.getGtsManageAddr())).
+        findFirst();
       }
-      liveManageInfo.setManageLiveInfo(brokerLive.get());
+      liveManageInfo.setGtsManageLiveAddr(brokerLiveAddr.get());
       return liveManageInfo.encode();
   }
 
@@ -77,7 +81,6 @@ public class RouteInfoManager {
       }finally {
         this.lock.writeLock().unlock();
       }
-
       return result;
   }
 
@@ -116,10 +119,10 @@ public class RouteInfoManager {
       while (it.hasNext()) {
           Entry<String, GtsManageLiveInfo> next = it.next();
           long last = next.getValue().getLastUpdateTimestamp();
-          if ((last + BROKER_CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
+          if ((last + CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
               RemotingUtil.closeChannel(next.getValue().getChannel());
               it.remove();
-              log.warn("The manage channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
+              log.warn("The manage channel expired, {} {}ms", next.getKey(), CHANNEL_EXPIRED_TIME);
               this.onChannelDestroy(next.getKey(), next.getValue().getChannel());
           }
       }

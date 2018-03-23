@@ -2,9 +2,14 @@ package com.wf.gts.common.beans;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 事务方法参数
  */
+@Getter
+@Setter
 public class TransactionInvocation implements Serializable {
 
     private static final long serialVersionUID = 9209965609104391346L;
@@ -35,19 +40,5 @@ public class TransactionInvocation implements Serializable {
         this.argumentTypes = argumentTypes;
     }
 
-    public Class getTargetClazz() {
-        return targetClazz;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public Object[] getArgumentValues() {
-        return argumentValues;
-    }
-
-    public Class[] getArgumentTypes() {
-        return argumentTypes;
-    }
+ 
 }

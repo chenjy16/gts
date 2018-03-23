@@ -1,13 +1,15 @@
 package com.wf.gts.remoting.netty;
-
-
-
 import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 public class NettyEvent {
-    private final NettyEventType type;
-    private final String remoteAddr;
-    private final Channel channel;
+    private  NettyEventType type;
+    private  String remoteAddr;
+    private  Channel channel;
 
     public NettyEvent(NettyEventType type, String remoteAddr, Channel channel) {
         this.type = type;
@@ -15,17 +17,6 @@ public class NettyEvent {
         this.channel = channel;
     }
 
-    public NettyEventType getType() {
-        return type;
-    }
-
-    public String getRemoteAddr() {
-        return remoteAddr;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
 
     @Override
     public String toString() {

@@ -4,6 +4,12 @@ import com.wf.gts.remoting.CommandCustomHeader;
 import com.wf.gts.remoting.annotation.CFNullable;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 public class FindTransGroupStatusResponseHeader implements CommandCustomHeader{
   
       @CFNullable
@@ -13,11 +19,5 @@ public class FindTransGroupStatusResponseHeader implements CommandCustomHeader{
       public void checkFields() throws RemotingCommandException {
       }
     
-      public Integer getStatus() {
-        return status;
-      }
-    
-      public void setStatus(Integer status) {
-        this.status = status;
-      }
+     
 }

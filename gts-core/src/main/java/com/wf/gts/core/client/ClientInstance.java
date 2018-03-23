@@ -1,4 +1,5 @@
 package com.wf.gts.core.client;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -9,6 +10,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
 import com.wf.gts.core.client.processor.ClientRemotingProcessor;
 import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.exception.GtsManageException;
@@ -55,19 +58,20 @@ public class ClientInstance {
      */
     public void start(ClientConfig config)  {
       initialize(config);
-      this.clientAPIImpl.start();
-      this.startScheduledTask();
+      startScheduledTask();
     }
     
     
     
-   private boolean initialize(ClientConfig config){
+   private void initialize(ClientConfig config){
      this.config=config;
      this.nettyClientConfig = new NettyClientConfig();
      this.nettyClientConfig.setClientCallbackExecutorThreads(config.getClientCallbackExecutorThreads());
      this.nettyClientConfig.setUseTLS(config.isUseTLS());
      this.clientAPIImpl = new ClientAPIImpl(this.nettyClientConfig, null,new ClientRemotingProcessor());
-     return true;
+     clientAPIImpl.start();
+     updateRouteInfoFromNameServer();
+     sendHeartbeatToAllManageWithLock();
    }
     
    
@@ -95,7 +99,7 @@ public class ClientInstance {
             @Override
             public void run() {
                 try {
-                    ClientInstance.this.updateRouteInfoFromNameServer();
+                    updateRouteInfoFromNameServer();
                 } catch (Exception e) {
                   LOGGER.error("更新客户端路由信息定时任务异常:{}", e);
                 }
@@ -108,7 +112,7 @@ public class ClientInstance {
           @Override
           public void run() {
                 try {
-                    ClientInstance.this.sendHeartbeatToAllManageWithLock();
+                   sendHeartbeatToAllManageWithLock();
                 } catch (Exception e) {
                     LOGGER.error("发送心跳信息给manage定时任务异常:{}", e);
                 }
@@ -159,7 +163,7 @@ public class ClientInstance {
      * @author: chenjy
      * @date: 2018年3月21日 下午2:17:43
      */
-    public void sendHeartbeatToAllManageWithLock() {
+    private void sendHeartbeatToAllManageWithLock() {
         if (this.lockHeartbeat.tryLock()) {
             try {
                 this.sendHeartbeatToAllManage();
@@ -177,12 +181,15 @@ public class ClientInstance {
     private void sendHeartbeatToAllManage() {
       HeartbeatData heartbeatData = new HeartbeatData();
       heartbeatData.setClientID(config.buildMQClientId());
-      if (this.liveManageRef!=null) {
+      if (Objects.nonNull( this.liveManageRef.get())) {
           try {
-              int version = this.clientAPIImpl.sendHearbeat(this.liveManageRef.get().getManageLiveInfo().getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
+              RemotingCommand res= this.clientAPIImpl.sendHearbeat(this.liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
+              LOGGER.info("发送心跳信息:{}",JSON.toJSONString(res));
           } catch (Exception e) {
               LOGGER.info("发送心跳异常:{}",e);
           }
+      }else{
+        
       }
    }
       
@@ -193,11 +200,12 @@ public class ClientInstance {
      * @date: 2018年3月21日 上午10:27:38 
      * @return
      */
-    public boolean updateRouteInfoFromNameServer() {
+    private boolean updateRouteInfoFromNameServer() {
         try {
             if (this.lockNamesrv.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
               
                 LiveManageInfo liveManageInfo=this.clientAPIImpl.getGtsClusterInfo(config.getNamesrvAddr(),config.getTimeoutMillis());
+                LOGGER.info("更新路由信息:{}",JSON.toJSONString(liveManageInfo));
                 this.liveManageRef.set(liveManageInfo);
                 return true;
                 
@@ -211,7 +219,6 @@ public class ClientInstance {
         }
         return false;
     }
-    
     
     
     public ClientAPIImpl getClientAPIImpl() {

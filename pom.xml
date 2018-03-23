@@ -17,7 +17,6 @@
 	        <module>gts-core</module>
 	        <module>gts-manage</module>
 	        <module>gts-dubbo</module>
-	        <module>gts-common</module>
 	        <module>gts-nameserver</module>
 	       	<module>gts-remoting</module>
 	        <module>gts-example-a</module>
@@ -46,6 +45,7 @@
 	      <okhttp.version>3.7.0</okhttp.version>
 	      <gson.verions>2.6.2</gson.verions>
 	      <druid.version>1.0.29</druid.version>
+	      <lombok.version>1.16.4</lombok.version>
 	    </properties>
   
   <dependencyManagement>
@@ -79,6 +79,11 @@
                 <artifactId>spring-data-mongodb</artifactId>
                 <version>${spring.data.mongodb.version}</version>
             </dependency>
+            <dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
 	  			<artifactId>dubbox</artifactId>
@@ -245,28 +250,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>com.caucho</groupId>
-                <artifactId>hessian</artifactId>
-                <version>${hessian.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.esotericsoftware</groupId>
-                <artifactId>kryo-shaded</artifactId>
-                <version>${kryo.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.dyuproject.protostuff</groupId>
-                <artifactId>protostuff-core</artifactId>
-                <version>${protostuff.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dyuproject.protostuff</groupId>
-                <artifactId>protostuff-runtime</artifactId>
-                <version>${protostuff.version}</version>
-            </dependency>
+       
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>

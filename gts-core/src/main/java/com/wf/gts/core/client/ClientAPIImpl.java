@@ -136,19 +136,10 @@ public class ClientAPIImpl {
    * @throws GtsManageException
    * @throws InterruptedException
    */
-  public int sendHearbeat(String addr,HeartbeatData heartbeatData,long timeoutMillis) throws RemotingException, GtsManageException, InterruptedException {
+  public RemotingCommand sendHearbeat(String addr,HeartbeatData heartbeatData,long timeoutMillis) throws RemotingException, GtsManageException, InterruptedException {
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.HEART_BEAT, null);
       request.setBody(heartbeatData.encode());
-      RemotingCommand response = this.remotingClient.invokeSync(addr, request, timeoutMillis);
-      assert response != null;
-      switch (response.getCode()) {
-          case ResponseCode.SUCCESS: {
-              return response.getVersion();
-          }
-          default:
-              break;
-      }
-      throw new GtsManageException(response.getCode(), response.getRemark());
+      return this.remotingClient.invokeSync(addr, request, timeoutMillis);
   }
   
 }

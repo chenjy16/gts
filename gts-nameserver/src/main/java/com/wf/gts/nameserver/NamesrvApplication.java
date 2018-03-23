@@ -1,4 +1,4 @@
-package com.wf.gts.manage;
+package com.wf.gts.nameserver;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class TxManagerApplication {
+public class NamesrvApplication {
   
   public static void main(String[] args) {
-      SpringApplication.run(TxManagerApplication.class, args);
+      SpringApplication.run(NamesrvApplication.class, args);
   }
-
+  
 }

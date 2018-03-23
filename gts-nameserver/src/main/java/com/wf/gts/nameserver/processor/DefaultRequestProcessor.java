@@ -89,7 +89,6 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
             ctx.channel());
         
         
-        responseHeader.setHaServerAddr(result.getHaServerAddr());
         responseHeader.setMasterAddr(result.getMasterAddr());
         response.setCode(ResponseCode.SUCCESS);
         response.setRemark(null);

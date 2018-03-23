@@ -1,8 +1,10 @@
-package com.wf.gts.manage.config;
+package com.wf.gts.nameserver.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import com.wf.gts.remoting.netty.NettyServerConfig;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "gts.netty.server")
-public class GtsManageNettyServerConfig {
+public class nameServNettyServerConfig {
   
   private int listenPort;
   private int serverWorkerThreads;
@@ -40,7 +42,7 @@ public class GtsManageNettyServerConfig {
       cfg.setServerSocketRcvBufSize(serverSocketRcvBufSize);
       cfg.setServerWorkerThreads(serverWorkerThreads);
       cfg.setUseEpollNativeSelector(useEpollNativeSelector);
-      return cfg;
+    return cfg;
   }
 
 

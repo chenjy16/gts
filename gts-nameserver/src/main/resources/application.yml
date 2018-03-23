@@ -1,0 +1,15 @@
+server:
+  port: ${PORT:10300}
+gts:
+  netty:
+    server:
+        listenPort: 8000
+        serverWorkerThreads:  10
+        serverCallbackExecutorThreads:  10
+        serverSelectorThreads:  10
+        serverOnewaySemaphoreValue: 10
+        serverAsyncSemaphoreValue:  10
+        serverChannelMaxIdleTimeSeconds:  60
+        serverSocketSndBufSize: 65535
+        serverSocketRcvBufSize: 65535
+        #serverPooledByteBufAllocatorEnable:
