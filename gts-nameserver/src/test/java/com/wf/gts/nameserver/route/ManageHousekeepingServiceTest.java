@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.wf.gts.nameserver.NamesrvController;
+import com.wf.gts.nameserver.NameSrvController;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 
 public class ManageHousekeepingServiceTest {
@@ -13,7 +13,7 @@ public class ManageHousekeepingServiceTest {
 
     @BeforeClass
     public static void setup() {
-        NamesrvController namesrvController = new NamesrvController(
+        NameSrvController namesrvController = new NameSrvController(
             new NettyServerConfig()
         );
         brokerHousekeepingService = new ManageHousekeepingService(namesrvController);

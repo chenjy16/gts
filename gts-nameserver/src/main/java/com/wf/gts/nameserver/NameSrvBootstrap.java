@@ -24,7 +24,7 @@ public class NameSrvBootstrap{
     @PostConstruct
     public void start() throws BeansException {
       
-      NamesrvController controller = new NamesrvController(nettyServerConfig); 
+      NameSrvController controller = new NameSrvController(nettyServerConfig); 
       try {
           Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(new Callable<Void>() {
                 @Override

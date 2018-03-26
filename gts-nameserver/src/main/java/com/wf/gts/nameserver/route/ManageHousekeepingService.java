@@ -1,5 +1,5 @@
 package com.wf.gts.nameserver.route;
-import com.wf.gts.nameserver.NamesrvController;
+import com.wf.gts.nameserver.NameSrvController;
 import com.wf.gts.remoting.ChannelEventListener;
 
 import io.netty.channel.Channel;
@@ -8,9 +8,9 @@ import io.netty.channel.Channel;
 
 public class ManageHousekeepingService implements ChannelEventListener{
     
-    private final NamesrvController namesrvController;
+    private final NameSrvController namesrvController;
 
-    public ManageHousekeepingService(NamesrvController namesrvController) {
+    public ManageHousekeepingService(NameSrvController namesrvController) {
         this.namesrvController = namesrvController;
     }
 

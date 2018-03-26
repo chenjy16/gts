@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import com.wf.gts.core.bean.bootstrap.TxTransactionBootstrap;
+import com.wf.gts.core.bootstrap.TxTransactionBootstrap;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass=true,exposeProxy=true)
@@ -14,16 +14,9 @@ import com.wf.gts.core.bean.bootstrap.TxTransactionBootstrap;
 public class TxTransactionConfig {
 	
 	@Bean(name="txTransactionBootstrap")
-	public TxTransactionBootstrap txTransactionBootstrap(@Value("${tx.txManagerUrl}") String txManagerUrl, @Value("${tx.serializer}") String serializer,
-			@Value("${tx.nettySerializer}") String nettySerializer,
-			@Value("${tx.blockingQueueType}") String blockingQueueType) {
-	  
-	  
+	public TxTransactionBootstrap txTransactionBootstrap(@Value("${tx.namesrvAddr}") String namesrvAddr) {
 	  TxTransactionBootstrap boot=new TxTransactionBootstrap();
-	  boot.setTxManagerUrl(txManagerUrl);
-	  boot.setSerializer(serializer);
-	  boot.setNettySerializer(nettySerializer);
-	  boot.setBlockingQueueType(blockingQueueType);
+	  boot.setNamesrvAddr(namesrvAddr);
 		return boot;
 	}
 

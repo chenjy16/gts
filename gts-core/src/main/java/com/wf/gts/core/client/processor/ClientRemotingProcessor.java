@@ -1,8 +1,8 @@
 package com.wf.gts.core.client.processor;
 import java.util.List;
 import org.springframework.util.CollectionUtils;
-import com.wf.gts.common.beans.TxTransactionGroup;
-import com.wf.gts.common.beans.TxTransactionItem;
+import com.wf.gts.common.beans.TransGroup;
+import com.wf.gts.common.beans.TransItem;
 import com.wf.gts.core.concurrent.BlockTask;
 import com.wf.gts.core.concurrent.BlockTaskHelper;
 import com.wf.gts.remoting.exception.RemotingCommandException;
@@ -39,10 +39,10 @@ public class ClientRemotingProcessor implements NettyRequestProcessor {
       RemotingCommand response = RemotingCommand.createResponseCommand(null);
       byte[] body = request.getBody();
       if (body != null) {
-        TxTransactionGroup tx =RemotingSerializable.decode(body,TxTransactionGroup.class);
-        List<TxTransactionItem> txTransactionItems = tx.getItemList();
+        TransGroup tx =RemotingSerializable.decode(body,TransGroup.class);
+        List<TransItem> txTransactionItems = tx.getItemList();
         if (!CollectionUtils.isEmpty(txTransactionItems)) {
-            TxTransactionItem item = txTransactionItems.get(0);
+            TransItem item = txTransactionItems.get(0);
             BlockTask task = BlockTaskHelper.getInstance().getTask(item.getTaskKey());
             task.setAsyncCall(objects -> item.getStatus());
             task.signal();
@@ -59,10 +59,10 @@ public class ClientRemotingProcessor implements NettyRequestProcessor {
     private RemotingCommand commit(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
       byte[] body = request.getBody();
       if (body != null) {
-        TxTransactionGroup tx =RemotingSerializable.decode(body,TxTransactionGroup.class);
-        List<TxTransactionItem> txTransactionItems = tx.getItemList();
+        TransGroup tx =RemotingSerializable.decode(body,TransGroup.class);
+        List<TransItem> txTransactionItems = tx.getItemList();
         if (!CollectionUtils.isEmpty(txTransactionItems)) {
-            TxTransactionItem item = txTransactionItems.get(0);
+            TransItem item = txTransactionItems.get(0);
             BlockTask task = BlockTaskHelper.getInstance().getTask(item.getTaskKey());
             task.setAsyncCall(objects -> item.getStatus());
             task.signal();

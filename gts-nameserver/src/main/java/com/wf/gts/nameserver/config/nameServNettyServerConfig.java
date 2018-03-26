@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "gts.netty.server")
-public class nameServNettyServerConfig {
+public class NameServNettyServerConfig {
   
   private int listenPort;
   private int serverWorkerThreads;

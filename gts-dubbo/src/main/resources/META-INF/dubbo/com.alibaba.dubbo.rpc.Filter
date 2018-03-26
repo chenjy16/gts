@@ -1,1 +1,1 @@
-TxTransactionFilter=com.wf.gts.dubbo.filter.TxTransactionFilter
+GtsTransFilter=com.wf.gts.dubbo.filter.GtsTransFilter

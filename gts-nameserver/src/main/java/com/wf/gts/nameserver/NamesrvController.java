@@ -11,7 +11,7 @@ import com.wf.gts.remoting.core.ThreadFactoryImpl;
 import com.wf.gts.remoting.netty.NettyRemotingServer;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 
-public class NamesrvController {
+public class NameSrvController {
   
   private final NettyServerConfig nettyServerConfig;
   private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("NSScheduledThread"));
@@ -22,7 +22,7 @@ public class NamesrvController {
 
   
   
-  public NamesrvController( NettyServerConfig nettyServerConfig) {
+  public NameSrvController( NettyServerConfig nettyServerConfig) {
       this.nettyServerConfig = nettyServerConfig;
   }
 
@@ -43,7 +43,7 @@ public class NamesrvController {
     this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
         @Override
         public void run() {
-            NamesrvController.this.routeInfoManager.scanNotActiveBroker();
+            NameSrvController.this.routeInfoManager.scanNotActiveBroker();
         }
     }, 5, 10, TimeUnit.SECONDS);
   }

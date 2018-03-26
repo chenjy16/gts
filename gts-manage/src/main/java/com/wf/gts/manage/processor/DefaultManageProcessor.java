@@ -2,8 +2,8 @@ package com.wf.gts.manage.processor;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wf.gts.common.beans.TxTransactionGroup;
-import com.wf.gts.common.beans.TxTransactionItem;
+import com.wf.gts.common.beans.TransGroup;
+import com.wf.gts.common.beans.TransItem;
 import com.wf.gts.manage.ManageController;
 import com.wf.gts.manage.domain.Address;
 import com.wf.gts.remoting.exception.RemotingCommandException;
@@ -66,11 +66,11 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
       RemotingCommand response = RemotingCommand.createResponseCommand(null);  
       try {
           byte[] body = request.getBody();
-              TxTransactionGroup tx =RemotingSerializable.decode(body, TxTransactionGroup.class);
+              TransGroup tx =RemotingSerializable.decode(body, TransGroup.class);
               if (CollectionUtils.isNotEmpty(tx.getItemList())) {
                   String modelName = ctx.channel().remoteAddress().toString();
                   //这里创建事务组的时候，事务组也作为第一条数据来存储,第二条数据才是发起方因此是get(1)
-                  TxTransactionItem item = tx.getItemList().get(1);
+                  TransItem item = tx.getItemList().get(1);
                   item.setModelName(modelName);
                   item.setTmDomain(Address.getInstance().getDomain());
               }
@@ -131,7 +131,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
       AddTransRequestHeader header=(AddTransRequestHeader)request.decodeCommandCustomHeader(AddTransRequestHeader.class);
       try {
           byte[] body = request.getBody();
-          TxTransactionItem item =RemotingSerializable.decode(body, TxTransactionItem.class);
+          TransItem item =RemotingSerializable.decode(body, TransItem.class);
           item.setModelName(ctx.channel().remoteAddress().toString());
           item.setTmDomain(Address.getInstance().getDomain());
           Boolean success =  manageController.getTxManagerService().addTxTransaction(header.getTxGroupId(), item);
@@ -213,19 +213,16 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
     * @throws RemotingCommandException
     */
    private RemotingCommand completeCommit(ChannelHandlerContext ctx,RemotingCommand request) throws RemotingCommandException {
-     RemotingCommand response = RemotingCommand.createResponseCommand(null);
      byte[] body = request.getBody();
      try {
-         TxTransactionGroup tx =RemotingSerializable.decode(body, TxTransactionGroup.class);
+         TransGroup tx =RemotingSerializable.decode(body, TransGroup.class);
          if (CollectionUtils.isNotEmpty(tx.getItemList())) {
            manageController.getTxManagerService().updateTxTransactionItemStatus(tx.getId(), tx.getItemList().get(0).getTaskKey(),tx.getItemList().get(0).getStatus());
          }
-         response.setCode(ResponseCode.SUCCESS);
       } catch (Exception e) {
-          response.setCode(ResponseCode.SYSTEM_ERROR);
           e.printStackTrace();
       }
-     return response;
+     return null;
    }
    
    

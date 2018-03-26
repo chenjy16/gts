@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 import com.wf.gts.manage.client.ClientChannelManager;
 import com.wf.gts.manage.client.ClientHousekeepingService;
 import com.wf.gts.manage.config.GtsManageConfig;
-import com.wf.gts.manage.executer.TxTransactionExecutor;
+import com.wf.gts.manage.executer.GtsTransExecutor;
 import com.wf.gts.manage.out.ManageOuterAPI;
 import com.wf.gts.manage.processor.ClientManageProcessor;
 import com.wf.gts.manage.processor.DefaultManageProcessor;
-import com.wf.gts.manage.service.TxManagerService;
+import com.wf.gts.manage.service.GtsManagerService;
 import com.wf.gts.remoting.RemotingServer;
 import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.core.ThreadFactoryImpl;
@@ -47,10 +47,10 @@ public class ManageController  {
     private ClientHousekeepingService clientHousekeepingService;
     
     @Autowired
-    private TxManagerService txManagerService;
+    private GtsManagerService txManagerService;
     
     @Autowired
-    private TxTransactionExecutor txTransactionExecutor;
+    private GtsTransExecutor txTransactionExecutor;
     
     @Autowired
     NettyServerConfig nettyServerConfig;

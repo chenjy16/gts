@@ -33,7 +33,7 @@ public class HeartBeat implements Serializable {
     /**
      * 事务组信息
      */
-    private TxTransactionGroup txTransactionGroup;
+    private TransGroup txTransactionGroup;
 
    
 }

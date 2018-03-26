@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import com.wf.gts.nameserver.NamesrvController;
+import com.wf.gts.nameserver.NameSrvController;
 import com.wf.gts.nameserver.route.RouteInfoManager;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
@@ -31,7 +31,7 @@ public class DefaultRequestProcessorTest {
   
     private DefaultRequestProcessor defaultRequestProcessor;
 
-    private NamesrvController namesrvController;
+    private NameSrvController namesrvController;
 
 
     private NettyServerConfig nettyServerConfig;
@@ -46,8 +46,8 @@ public class DefaultRequestProcessorTest {
         
         routeInfoManager = new RouteInfoManager();
         
-        namesrvController = new NamesrvController(nettyServerConfig);
-        Field field = NamesrvController.class.getDeclaredField("routeInfoManager");
+        namesrvController = new NameSrvController(nettyServerConfig);
+        Field field = NameSrvController.class.getDeclaredField("routeInfoManager");
         field.setAccessible(true);
         field.set(namesrvController, routeInfoManager);
         defaultRequestProcessor = new DefaultRequestProcessor(namesrvController);

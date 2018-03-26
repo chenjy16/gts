@@ -3,13 +3,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import com.alibaba.fastjson.JSON;
-import com.wf.gts.common.beans.TxTransactionGroup;
-import com.wf.gts.common.beans.TxTransactionItem;
-import com.wf.gts.common.enums.TransactionRoleEnum;
-import com.wf.gts.common.enums.TransactionStatusEnum;
+import com.wf.gts.common.beans.TransGroup;
+import com.wf.gts.common.beans.TransItem;
+import com.wf.gts.common.enums.TransRoleEnum;
+import com.wf.gts.common.enums.TransStatusEnum;
 import com.wf.gts.common.utils.IdWorkerUtils;
 import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.remoting.header.AddTransRequestHeader;
+import com.wf.gts.remoting.header.FindTransGroupStatusRequestHeader;
+import com.wf.gts.remoting.header.FindTransGroupStatusResponseHeader;
 import com.wf.gts.remoting.header.PreCommitRequestHeader;
 import com.wf.gts.remoting.header.RollBackTransGroupRequestHeader;
 import com.wf.gts.remoting.protocol.RemotingCommand;
@@ -34,8 +36,8 @@ public class ClientInstanceTest {
       config.setNamesrvAddr("localhost:8000");
       ClientInstance ins=new ClientInstance();
       ins.start(config);
-      /*Thread.sleep(60L*1000L);
-      ins.shutdown();*/
+      Thread.sleep(60L*1000L);
+      ins.shutdown();
       System.in.read();
     }
     
@@ -53,22 +55,22 @@ public class ClientInstanceTest {
       ClientInstance ins=new ClientInstance();
       ins.start(config);
       //创建事务组信息
-      TxTransactionGroup txTransactionGroup = new TxTransactionGroup();
+      TransGroup txTransactionGroup = new TransGroup();
       txTransactionGroup.setId("test");
-      List<TxTransactionItem> items = new ArrayList<>(2);
+      List<TransItem> items = new ArrayList<>(2);
       //tmManager 用redis hash 结构来存储 整个事务组的状态做为hash结构的第一条数据
-      TxTransactionItem groupItem = new TxTransactionItem();
-      groupItem.setStatus(TransactionStatusEnum.BEGIN.getCode());//整个事务组状态为开始
+      TransItem groupItem = new TransItem();
+      groupItem.setStatus(TransStatusEnum.BEGIN.getCode());//整个事务组状态为开始
       groupItem.setTransId("test"); //设置事务id为组的id  即为 hashKey
       groupItem.setTaskKey("test");
-      groupItem.setRole(TransactionRoleEnum.START.getCode());
+      groupItem.setRole(TransRoleEnum.START.getCode());
       items.add(groupItem);
       
-      TxTransactionItem item = new TxTransactionItem();
+      TransItem item = new TransItem();
       item.setTaskKey("testtaskey");
       item.setTransId(IdWorkerUtils.getInstance().createUUID());
-      item.setRole(TransactionRoleEnum.START.getCode());
-      item.setStatus(TransactionStatusEnum.BEGIN.getCode());
+      item.setRole(TransRoleEnum.START.getCode());
+      item.setStatus(TransStatusEnum.BEGIN.getCode());
       item.setTxGroupId("test");
       items.add(item);
       txTransactionGroup.setItemList(items);
@@ -98,11 +100,11 @@ public class ClientInstanceTest {
       ins.start(config);
       final String waitKey = IdWorkerUtils.getInstance().createTaskKey();
       
-      TxTransactionItem item = new TxTransactionItem();
+      TransItem item = new TransItem();
       item.setTaskKey(waitKey);
       item.setTransId(IdWorkerUtils.getInstance().createUUID());
-      item.setStatus(TransactionStatusEnum.BEGIN.getCode());//开始事务
-      item.setRole(TransactionRoleEnum.ACTOR.getCode());//参与者
+      item.setStatus(TransStatusEnum.BEGIN.getCode());//开始事务
+      item.setRole(TransRoleEnum.ACTOR.getCode());//参与者
       item.setTxGroupId("test");
       
       AddTransRequestHeader  header=new AddTransRequestHeader();
@@ -114,6 +116,27 @@ public class ClientInstanceTest {
       System.out.println(JSON.toJSONString(res));
       System.in.read();
     }
+    
+    
+    
+    @Test
+    public void testGetTransactionGroupStatus() throws Exception {
+      
+      ClientConfig config=new ClientConfig();
+      config.setNamesrvAddr("localhost:8000");
+      ClientInstance ins=new ClientInstance();
+      ins.start(config);
+      
+      FindTransGroupStatusRequestHeader header=new FindTransGroupStatusRequestHeader();
+      header.setTxGroupId("test");
+      RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.FIND_TRANSGROUP_STATUS,header);
+      RemotingCommand res=ins.getClientAPIImpl().sendMessageSync("localhost:9876", 3000l, request);
+      System.out.println(JSON.toJSONString(res));
+      System.in.read();
+      
+    }
+    
+    
     
     
     
@@ -151,6 +174,7 @@ public class ClientInstanceTest {
       config.setNamesrvAddr("localhost:8000");
       ClientInstance ins=new ClientInstance();
       ins.start(config);
+      
       RollBackTransGroupRequestHeader  header=new RollBackTransGroupRequestHeader();
       header.setTxGroupId("test");
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, header);

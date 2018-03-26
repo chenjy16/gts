@@ -10,16 +10,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSON;
 import com.wf.gts.core.client.processor.ClientRemotingProcessor;
 import com.wf.gts.core.config.ClientConfig;
-import com.wf.gts.core.exception.GtsManageException;
+import com.wf.gts.core.exception.GtsClientException;
 import com.wf.gts.remoting.exception.RemotingException;
 import com.wf.gts.remoting.header.UnregisterClientRequestHeader;
 import com.wf.gts.remoting.netty.NettyClientConfig;
-import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.HeartbeatData;
+import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RequestCode;
 import com.wf.gts.remoting.protocol.ResponseCode;
@@ -130,7 +129,7 @@ public class ClientInstance {
     private void unregisterClientWithLock() {
         try {
             if (this.lockHeartbeat.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-               this.unregisterClient(config.getNamesrvAddr(), config.buildMQClientId(), config.getTimeoutMillis());
+               this.unregisterClient(this.liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), config.buildMQClientId(), config.getTimeoutMillis());
             }
         }catch (Exception e) {
             LOGGER.warn("客户端注销异常:{}", e);
@@ -140,7 +139,7 @@ public class ClientInstance {
     }
     
 
-    private void unregisterClient(String addr,String clientID,long timeoutMillis) throws RemotingException, GtsManageException, InterruptedException {
+    private void unregisterClient(String addr,String clientID,long timeoutMillis) throws RemotingException, GtsClientException, InterruptedException {
         
         UnregisterClientRequestHeader requestHeader = new UnregisterClientRequestHeader();
         requestHeader.setClientID(clientID);
@@ -154,7 +153,7 @@ public class ClientInstance {
             default:
                 break;
         }
-        throw new GtsManageException(response.getCode(), response.getRemark());
+        throw new GtsClientException(response.getCode(), response.getRemark());
     }
     
     

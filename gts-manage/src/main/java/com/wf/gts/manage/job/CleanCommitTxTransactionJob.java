@@ -2,7 +2,7 @@ package com.wf.gts.manage.job;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
-import com.wf.gts.manage.service.TxManagerService;
+import com.wf.gts.manage.service.GtsManagerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +19,10 @@ public class CleanCommitTxTransactionJob implements SimpleJob {
      *
      */
     @Autowired
-    private TxManagerService txManagerService;
+    private GtsManagerService gtsManagerService;
 
     @Override
     public void execute(ShardingContext shardingContext) {
-    	txManagerService.removeAllCommit();
+      gtsManagerService.removeAllCommit();
     }
 }

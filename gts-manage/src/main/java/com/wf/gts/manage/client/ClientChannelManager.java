@@ -28,7 +28,7 @@ public class ClientChannelManager {
       try {
           if (this.groupChannelLock.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
               try {
-                  newGroupChannelTable.putAll(groupChannelTable);
+                  newGroupChannelTable.putAll(this.groupChannelTable);
               } finally {
                   groupChannelLock.unlock();
               }
@@ -113,7 +113,8 @@ public class ClientChannelManager {
     public void unregisterProducer(String remoteAddr, ClientChannelInfo clientChannelInfo) throws InterruptedException {
           if (this.groupChannelLock.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
               try {
-                    ClientChannelInfo old = this.groupChannelTable.remove(clientChannelInfo.getChannel().remoteAddress().toString());
+                    log.info("注销客户端信息:{}",remoteAddr);
+                    ClientChannelInfo old = this.groupChannelTable.remove(remoteAddr);
                     if (old != null) {
                       log.info("注销客户端信息:{}",remoteAddr);
                     }

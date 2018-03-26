@@ -2,7 +2,7 @@ package com.wf.gts.nameserver.processor;
 import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wf.gts.nameserver.NamesrvController;
+import com.wf.gts.nameserver.NameSrvController;
 import com.wf.gts.remoting.core.RemotingHelper;
 import com.wf.gts.remoting.exception.RemotingCommandException;
 import com.wf.gts.remoting.header.RegisterBrokerRequestHeader;
@@ -21,9 +21,9 @@ import io.netty.channel.ChannelHandlerContext;
 public class DefaultRequestProcessor implements NettyRequestProcessor {
   
     private static final Logger log = LoggerFactory.getLogger(DefaultRequestProcessor.class);
-    protected final NamesrvController namesrvController;
+    protected final NameSrvController namesrvController;
 
-    public DefaultRequestProcessor(NamesrvController namesrvController) {
+    public DefaultRequestProcessor(NameSrvController namesrvController) {
         this.namesrvController = namesrvController;
     }
 

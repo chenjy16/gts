@@ -7,14 +7,14 @@ import org.junit.Before;
 import com.wf.gts.remoting.netty.NettyServerConfig;
 
 public class NameServerInstanceTest {
-    protected NamesrvController nameSrvController = null;
+    protected NameSrvController nameSrvController = null;
     protected NettyServerConfig nettyServerConfig = new NettyServerConfig();
 
 
     @Before
     public void startup() throws Exception {
         nettyServerConfig.setListenPort(9876);
-        nameSrvController = new NamesrvController(nettyServerConfig);
+        nameSrvController = new NameSrvController(nettyServerConfig);
         //boolean initResult = nameSrvController.initialize();
         //assertThat(initResult).isTrue();
        // nameSrvController.start();

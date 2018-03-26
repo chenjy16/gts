@@ -100,8 +100,6 @@ public class ClientConfig {
     this.heartbeatBrokerInterval = heartbeatBrokerInterval;
   }
 
-
-
   public long getTimeoutMillis() {
     return timeoutMillis;
   }
