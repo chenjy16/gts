@@ -56,3 +56,20 @@
 
 
 三、nameserver服务部署
+
+1、参数配置
+
+|属性 |描述 |必填|默认值 |备注 |
+|---- |----|----|------|----|
+|listenPort |注册中心端口  |是|无 |  |
+|serverWorkerThreads |工作线程数量 |否|4 |  |
+|serverCallbackExecutorThreads |执行回调方法的线程数量 |否|4 | |
+|serverSelectorThreads |socket io线程数 |否|3 | |
+|serverOnewaySemaphoreValue |单向请求流量控制|否|256|  |
+|serverAsyncSemaphoreValue |异步请求流量控制 |否|64 | |
+|serverChannelMaxIdleTimeSeconds | 连接最大空闲时间|否|65535 | |
+|serverSocketSndBufSize |发送缓存区 |否|65535| |
+|serverSocketRcvBufSize |接收缓存区 |否|65535| |
+|serverPooledByteBufAllocatorEnable | BUFFER分配方式|否|true | |
+|useEpollNativeSelector |io方式 |否|false | |
+
