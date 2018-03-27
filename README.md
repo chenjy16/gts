@@ -17,13 +17,19 @@
 
 |属性 |描述 |必填|默认值 |备注 |
 |---- |----|----|------|----|
-|namesrvAddr |描述 |必填|默认值 |备注 |
-|clientIP |描述 |必填|默认值 |备注 |
-|instanceName |描述 |必填|默认值 |备注 |
-|pollNameServerInterval |描述 |必填|默认值 |备注 |
-|heartbeatBrokerInterval |描述 |必填|默认值 |备注 |
-|timeoutMillis |描述 |必填|默认值 |备注 |
-|clientWorkerThreads |描述 |必填|默认值 |备注 |
+|namesrvAddr |注册中心地址 ip：port |是|无 |  |
+|instanceName |客户端实例名 |否|DEFAULT |  |
+|pollNameServerInterval |从注册服务拉取manage服务地址 |否|1000 * 30 | |
+|heartbeatBrokerInterval |像manage服务发送心跳频率 |否|1000 * 30 | |
+|timeoutMillis |客户端请求超时时间 |否|3000L |  |
+|clientOnewaySemaphoreValue |单向请求流量控制 |否|65535 | |
+|clientAsyncSemaphoreValue |异步请求流量控制 |否|65535 | |
+|channelNotActiveInterval |检查连接是否关闭 |否|1000 * 60| |
+|clientChannelMaxIdleTimeSeconds |客户端连接最大空闲时间 |否|120s | |
+|clientSocketSndBufSize |发送缓冲区 |否|65535 |备注 |
+|clientSocketRcvBufSize |接收缓冲区 |否|65535 |备注 |
+|clientCloseSocketIfTimeout |客户端超时是否关闭连接 |否|false| |
+
 
 
  
