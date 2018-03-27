@@ -9,6 +9,9 @@ public class GtsManageLiveAddr {
   private String gtsManageAddr;
   
   
+  public GtsManageLiveAddr() {
+    
+  }
   
   
   public GtsManageLiveAddr(long gtsManageId, long lastUpdateTimestamp, String gtsManageName, String gtsManageAddr) {

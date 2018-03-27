@@ -3,6 +3,8 @@ package com.wf.gts.core.bean;
 import com.wf.gts.common.beans.TransactionInvocation;
 import com.wf.gts.core.annotation.GtsTransaction;
 
+import lombok.Getter;
+@Getter
 public class GtsTransInfo {
     /**
      * 补偿方法对象
@@ -27,18 +29,6 @@ public class GtsTransInfo {
         this.invocation = invocation;
     }
 
-
-    public TransactionInvocation getInvocation() {
-        return invocation;
-    }
-
-    public String getTxGroupId() {
-        return txGroupId;
-    }
-
-    public GtsTransaction getTxTransaction() {
-      return txTransaction;
-    }
 
     
 }

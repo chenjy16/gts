@@ -30,9 +30,9 @@ public class ClientManageProcessor implements NettyRequestProcessor {
       throws RemotingCommandException {
       switch (request.getCode()) {
           case RequestCode.HEART_BEAT:
-              return this.heartBeat(ctx, request);
+              return heartBeat(ctx, request);
           case RequestCode.UNREGISTER_CLIENT:
-              return this.unregisterClient(ctx, request);
+              return unregisterClient(ctx, request);
           default:
               break;
       }
@@ -45,7 +45,7 @@ public class ClientManageProcessor implements NettyRequestProcessor {
     HeartbeatData heartbeatData = HeartbeatData.decode(request.getBody(), HeartbeatData.class);
     ClientChannelInfo clientChannelInfo = new ClientChannelInfo(ctx.channel(),heartbeatData.getClientID());
     try {
-      this.producerManager.registerProducer(ctx.channel().remoteAddress().toString(), clientChannelInfo);
+      producerManager.registerProducer(ctx.channel().remoteAddress().toString(), clientChannelInfo);
       response.setCode(ResponseCode.SUCCESS);
     } catch (InterruptedException e) {
       response.setCode(ResponseCode.SYSTEM_ERROR);
@@ -60,7 +60,7 @@ public class ClientManageProcessor implements NettyRequestProcessor {
     UnregisterClientRequestHeader requestHeader =(UnregisterClientRequestHeader) request.decodeCommandCustomHeader(UnregisterClientRequestHeader.class);
     ClientChannelInfo clientChannelInfo = new ClientChannelInfo(ctx.channel(),requestHeader.getClientID());
     try {
-      this.producerManager.unregisterProducer(ctx.channel().remoteAddress().toString(), clientChannelInfo);
+      producerManager.unregisterProducer(ctx.channel().remoteAddress().toString(), clientChannelInfo);
     } catch (InterruptedException e) {
       response.setCode(ResponseCode.SYSTEM_ERROR);
       e.printStackTrace();

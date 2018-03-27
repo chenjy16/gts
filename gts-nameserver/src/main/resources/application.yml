@@ -3,7 +3,7 @@ server:
 gts:
   netty:
     server:
-        listenPort: 8000
+        listenPort: 40000
         serverWorkerThreads:  10
         serverCallbackExecutorThreads:  10
         serverSelectorThreads:  10

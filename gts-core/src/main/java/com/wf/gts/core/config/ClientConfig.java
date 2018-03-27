@@ -1,20 +1,41 @@
 package com.wf.gts.core.config;
 import com.wf.gts.remoting.core.RemotingUtil;
+import com.wf.gts.remoting.netty.NettyClientConfig;
 import com.wf.gts.remoting.netty.TlsSystemConfig;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * TxTransaction 事务基本信息配置类
+ * 事务基本信息配置类
  */
+@Getter
+@Setter
 public class ClientConfig {
 
   private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
-  private boolean useTLS = TlsSystemConfig.tlsEnable;
-  private String namesrvAddr;//
+
+  private String namesrvAddr;
   private String clientIP = RemotingUtil.getLocalAddress();
   private String instanceName ="DEFAULT";
   private int pollNameServerInterval = 1000 * 30;
   private int heartbeatBrokerInterval = 1000 * 30;
   private long timeoutMillis=3000L;
+  
+  
+  
+  private boolean useTLS = TlsSystemConfig.tlsEnable;
+  private int clientWorkerThreads = 4;
+  private int clientOnewaySemaphoreValue = 65535;
+  private int clientAsyncSemaphoreValue = 65535;
+  private int connectTimeoutMillis = 3000;
+  private long channelNotActiveInterval = 1000 * 60;
+  private int clientChannelMaxIdleTimeSeconds = 120;
+  private int clientSocketSndBufSize = 65535; //64K
+  private int clientSocketRcvBufSize = 65535; //64K
+  private boolean clientPooledByteBufAllocatorEnable = false;
+  private boolean clientCloseSocketIfTimeout = false;
+  
   
   
   public String buildMQClientId() {
@@ -24,8 +45,6 @@ public class ClientConfig {
       sb.append(this.getInstanceName());
       return sb.toString();
   }
-
-  
   
   public ClientConfig cloneClientConfig() {
     ClientConfig cc = new ClientConfig();
@@ -34,80 +53,21 @@ public class ClientConfig {
     cc.clientCallbackExecutorThreads = clientCallbackExecutorThreads;
     cc.useTLS = useTLS;
     return cc;
-}
-  
-  public int getClientCallbackExecutorThreads() {
-    return clientCallbackExecutorThreads;
   }
   
-  public void setClientCallbackExecutorThreads(int clientCallbackExecutorThreads) {
-    this.clientCallbackExecutorThreads = clientCallbackExecutorThreads;
+  public NettyClientConfig buildNettyClientConfig() {
+    NettyClientConfig nettyClientConfig = new NettyClientConfig();
+    nettyClientConfig.setClientCallbackExecutorThreads(clientCallbackExecutorThreads);
+    nettyClientConfig.setUseTLS(useTLS);
+    nettyClientConfig.setClientOnewaySemaphoreValue(clientOnewaySemaphoreValue);
+    nettyClientConfig.setClientAsyncSemaphoreValue(clientAsyncSemaphoreValue);
+    nettyClientConfig.setConnectTimeoutMillis(connectTimeoutMillis);
+    nettyClientConfig.setChannelNotActiveInterval(channelNotActiveInterval);
+    nettyClientConfig.setClientChannelMaxIdleTimeSeconds(clientChannelMaxIdleTimeSeconds);
+    nettyClientConfig.setClientWorkerThreads(clientWorkerThreads);
+    nettyClientConfig.setClientSocketSndBufSize(clientSocketSndBufSize);
+    nettyClientConfig.setClientSocketRcvBufSize(clientSocketRcvBufSize);
+    nettyClientConfig.setClientPooledByteBufAllocatorEnable(clientPooledByteBufAllocatorEnable);
+    return nettyClientConfig;
   }
-  
-  public boolean isUseTLS() {
-    return useTLS;
-  }
-  public void setUseTLS(boolean useTLS) {
-    this.useTLS = useTLS;
-  }
-  public String getNamesrvAddr() {
-    return namesrvAddr;
-  }
-  public void setNamesrvAddr(String namesrvAddr) {
-    this.namesrvAddr = namesrvAddr;
-  }
-
-  public String getClientIP() {
-    return clientIP;
-  }
-
-  public void setClientIP(String clientIP) {
-    this.clientIP = clientIP;
-  }
-
-
-  public String getInstanceName() {
-    return instanceName;
-  }
-
-
-
-  public void setInstanceName(String instanceName) {
-    this.instanceName = instanceName;
-  }
-
-
-
-  public int getPollNameServerInterval() {
-    return pollNameServerInterval;
-  }
-
-
-
-  public void setPollNameServerInterval(int pollNameServerInterval) {
-    this.pollNameServerInterval = pollNameServerInterval;
-  }
-
-
-
-  public int getHeartbeatBrokerInterval() {
-    return heartbeatBrokerInterval;
-  }
-
-
-
-  public void setHeartbeatBrokerInterval(int heartbeatBrokerInterval) {
-    this.heartbeatBrokerInterval = heartbeatBrokerInterval;
-  }
-
-  public long getTimeoutMillis() {
-    return timeoutMillis;
-  }
-
-
-  public void setTimeoutMillis(long timeoutMillis) {
-    this.timeoutMillis = timeoutMillis;
-  }
-  
-    
 }

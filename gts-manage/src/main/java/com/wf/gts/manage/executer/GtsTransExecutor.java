@@ -8,7 +8,7 @@ public interface GtsTransExecutor {
    * 回滚整个事务组
    * @param txGroupId 事务组id
    */
-  void rollBack(String txGroupId,ManageController manageController);
+  void rollBack(String txGroupId,ManageController manageController)throws GtsManageException;
 
 
   /**

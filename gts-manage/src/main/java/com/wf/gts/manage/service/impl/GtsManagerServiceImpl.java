@@ -35,7 +35,6 @@ public class GtsManagerServiceImpl implements GtsManagerService{
             }
         }
     } catch (Exception e) {
-        e.printStackTrace();
         LOGGER.error("保存事务组信息报错:{}",e);
         return false;
     }
@@ -49,7 +48,6 @@ public class GtsManagerServiceImpl implements GtsManagerService{
       try {
         JedisUtils.getJedisInstance().execHsetToCache(cacheKey(txGroupId), txTransactionItem.getTaskKey(),JSON.toJSONString(txTransactionItem));
       } catch (Exception e) {
-          e.printStackTrace();
           LOGGER.error("增加事务信息报错:{}",e);
           return false;
       }
@@ -75,7 +73,6 @@ public class GtsManagerServiceImpl implements GtsManagerService{
         txTransactionItem.setStatus(status);
         JedisUtils.getJedisInstance().execHsetToCache(cacheKey(key), txTransactionItem.getTaskKey(),JSON.toJSONString(txTransactionItem));
       } catch (BeansException e) {
-          e.printStackTrace();
           LOGGER.error("更新事务状态信息报错:{}",e);
           return false;
       }
@@ -91,7 +88,6 @@ public class GtsManagerServiceImpl implements GtsManagerService{
           TransItem txTransactionItem=JSON.parseObject(item, TransItem.class);
           return txTransactionItem.getStatus();
       } catch (Exception e) {
-          e.printStackTrace();
           return TransStatusEnum.ROLLBACK.getCode();
       }
   }

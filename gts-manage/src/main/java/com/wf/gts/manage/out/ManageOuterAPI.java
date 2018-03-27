@@ -103,7 +103,7 @@ public class ManageOuterAPI {
         requestHeader.setBrokerId(manageId);
         requestHeader.setBrokerName(manageName);
         requestHeader.setBrokerAddr(manageAddr);
-        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.REGISTER_BROKER, requestHeader);
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.REGISTER_MANAGE, requestHeader);
         RemotingCommand response = this.remotingClient.invokeSync(namesrvAddr, request, timeoutMills);
         assert response != null;
         switch (response.getCode()) {
@@ -148,7 +148,7 @@ public class ManageOuterAPI {
         requestHeader.setBrokerAddr(manageAddr);
         requestHeader.setBrokerId(manageId);
         requestHeader.setBrokerName(manageName);
-        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UNREGISTER_BROKER, requestHeader);
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UNREGISTER_MANAGE, requestHeader);
         RemotingCommand response = this.remotingClient.invokeSync(namesrvAddr, request, 3000);
         assert response != null;
         switch (response.getCode()) {

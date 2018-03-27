@@ -11,20 +11,13 @@ public class RequestCode {
   
   public static final int HEART_BEAT = 34;
   public static final int UNREGISTER_CLIENT=35;
-  
-  
 
-  public static final int PUT_KV_CONFIG = 100;
 
-  public static final int GET_KV_CONFIG = 101;
+  public static final int REGISTER_MANAGE = 103;
 
-  public static final int REGISTER_BROKER = 103;
+  public static final int UNREGISTER_MANAGE = 104;
 
-  public static final int UNREGISTER_BROKER = 104;
-  
-  public static final int GET_ROUTEINTO_BY_TOPIC = 105;
-
-  public static final int GET_BROKER_CLUSTER_INFO = 106;
+  public static final int GET_MANAGE_CLUSTER_INFO = 106;
   
 
 

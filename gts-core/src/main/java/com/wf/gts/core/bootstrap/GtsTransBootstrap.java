@@ -9,9 +9,7 @@ import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.util.SpringBeanUtils;
 
 
-/**
- * TxTransaction 启动类
- */
+
 @Component
 public class GtsTransBootstrap extends ClientConfig implements ApplicationContextAware {
   
@@ -36,15 +34,13 @@ public class GtsTransBootstrap extends ClientConfig implements ApplicationContex
         gtsTransInitialize.init(config);
     }
 
-    
-    public GtsTransInitialize getTxTransactionInitialize() {
+    public GtsTransInitialize getGtsTransInitialize() {
       return gtsTransInitialize;
     }
 
-
-    public void setTxTransactionInitialize(GtsTransInitialize gtsTransInitialize) {
+    public void setGtsTransInitialize(GtsTransInitialize gtsTransInitialize) {
       this.gtsTransInitialize = gtsTransInitialize;
     }
-    
+
     
 }

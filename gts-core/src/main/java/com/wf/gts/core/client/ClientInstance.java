@@ -16,7 +16,6 @@ import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.exception.GtsClientException;
 import com.wf.gts.remoting.exception.RemotingException;
 import com.wf.gts.remoting.header.UnregisterClientRequestHeader;
-import com.wf.gts.remoting.netty.NettyClientConfig;
 import com.wf.gts.remoting.protocol.HeartbeatData;
 import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.RemotingCommand;
@@ -32,9 +31,7 @@ public class ClientInstance {
     private final static long LOCK_TIMEOUT_MILLIS = 3000;
     private final Lock lockNamesrv = new ReentrantLock();
     private final Lock lockHeartbeat = new ReentrantLock();
-    
     private  ClientAPIImpl clientAPIImpl;
-    private  NettyClientConfig nettyClientConfig;
     private  AtomicReference<LiveManageInfo> liveManageRef=new AtomicReference<LiveManageInfo>();
     private  ClientConfig config;
     
@@ -64,10 +61,7 @@ public class ClientInstance {
     
    private void initialize(ClientConfig config){
      this.config=config;
-     this.nettyClientConfig = new NettyClientConfig();
-     this.nettyClientConfig.setClientCallbackExecutorThreads(config.getClientCallbackExecutorThreads());
-     this.nettyClientConfig.setUseTLS(config.isUseTLS());
-     this.clientAPIImpl = new ClientAPIImpl(this.nettyClientConfig, null,new ClientRemotingProcessor());
+     clientAPIImpl = new ClientAPIImpl(config.buildNettyClientConfig(), null,new ClientRemotingProcessor());
      clientAPIImpl.start();
      updateRouteInfoFromNameServer();
      sendHeartbeatToAllManageWithLock();
@@ -82,7 +76,7 @@ public class ClientInstance {
    public void shutdown() {
       this.scheduledExecutorService.shutdown();
       unregisterClientWithLock();
-      this.clientAPIImpl.shutdown();
+      clientAPIImpl.shutdown();
    }
     
     
@@ -128,13 +122,13 @@ public class ClientInstance {
      */
     private void unregisterClientWithLock() {
         try {
-            if (this.lockHeartbeat.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-               this.unregisterClient(this.liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), config.buildMQClientId(), config.getTimeoutMillis());
+            if (lockHeartbeat.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+               unregisterClient(liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), config.buildMQClientId(), config.getTimeoutMillis());
             }
         }catch (Exception e) {
             LOGGER.warn("客户端注销异常:{}", e);
         }finally {
-            this.lockHeartbeat.unlock();
+            lockHeartbeat.unlock();
         }
     }
     
@@ -144,8 +138,7 @@ public class ClientInstance {
         UnregisterClientRequestHeader requestHeader = new UnregisterClientRequestHeader();
         requestHeader.setClientID(clientID);
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UNREGISTER_CLIENT, requestHeader);
-        RemotingCommand response = this.clientAPIImpl.sendMessageSync(addr,timeoutMillis,request);
-        assert response != null;
+        RemotingCommand response = clientAPIImpl.sendMessageSync(addr,timeoutMillis,request);
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
                 return;
@@ -163,13 +156,13 @@ public class ClientInstance {
      * @date: 2018年3月21日 下午2:17:43
      */
     private void sendHeartbeatToAllManageWithLock() {
-        if (this.lockHeartbeat.tryLock()) {
+        if (lockHeartbeat.tryLock()) {
             try {
-                this.sendHeartbeatToAllManage();
+                sendHeartbeatToAllManage();
             } catch (Exception e) {
                 LOGGER.error("发送心跳给manage异常:{}", e);
             } finally {
-                this.lockHeartbeat.unlock();
+                lockHeartbeat.unlock();
             }
         } else {
             LOGGER.warn("发送心跳锁失败");
@@ -180,9 +173,9 @@ public class ClientInstance {
     private void sendHeartbeatToAllManage() {
       HeartbeatData heartbeatData = new HeartbeatData();
       heartbeatData.setClientID(config.buildMQClientId());
-      if (Objects.nonNull( this.liveManageRef.get())) {
+      if (Objects.nonNull(liveManageRef.get())) {
           try {
-              RemotingCommand res= this.clientAPIImpl.sendHearbeat(this.liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
+              RemotingCommand res= clientAPIImpl.sendHearbeat(liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
               LOGGER.info("发送心跳信息:{}",JSON.toJSONString(res));
           } catch (Exception e) {
               LOGGER.info("发送心跳异常:{}",e);
@@ -201,11 +194,11 @@ public class ClientInstance {
      */
     private boolean updateRouteInfoFromNameServer() {
         try {
-            if (this.lockNamesrv.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+            if (lockNamesrv.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
               
                 LiveManageInfo liveManageInfo=this.clientAPIImpl.getGtsClusterInfo(config.getNamesrvAddr(),config.getTimeoutMillis());
                 LOGGER.info("更新路由信息:{}",JSON.toJSONString(liveManageInfo));
-                this.liveManageRef.set(liveManageInfo);
+                liveManageRef.set(liveManageInfo);
                 return true;
                 
             } else {
@@ -214,7 +207,7 @@ public class ClientInstance {
         } catch (Exception e) {
             LOGGER.error("更新路由信息失败:{}", e);
         }finally {
-          this.lockNamesrv.unlock();
+          lockNamesrv.unlock();
         }
         return false;
     }

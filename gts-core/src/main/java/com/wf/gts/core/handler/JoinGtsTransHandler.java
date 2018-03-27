@@ -145,14 +145,10 @@ public class JoinGtsTransHandler implements GtsTransHandler {
      */
     private void  findTransactionGroupStatus(GtsTransInfo info,BlockTask waitTask) throws Throwable{
         //如果获取通知超时了，那么就去获取事务组的状态
-        final int transactionGroupStatus = gtsMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().socketTimeout());
-        
-        if (TransStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||
-                TransStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
-            LOGGER.info("事务组id：{}，自动超时，获取事务组状态为提交，进行提交!", info.getTxGroupId());
+        int transactionGroupStatus = gtsMessageService.findTransactionGroupStatus(info.getTxGroupId(),info.getTxTransaction().socketTimeout());
+        if (TransStatusEnum.PRE_COMMIT.getCode() == transactionGroupStatus ||TransStatusEnum.COMMIT.getCode() == transactionGroupStatus) {
             waitTask.setAsyncCall(objects -> TransStatusEnum.COMMIT.getCode());
         } else {
-            LOGGER.info("事务组id：{}，自动超时进行回滚!", info.getTxGroupId());
             waitTask.setAsyncCall(objects -> TransStatusEnum.ROLLBACK.getCode());
         }
         LOGGER.error("从redis查询事务状态为:{}", transactionGroupStatus);

@@ -2,9 +2,7 @@ package com.wf.gts.nameserver.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import com.wf.gts.remoting.netty.NettyServerConfig;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,7 +40,7 @@ public class NameServNettyServerConfig {
       cfg.setServerSocketRcvBufSize(serverSocketRcvBufSize);
       cfg.setServerWorkerThreads(serverWorkerThreads);
       cfg.setUseEpollNativeSelector(useEpollNativeSelector);
-    return cfg;
+      return cfg;
   }
 
 

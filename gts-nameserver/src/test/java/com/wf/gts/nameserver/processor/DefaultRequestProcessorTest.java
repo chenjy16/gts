@@ -94,7 +94,7 @@ public class DefaultRequestProcessorTest {
         RegisterBrokerRequestHeader header = new RegisterBrokerRequestHeader();
         header.setBrokerName("broker");
         RemotingCommand request = RemotingCommand.createRequestCommand(
-            reg ? RequestCode.REGISTER_BROKER : RequestCode.UNREGISTER_BROKER, header);
+            reg ? RequestCode.REGISTER_MANAGE : RequestCode.UNREGISTER_MANAGE, header);
         request.addExtField("brokerName", "broker");
         request.addExtField("brokerAddr", "10.10.1.1");
         request.addExtField("clusterName", "cluster");

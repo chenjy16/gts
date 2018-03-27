@@ -1,7 +1,7 @@
 package com.wufumall.example.b.facade.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.wf.gts.core.annotation.TxTransaction;
+import com.wf.gts.core.annotation.GtsTransaction;
 import com.wufumall.core.dto.result.BaseCommonResult;
 import com.wufumall.example.b.dao.TxExampleBMapper;
 import com.wufumall.example.b.facade.ExampleBFacade;
@@ -29,7 +29,7 @@ public class ExampleBFacadeImpl implements ExampleBFacade{
 	private TxExampleBMapper exampleBmapper;
 
 	@Override
-	@TxTransaction
+	@GtsTransaction
 	public BaseCommonResult insert(ExampleBInsertRequest request) {
 		log.info("服务B insert接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();	
@@ -43,7 +43,7 @@ public class ExampleBFacadeImpl implements ExampleBFacade{
 	}
 
 	@Override
-	 @TxTransaction
+	@GtsTransaction
 	public BaseCommonResult fail(ExampleBInsertRequest request) {
 		log.info("服务B fail接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();	
@@ -57,7 +57,7 @@ public class ExampleBFacadeImpl implements ExampleBFacade{
 	}
 
 	@Override
-	 @TxTransaction
+	@GtsTransaction
 	public BaseCommonResult timeout(ExampleBInsertRequest request) {
 		log.info("服务B timeout接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();	

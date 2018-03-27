@@ -41,11 +41,11 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
                 request);
         }
         switch (request.getCode()) {
-            case RequestCode.REGISTER_BROKER:
+            case RequestCode.REGISTER_MANAGE:
                 return this.registerBrokerWithFilterServer(ctx, request);
-            case RequestCode.UNREGISTER_BROKER:
+            case RequestCode.UNREGISTER_MANAGE:
                 return this.unregisterBroker(ctx, request); 
-            case RequestCode.GET_BROKER_CLUSTER_INFO:
+            case RequestCode.GET_MANAGE_CLUSTER_INFO:
               return this.getBrokerClusterInfo(ctx, request);
             default:
                 break;

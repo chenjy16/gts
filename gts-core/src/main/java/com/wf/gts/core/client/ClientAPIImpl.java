@@ -27,17 +27,17 @@ public class ClientAPIImpl {
   public ClientAPIImpl(NettyClientConfig nettyClientConfig,RPCHook rpcHook,ClientRemotingProcessor clientRemotingProcessor) {
       this.clientRemotingProcessor=clientRemotingProcessor;
       this.remotingClient = new NettyRemotingClient(nettyClientConfig, null);
-      this.remotingClient.registerRPCHook(rpcHook);
-      this.remotingClient.registerProcessor(RequestCode.ROLLBACK_TRANSGROUP, this.clientRemotingProcessor, null);
-      this.remotingClient.registerProcessor(RequestCode.COMMIT_TRANS, this.clientRemotingProcessor, null);
+      remotingClient.registerRPCHook(rpcHook);
+      remotingClient.registerProcessor(RequestCode.ROLLBACK_TRANSGROUP, this.clientRemotingProcessor, null);
+      remotingClient.registerProcessor(RequestCode.COMMIT_TRANS, this.clientRemotingProcessor, null);
   }
   
   public void start() {
-    this.remotingClient.start();
+    remotingClient.start();
   }
   
   public void shutdown() {
-    this.remotingClient.shutdown();
+    remotingClient.shutdown();
 }
 
   
@@ -56,8 +56,8 @@ public class ClientAPIImpl {
    */
   public LiveManageInfo getGtsClusterInfo(String addr,long timeoutMillis) throws InterruptedException, RemotingTimeoutException,
       RemotingSendRequestException, RemotingConnectException, GtsClientException {
-      RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_CLUSTER_INFO, null);
-      RemotingCommand response = this.remotingClient.invokeSync(addr, request, timeoutMillis);
+      RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_MANAGE_CLUSTER_INFO, null);
+      RemotingCommand response = remotingClient.invokeSync(addr, request, timeoutMillis);
       assert response != null;
       switch (response.getCode()) {
           case ResponseCode.SUCCESS: {
@@ -84,7 +84,7 @@ public class ClientAPIImpl {
    * @throws InterruptedException
    */
   public RemotingCommand sendMessageSync( String addr, long timeoutMillis, RemotingCommand request) throws RemotingException,InterruptedException {
-      return this.remotingClient.invokeSync(addr, request, timeoutMillis);
+      return remotingClient.invokeSync(addr, request, timeoutMillis);
   }
   
   
@@ -100,7 +100,7 @@ public class ClientAPIImpl {
    * @throws  RemotingException
    */
   public void sendMessageAsync( String addr, long timeoutMillis, RemotingCommand request, InvokeCallback invokeCallback) throws InterruptedException, RemotingException {
-    this.remotingClient.invokeAsync(addr, request, timeoutMillis, invokeCallback);
+    remotingClient.invokeAsync(addr, request, timeoutMillis, invokeCallback);
   }
 
   
@@ -119,7 +119,7 @@ public class ClientAPIImpl {
    * @throws InterruptedException
    */
   public void invokeOnewayImpl( String addr,  RemotingCommand request,  long timeoutMillis) throws RemotingConnectException, RemotingTooMuchRequestException, RemotingTimeoutException, RemotingSendRequestException, InterruptedException{
-    this.remotingClient.invokeOneway(addr, request, timeoutMillis);
+    remotingClient.invokeOneway(addr, request, timeoutMillis);
   }
   
   
@@ -139,7 +139,7 @@ public class ClientAPIImpl {
   public RemotingCommand sendHearbeat(String addr,HeartbeatData heartbeatData,long timeoutMillis) throws RemotingException, GtsManageException, InterruptedException {
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.HEART_BEAT, null);
       request.setBody(heartbeatData.encode());
-      return this.remotingClient.invokeSync(addr, request, timeoutMillis);
+      return remotingClient.invokeSync(addr, request, timeoutMillis);
   }
   
 }

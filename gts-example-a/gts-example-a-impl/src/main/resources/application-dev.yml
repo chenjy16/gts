@@ -33,20 +33,6 @@ spring:
     minEvictableIdleTimeMillis : 1800000
     jackson:
       default-property-inclusion: non_null
-config:
-  jedis :
-    jedisShardInfo1 :
-      host : 192.168.1.235
-      port : 6379
-    jedisShardInfo2 :
-      host : 192.168.1.235
-      port : 6380
-    maxTotal: 1024
-    maxIdle: 250
-    maxWaitMillis : 2000
-    testOnBorrow: true
-    testOnReturn: true
-    seconds : 1800
 
 dubbo:
   application:
@@ -64,8 +50,6 @@ dubbo:
     protocol: zookeeper
     address: 192.168.1.235:2181,192.168.1.235:2182,192.168.1.235:2183
     
-tx:
-  txManagerUrl: http://192.168.1.235:40000
-  serializer: kryo
-  nettySerializer: kryo
-  blockingQueueType: Linked
+gts:
+  namesrvAddr: localhost:40000
+

@@ -29,7 +29,7 @@ cleanCommitTxGroupJob:
   
 gts:
   manage:
-    namesrvAddr:  localhost:8000  #ip:port;ip:port
+    namesrvAddr:  localhost:40000  #ip:port;ip:port
     manageName: gtsmanage
     manageId: 1
     registerBrokerTimeoutMills: 6000
@@ -38,7 +38,7 @@ gts:
     clientManagerThreadPoolQueueCapacity: 3000
   netty:
     server:
-        listenPort: 9876
+        listenPort: 40001
         serverWorkerThreads:  10
         serverCallbackExecutorThreads:  10
         serverSelectorThreads:  10

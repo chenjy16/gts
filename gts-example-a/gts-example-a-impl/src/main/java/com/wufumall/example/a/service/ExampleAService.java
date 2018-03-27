@@ -1,7 +1,8 @@
 package com.wufumall.example.a.service;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.wf.gts.core.annotation.TxTransaction;
+
+import com.wf.gts.core.annotation.GtsTransaction;
 import com.wufumall.core.dto.result.BaseCommonResult;
 import com.wufumall.example.a.dao.TxExampleAMapper;
 import com.wufumall.example.a.model.TxExampleA;
@@ -61,7 +62,7 @@ public class ExampleAService{
 	* @return
 	* @throws Exception
 	 */
-	@TxTransaction(serviceTransTimeout=30000)
+	@GtsTransaction(serviceTransTimeout=30000)
 	public BaseCommonResult insertAll(TxExampleA request) throws Exception{
 		log.info("主流程接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();		
@@ -95,7 +96,7 @@ public class ExampleAService{
 	* @param request
 	* @return
 	 */
-	@TxTransaction
+	@GtsTransaction
 	public BaseCommonResult testBFail(TxExampleA request){
 		log.info("主流程接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();		
@@ -128,7 +129,7 @@ public class ExampleAService{
 	* @param request
 	* @return
 	 */
-	@TxTransaction
+	@GtsTransaction
 	public BaseCommonResult testBTimeout(TxExampleA request){
 		log.info("主流程接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();		
@@ -161,7 +162,7 @@ public class ExampleAService{
 	* @param request
 	* @return
 	 */
-	@TxTransaction
+	@GtsTransaction
 	public BaseCommonResult testCFail(TxExampleA request){
 		log.info("主流程接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();		
@@ -194,7 +195,7 @@ public class ExampleAService{
 	* @param request
 	* @return
 	 */
-	@TxTransaction
+	@GtsTransaction
 	public BaseCommonResult testCTimeout(TxExampleA request){
 		log.info("主流程接口开始,请求参数为：{}",request);
 		BaseCommonResult result = new BaseCommonResult();		

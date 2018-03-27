@@ -19,14 +19,14 @@ public class GtsClient  {
      * 启动netty客户端
      */
     public void start(ClientConfig config) {
-        this.clientInstance.start(config);
+        clientInstance.start(config);
     }
     
     /**
      * 停止服务
      */
     public void stop() {
-        this.clientInstance.shutdown();
+        clientInstance.shutdown();
     }
 
    

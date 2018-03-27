@@ -41,31 +41,27 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
      * @param txGroupId 事务组id
      */
     @Override
-    public void rollBack(String txGroupId,ManageController manageController) {
-        gtsManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransStatusEnum.ROLLBACK.getCode());
+    public void rollBack(String txGroupId,ManageController manageController) throws GtsManageException{
         List<TransItem> txTransactionItems = gtsManagerService.listByTxGroupId(txGroupId);
         txTransactionItems= filterData(txTransactionItems);
         if(CollectionUtils.isEmpty(txTransactionItems)){
-          //抛异常
+          throw new GtsManageException(10001, "事务组信息不完整");
         }
         HashMap<String,ClientChannelInfo> channels=manageController.getClientChannelManager().getAllClientChannelTable();
-       
-        
+        LOGGER.info("rollBack:{}",JSON.toJSONString(channels));
         RemotingServer remotingServer=manageController.getRemotingServer();
         doRollBack(txGroupId, txTransactionItems,channels,remotingServer);
     }
 
 
     /**
-     * 事务预提交
+     * 
      * @param txGroupId 事务组id
      * @return true 成功 false 失败
      * @throws GtsManageException 
      */
     @Override
     public Boolean preCommit(String txGroupId,ManageController manageController) throws GtsManageException {
-      
-        boolean res=gtsManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransStatusEnum.COMMIT.getCode());
         List<TransItem> txTransactionItems = gtsManagerService.listByTxGroupId(txGroupId);
         txTransactionItems= filterData(txTransactionItems);
         if(CollectionUtils.isEmpty(txTransactionItems)){
@@ -82,6 +78,7 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
         } else {
             doCommit(txGroupId, txTransactionItems,channels,remotingServer);
         }
+        
         return true;
     }
     
@@ -105,14 +102,14 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
     }
 
     
-    /**
-     * 功能描述: 检测客户端通道状态
-     * @author: chenjy
-     * @date: 2018年3月20日 下午3:08:38 
-     * @param txTransactionItems
-     * @param channels
-     * @return
-     */
+   /**
+    * 功能描述: 检测客户端通道状态
+    * @author: chenjy
+    * @date: 2018年3月27日 上午10:30:22 
+    * @param txTransactionItems
+    * @param channels
+    * @return
+    */
     private Boolean checkChannel(List<TransItem> txTransactionItems,HashMap<String,ClientChannelInfo> channels) {
         if (CollectionUtils.isNotEmpty(txTransactionItems)) {
             List<TransItem> collect = txTransactionItems.stream().filter(item -> {
@@ -127,9 +124,13 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
 
     
     /**
-     * 执行回滚动作
-     * @param txGroupId          事务组id
-     * @param txTransactionItems 连接到当前tm的channel信息
+     * 功能描述: 执行回滚动作
+     * @author: chenjy
+     * @date: 2018年3月27日 上午10:30:02 
+     * @param txGroupId
+     * @param txTransactionItems
+     * @param channels
+     * @param remotingServer
      */
     private void doRollBack(String txGroupId, List<TransItem> txTransactionItems,HashMap<String,ClientChannelInfo> channels,RemotingServer remotingServer) {
         try {
@@ -139,6 +140,7 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
                         .map(item ->
                                 CompletableFuture.runAsync(() -> {
                                     ClientChannelInfo channelinfo=channels.get(item.getModelName());
+                                    
                                     try {
                                       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, null);
                                       TransGroup txTransactionGroup = new TransGroup();
@@ -148,55 +150,55 @@ public class GtsTransExecutorImpl implements GtsTransExecutor{
                                       byte[] body = RemotingSerializable.encode(txTransactionGroup);
                                       request.setBody(body);
                                       RemotingCommand res=remotingServer.invokeSync(channelinfo.getChannel(), request, 3000);
-                                      //更新事务组中事务状态
-                                     // txManagerService.updateTxTransactionItemStatus(item.getTxGroupId(), item.getTaskKey(),TransactionStatusEnum.ROLLBACK.getCode());
                                     } catch (RemotingSendRequestException | RemotingTimeoutException
                                         | InterruptedException e1) {
                                       LOGGER.error("txManger rollback指令失败，channel为空，事务组id：{}, 事务taskId为:{}",txGroupId, item.getTaskKey());
                                     }
+                                    
+                                    
                                 }).whenComplete((v, e) ->
                                     LOGGER.info("txManger 成功发送rollback指令 事务taskId为：{}", item.getTaskKey())
                                 ))
                         .toArray(CompletableFuture[]::new);
                  
                 CompletableFuture.allOf(cfs).join();
-                LOGGER.info("txManger 成功发送rollback指令 事务组id为：{}",txGroupId);
+                //更新事务组状态
+                gtsManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransStatusEnum.ROLLBACK.getCode());
             }
         } catch (Exception e) {
             LOGGER.error("txManger 发送rollback指令异常：{} ", e);
         }
+       
     }
 
 
     /**
-     * 执行提交动作
-     * @param txGroupId          事务组id
-     * @param txTransactionItems 连接到当前tm的channel信息
+     * 功能描述: 执行提交动作
+     * @author: chenjy
+     * @date: 2018年3月27日 上午10:29:47 
+     * @param txGroupId
+     * @param txTransactionItems
+     * @param channels
+     * @param remotingServer
      */
-    protected void doCommit(String txGroupId, List<TransItem> txTransactionItems,HashMap<String,ClientChannelInfo> channels,RemotingServer remotingServer) {
-        try {
-            txTransactionItems.forEach(item -> {
-                ClientChannelInfo channelinfo=channels.get(item.getModelName());
-                try {
-                  TransGroup txTransactionGroup = new TransGroup();
-                  item.setStatus(TransStatusEnum.COMMIT.getCode());
-                  txTransactionGroup.setStatus(TransStatusEnum.COMMIT.getCode());
-                  txTransactionGroup.setItemList(Collections.singletonList(item));
-                  
-                  RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.COMMIT_TRANS, null);
-                  byte[] body = RemotingSerializable.encode(txTransactionGroup);
-                  request.setBody(body);
-                  RemotingCommand res=remotingServer.invokeSync(channelinfo.getChannel(), request, 3000);
-                  //更新事务组中事务状态
-                  //txManagerService.updateTxTransactionItemStatus(item.getTxGroupId(), item.getTaskKey(),TransactionStatusEnum.COMMIT.getCode());
-                } catch (RemotingSendRequestException | RemotingTimeoutException| InterruptedException e1) {
-                  LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
-                }
-            });
-        } catch (Exception e) {
-            LOGGER.info("txManger 发送doCommit指令异常:{} ", e);
-        }
+    private void doCommit(String txGroupId, List<TransItem> txTransactionItems,HashMap<String,ClientChannelInfo> channels,RemotingServer remotingServer) {
+        txTransactionItems.forEach(item -> {
+            ClientChannelInfo channelinfo=channels.get(item.getModelName());
+            try {
+              TransGroup transGroup = new TransGroup();
+              item.setStatus(TransStatusEnum.COMMIT.getCode());
+              transGroup.setStatus(TransStatusEnum.COMMIT.getCode());
+              transGroup.setItemList(Collections.singletonList(item));
+              
+              RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.COMMIT_TRANS, null);
+              byte[] body = RemotingSerializable.encode(transGroup);
+              request.setBody(body);
+              RemotingCommand res=remotingServer.invokeSync(channelinfo.getChannel(), request, 3000);
+            } catch (RemotingSendRequestException | RemotingTimeoutException| InterruptedException e1) {
+              LOGGER.info("txManger 发送doCommit指令失败，channel为空，事务组id：{}, 事务taskId为:{}", txGroupId, item.getTaskKey());
+            }
+        });
+        //更新事务组状态
+        gtsManagerService.updateTxTransactionItemStatus(txGroupId, txGroupId, TransStatusEnum.COMMIT.getCode());
     }
-
-
 }

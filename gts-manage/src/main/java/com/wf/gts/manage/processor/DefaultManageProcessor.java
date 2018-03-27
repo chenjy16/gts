@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class DefaultManageProcessor implements NettyRequestProcessor {
   
-   private static final Logger log = LoggerFactory.getLogger(DefaultManageProcessor.class);
+   private static final Logger logger = LoggerFactory.getLogger(DefaultManageProcessor.class);
    
    private ManageController manageController;
    
@@ -83,7 +83,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
               }
         } catch (Exception e) {
             response.setCode(ResponseCode.SYSTEM_ERROR);
-            log.error("创建事务组异常:{}", e);
+            logger.error("创建事务组异常:{}", e);
         }
         return response;
     }
@@ -110,7 +110,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
           response.setCode(ResponseCode.SUCCESS);
         } catch (Exception e) {
           response.setCode(ResponseCode.SYSTEM_ERROR);
-          e.printStackTrace();
+          logger.error("查询事务状态异常:{}", e);
         }
         return response;
     }
@@ -142,7 +142,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
           }
       } catch (Exception e) {
         response.setCode(ResponseCode.SYSTEM_ERROR);
-        e.printStackTrace();
+        logger.error("添加事务异常:{}", e);
       }
       return response;
   }
@@ -169,7 +169,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
        response.setCode(ResponseCode.SUCCESS);
      } catch (Exception e) {
       response.setCode(ResponseCode.SYSTEM_ERROR);
-      e.printStackTrace();
+      logger.error("回滚事务异常:{}", e);
     }
      return response;
    }
@@ -196,7 +196,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
        response.setCode(ResponseCode.SUCCESS);
     } catch (Exception e) {
       response.setCode(ResponseCode.SYSTEM_ERROR);
-      e.printStackTrace();
+      logger.error("预提交事务异常:{}", e);
     }
      return response;
    }
@@ -220,7 +220,7 @@ public class DefaultManageProcessor implements NettyRequestProcessor {
            manageController.getTxManagerService().updateTxTransactionItemStatus(tx.getId(), tx.getItemList().get(0).getTaskKey(),tx.getItemList().get(0).getStatus());
          }
       } catch (Exception e) {
-          e.printStackTrace();
+        logger.error("提交事务异常:{}", e);
       }
      return null;
    }

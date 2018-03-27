@@ -1,7 +1,10 @@
 package com.wf.gts.core.client;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
 import org.junit.Test;
+
 import com.alibaba.fastjson.JSON;
 import com.wf.gts.common.beans.TransGroup;
 import com.wf.gts.common.beans.TransItem;
@@ -11,7 +14,6 @@ import com.wf.gts.common.utils.IdWorkerUtils;
 import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.remoting.header.AddTransRequestHeader;
 import com.wf.gts.remoting.header.FindTransGroupStatusRequestHeader;
-import com.wf.gts.remoting.header.FindTransGroupStatusResponseHeader;
 import com.wf.gts.remoting.header.PreCommitRequestHeader;
 import com.wf.gts.remoting.header.RollBackTransGroupRequestHeader;
 import com.wf.gts.remoting.protocol.RemotingCommand;
@@ -180,6 +182,28 @@ public class ClientInstanceTest {
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, header);
       RemotingCommand res=ins.getClientAPIImpl().sendMessageSync("localhost:9876", 3000l, request);
       System.out.println(JSON.toJSONString(res));
+      System.in.read();
+    }
+    
+    
+    @Test
+    public void testAsyncCompleteCommitTxTransaction() throws Exception {
+      ClientConfig config=new ClientConfig();
+      config.setNamesrvAddr("localhost:8000");
+      ClientInstance ins=new ClientInstance();
+      ins.start(config);
+      
+      
+      RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.COMMIT_TRANS, null);
+      TransGroup tx = new TransGroup();
+      tx.setId("test");
+      TransItem item = new TransItem();
+      item.setTaskKey("test");
+      item.setStatus(3);
+      tx.setItemList(Collections.singletonList(item));
+      byte[] body = RemotingSerializable.encode(tx);
+      request.setBody(body);
+      ins.getClientAPIImpl().invokeOnewayImpl("localhost:9876",request ,3000);
       System.in.read();
     }
  
