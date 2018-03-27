@@ -7,6 +7,11 @@
 #基于dubbox
 
 
+
+![Image text](https://github.com/chenjy16/gts/blob/master/gts.png)
+
+
+
 一、客户端配置
  
 1、注解说明
