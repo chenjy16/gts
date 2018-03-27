@@ -26,8 +26,8 @@
 |clientAsyncSemaphoreValue |异步请求流量控制 |否|65535 | |
 |channelNotActiveInterval |检查连接是否关闭 |否|1000 * 60| |
 |clientChannelMaxIdleTimeSeconds |客户端连接最大空闲时间 |否|120s | |
-|clientSocketSndBufSize |发送缓冲区 |否|65535 |备注 |
-|clientSocketRcvBufSize |接收缓冲区 |否|65535 |备注 |
+|clientSocketSndBufSize |发送缓冲区 |否|65535 | |
+|clientSocketRcvBufSize |接收缓冲区 |否|65535 | |
 |clientCloseSocketIfTimeout |客户端超时是否关闭连接 |否|false| |
 
 
