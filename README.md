@@ -17,8 +17,13 @@
 
 |属性 |描述 |必填|默认值 |备注 |
 |---- |----|----|------|----|
- 
-
+|namesrvAddr |描述 |必填|默认值 |备注 |
+|clientIP |描述 |必填|默认值 |备注 |
+|instanceName |描述 |必填|默认值 |备注 |
+|pollNameServerInterval |描述 |必填|默认值 |备注 |
+|heartbeatBrokerInterval |描述 |必填|默认值 |备注 |
+|timeoutMillis |描述 |必填|默认值 |备注 |
+|clientWorkerThreads |描述 |必填|默认值 |备注 |
 
 
  
