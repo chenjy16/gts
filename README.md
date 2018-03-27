@@ -2,15 +2,23 @@
 全局事务管理
 
 
--需要jdk1.8以上
--非强一致性控制，在网络不通等极端情况下可能导致数据不一致，需要告警人工介入
--基于dubbox
+#需要jdk1.8以上
+#非强一致性控制，在网络不通等极端情况下可能导致数据不一致，需要告警人工介入
+#基于dubbox
 
 
 一、客户端配置
  
 1、注解说明
 
+ //事务发起方超时时间
+  long clientTransTimeout() default 3000L;
+  
+  //事务参与方超时时间
+  long serviceTransTimeout() default 3000L;
+  
+  //请求超时时间
+  long socketTimeout() default 3000L;
  
  
 2、spring配置
