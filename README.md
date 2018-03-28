@@ -62,6 +62,7 @@
 
 二、manage服务部署
 
+1、配置参数
 
 |属性 |描述 |必填|默认值 |备注 |
 |---- |----|----|------|----|
@@ -106,6 +107,16 @@ netty.client
 |clientSocketRcvBufSize |接收缓冲区 |否|65535 | 64k|
 |connectTimeoutMillis |客户端超时是否关闭连接 |否|false| |
 
+
+2、部署命令
+
+下载代码打包
+
+nohup java -jar 应用   > /dev/null 2>&1    &
+
+目前可以启动两个实例，一个主一个从，manageId来区分
+
+
 三、nameserver服务部署
 
 1、参数配置
@@ -123,6 +134,17 @@ netty.client
 |serverSocketRcvBufSize |接收缓存区 |否|65535| 64k|
 |serverPooledByteBufAllocatorEnable | BUFFER分配方式|否|true | |
 |useEpollNativeSelector |io方式 |否|false | |
+
+
+2、部署命令
+
+下载代码打包
+
+nohup java -jar 应用   > /dev/null 2>&1    &
+
+可以启动多个实例
+
+
 
 四、测试场景
 
