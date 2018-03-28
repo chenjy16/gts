@@ -16,6 +16,8 @@
  
 1、注解说明
 
+ GtsTransaction  该注解为分布式事务的切面（AOP point），如果业务方的service服务需要参与分布式事务，则需要加上此注解
+
  //事务发起方超时时间
   long clientTransTimeout() default 3000L;
   
@@ -33,7 +35,7 @@
 |namesrvAddr |注册中心地址 ip：port |是|无 |  |
 |instanceName |客户端实例名 |否|DEFAULT |  |
 |pollNameServerInterval |从注册服务拉取manage服务地址 |否|1000 * 30 ms | |
-|heartbeatBrokerInterval |像manage服务发送心跳频率 |否|1000 * 30 ms| |
+|heartbeatBrokerInterval |向manage服务发送心跳频率 |否|1000 * 30 ms| |
 |timeoutMillis |客户端请求超时时间 |否|3000 ms |  |
 |clientOnewaySemaphoreValue |单向请求流量控制 |否|65535 | |
 |clientAsyncSemaphoreValue |异步请求流量控制 |否|65535 | |
@@ -61,7 +63,7 @@
 
 |属性 |描述 |必填|默认值 |备注 |
 |---- |----|----|------|----|
-|namesrvAddr |注册中心地址 ip：port |是|无 |  |
+|namesrvAddr |注册中心地址 ip：port;ip：port |是|无 |  |
 |manageName |manage实例名 |否| |  |
 |manageId |manage标识|是|1 |1：主  其它数字为备 |
 |registerBrokerTimeoutMills |注册manage地址向nameserver的请求超时时间 |否|6000 ms | |
@@ -92,8 +94,8 @@ netty.client
 
 |属性 |描述 |必填|默认值 |备注 |
 |---- |----|----|------|----|
-|clientWorkerThreads |工作线程数量 |否|  | |
-|clientCallbackExecutorThreads |执行回调方法的线程数量 |否| | |
+|clientWorkerThreads |工作线程数量 |否|  4| |
+|clientCallbackExecutorThreads |执行回调方法的线程数量 |否|cpu数量 | |
 |clientOnewaySemaphoreValue |单向请求流量控制 |否|65535 | |
 |clientAsyncSemaphoreValue |异步请求流量控制 |否|65535 | |
 |channelNotActiveInterval |检查连接是否关闭 |否|1000 * 60 ms| |
