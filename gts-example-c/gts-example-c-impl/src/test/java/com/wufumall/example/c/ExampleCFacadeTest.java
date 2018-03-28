@@ -1,12 +1,12 @@
 package com.wufumall.example.c;
 
-import com.wufumall.SpringBootBaseTestCase;
-import com.wufumall.core.dto.result.BaseCommonResult;
-import com.wufumall.example.c.facade.ExampleCFacade;
-import com.wufumall.example.c.request.ExampleCInsertRequest;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.wufumall.SpringBootBaseTestCase;
+import com.wufumall.example.c.facade.BaseCommonResult;
+import com.wufumall.example.c.facade.ExampleCFacade;
+import com.wufumall.example.c.request.ExampleCInsertRequest;
 
 import lombok.extern.slf4j.Slf4j;
 

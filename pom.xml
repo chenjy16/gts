@@ -14,11 +14,12 @@
 		</parent>
 	
 	    <modules>
+	       	<module>gts-remoting</module>
 	        <module>gts-core</module>
 	        <module>gts-manage</module>
 	        <module>gts-dubbo</module>
 	        <module>gts-nameserver</module>
-	       	<module>gts-remoting</module>
+	    
 	    	<module>gts-example-a</module>
 	        <module>gts-example-b</module>
 	        <module>gts-example-c</module>
