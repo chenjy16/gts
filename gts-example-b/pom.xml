@@ -32,21 +32,11 @@
    <parent> 
       <groupId>com.wf.gts</groupId>
 	  <artifactId>gts</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>com.wufumall.user.impl</groupId>-->
-            <!--<artifactId>wf-user-impl</artifactId>-->
-            <!--<version>0.0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.wufumall.user.api</groupId>-->
-            <!--<artifactId>wf-user-api</artifactId>-->
-            <!--<version>0.0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
-        <!-- guava -->
+     
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -79,60 +69,15 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>${hamcrest.core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.core.version}</version>
-            <scope>test</scope>
-        </dependency>
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Core JAR is absolutely necessary to use Simons (Stopwatch, etc.) -->
-        <dependency>
-            <groupId>org.javasimon</groupId>
-            <artifactId>javasimon-core</artifactId>
-            <version>${javasimon.version}</version>
-        </dependency>
-        <!-- This one allows monitoring JDBC calls (proxy driver) -->
-        <dependency>
-            <groupId>org.javasimon</groupId>
-            <artifactId>javasimon-jdbc41</artifactId>
-            <version>${javasimon.version}</version>
-        </dependency>
-        <!-- JavaEE support, servlet filter, EJB/CDI interceptor -->
-        <dependency>
-            <groupId>org.javasimon</groupId>
-            <artifactId>javasimon-javaee</artifactId>
-            <version>${javasimon.version}</version>
-        </dependency>
-        <!-- Spring support, AOP interceptor, MVC handler interceptor -->
-        <dependency>
-            <groupId>org.javasimon</groupId>
-            <artifactId>javasimon-spring</artifactId>
-            <version>${javasimon.version}</version>
-        </dependency>
-        <!-- Embedded Java Simon web console -->
-        <dependency>
-            <groupId>org.javasimon</groupId>
-            <artifactId>javasimon-console-embed</artifactId>
-            <version>${javasimon.version}</version>
-        </dependency>
+      
 
-        <!-- Spring Kafka -->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
 
     </dependencies>
 

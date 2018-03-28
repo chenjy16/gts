@@ -22,12 +22,6 @@
 			<version>4.3.7.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.wufumall</groupId>
-			<artifactId>wufumall-support-core</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
         <dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>

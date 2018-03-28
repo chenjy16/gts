@@ -1,13 +1,15 @@
 package com.wufumall.example.b.service;
 
-import com.wufumall.core.dto.result.BaseCommonResult;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.wufumall.example.b.dao.TxExampleBMapper;
+import com.wufumall.example.b.facade.BaseCommonResult;
 import com.wufumall.example.b.model.TxExampleB;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * 主要作为流程扭转以及异常捕获

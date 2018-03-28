@@ -1,11 +1,13 @@
 package com.wufumall.example.a.service;
 
-import com.alibaba.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.wf.gts.core.annotation.GtsTransaction;
-import com.wufumall.core.dto.result.BaseCommonResult;
 import com.wufumall.example.a.dao.TxExampleAMapper;
 import com.wufumall.example.a.model.TxExampleA;
+import com.wufumall.example.b.facade.BaseCommonResult;
 import com.wufumall.example.b.facade.ExampleBFacade;
 import com.wufumall.example.b.request.ExampleBInsertRequest;
 import com.wufumall.example.c.facade.ExampleCFacade;
@@ -13,8 +15,6 @@ import com.wufumall.example.c.request.ExampleCInsertRequest;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * 主要作为流程扭转以及异常捕获
@@ -80,7 +80,7 @@ public class ExampleAService{
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用A服务开始,请求参数为：{}",requestC);
-		BaseCommonResult resultC = exampleCFacade.insert(requestC);
+		com.wufumall.example.c.facade.BaseCommonResult resultC = exampleCFacade.insert(requestC);
 		log.info("调用A服务结束,返回结果为：{}",resultC);
 		
 		//int i = 12/0;   //主服务异常
@@ -114,7 +114,7 @@ public class ExampleAService{
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
-		BaseCommonResult resultC = exampleCFacade.insert(requestC);
+		com.wufumall.example.c.facade.BaseCommonResult resultC = exampleCFacade.insert(requestC);
 		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
@@ -147,7 +147,7 @@ public class ExampleAService{
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
-		BaseCommonResult resultC = exampleCFacade.insert(requestC);
+		com.wufumall.example.c.facade.BaseCommonResult resultC = exampleCFacade.insert(requestC);
 		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
@@ -180,7 +180,7 @@ public class ExampleAService{
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C insert服务开始,请求参数为：{}",requestC);
-		BaseCommonResult resultC = exampleCFacade.fail(requestC);
+		com.wufumall.example.c.facade.BaseCommonResult resultC = exampleCFacade.fail(requestC);
 		log.info("调用C insert服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);
@@ -213,7 +213,7 @@ public class ExampleAService{
 		requestC.setStatus(1);
 		requestC.setType(1);
 		log.info("调用C timeout服务开始,请求参数为：{}",requestC);
-		BaseCommonResult resultC = exampleCFacade.timeout(requestC);
+		com.wufumall.example.c.facade.BaseCommonResult resultC = exampleCFacade.timeout(requestC);
 		log.info("调用C timeout服务结束,返回结果为：{}",resultC);
 		
 		log.info("主流程接口结束,返回结果为：{}", result);

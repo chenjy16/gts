@@ -1,8 +1,6 @@
 package com.gts.redis.util;
 
 import com.gts.redis.util.spring.AppContextLauncher;
-import com.wufumall.core.Constants;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.StringRedisConnection;
@@ -116,7 +114,7 @@ public class JedisUtils {
       @Override
       public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
         StringRedisConnection stringRedisConn = (StringRedisConnection)connection;
-        return stringRedisConn.del(cacheKey)== Constants.CONSTANT_INT_ZERO ? false : true;
+        return stringRedisConn.del(cacheKey)== 0 ? false : true;
       }
     });   
 	}

@@ -1,11 +1,14 @@
 package com.wufumall.example.c.service;
 
-import com.wufumall.core.dto.result.BaseCommonResult;
-import com.wufumall.example.c.dao.TxExampleCMapper;
-import com.wufumall.example.c.model.TxExampleC;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.wufumall.example.c.dao.TxExampleCMapper;
+import com.wufumall.example.c.facade.BaseCommonResult;
+import com.wufumall.example.c.model.TxExampleC;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 主要作为流程扭转以及异常捕获

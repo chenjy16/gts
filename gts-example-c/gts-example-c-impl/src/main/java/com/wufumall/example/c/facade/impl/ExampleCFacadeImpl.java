@@ -1,19 +1,19 @@
 package com.wufumall.example.c.facade.impl;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.wf.gts.core.annotation.GtsTransaction;
-import com.wufumall.core.dto.result.BaseCommonResult;
 import com.wufumall.example.c.dao.TxExampleCMapper;
+import com.wufumall.example.c.facade.BaseCommonResult;
 import com.wufumall.example.c.facade.ExampleCFacade;
 import com.wufumall.example.c.model.TxExampleC;
 import com.wufumall.example.c.request.ExampleCInsertRequest;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 主要作为流程扭转以及异常捕获

@@ -22,21 +22,7 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
-        <dependency>
-			<groupId>com.wufumall</groupId>
-			<artifactId>wufumall-support-core</artifactId>
-			<version>1.0.1-SNAPSHOT</version>		
-        </dependency>
-        <dependency>
-            <groupId>com.wufumall</groupId>
-            <artifactId>wufumall-support-safety</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.wufumall</groupId>
-            <artifactId>wufumall-support-redis</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
+        
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
