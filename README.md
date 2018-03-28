@@ -64,10 +64,10 @@
 |namesrvAddr |注册中心地址 ip：port |是|无 |  |
 |manageName |manage实例名 |否| |  |
 |manageId |manage标识|是|1 |1：主  其它数字为备 |
-|registerBrokerTimeoutMills |注册超时时间 |否| | |
-|defaultThreadPoolNums |默认线程池数量|否| |  |
-|clientManageThreadPoolNums |manage线程池数量 |否| | |
-|clientManagerThreadPoolQueueCapacity |manage线程池队列数量 |否| | |
+|registerBrokerTimeoutMills |注册manage地址向nameserver的请求超时时间 |否|6000 ms | |
+|defaultThreadPoolNums |默认线程池数量|是| |  |
+|clientManageThreadPoolNums |客户端连接管理的线程池数量 |是| | |
+|clientManagerThreadPoolQueueCapacity |客户端连接管理的线程池队列数量 |是| | |
 
 
 
@@ -82,11 +82,11 @@
 |serverSelectorThreads |socket io线程数 |否|3 | |
 |serverOnewaySemaphoreValue |单向请求流量控制|否|256|  |
 |serverAsyncSemaphoreValue |异步请求流量控制 |否|64 | |
-|serverChannelMaxIdleTimeSeconds | 连接最大空闲时间|否|65535 | |
+|serverChannelMaxIdleTimeSeconds | 连接最大空闲时间|否|120s | |
 |serverSocketSndBufSize |发送缓存区 |否|65535| |
 |serverSocketRcvBufSize |接收缓存区 |否|65535| |
 |serverPooledByteBufAllocatorEnable | BUFFER分配方式|否|true | |
-|useEpollNativeSelector |io方式 |否|false | |
+|useEpollNativeSelector |io方式是否使用epoll模式 |否|false | |
 
 netty.client
 
@@ -96,7 +96,7 @@ netty.client
 |clientCallbackExecutorThreads |执行回调方法的线程数量 |否| | |
 |clientOnewaySemaphoreValue |单向请求流量控制 |否|65535 | |
 |clientAsyncSemaphoreValue |异步请求流量控制 |否|65535 | |
-|channelNotActiveInterval |检查连接是否关闭 |否|1000 * 60| |
+|channelNotActiveInterval |检查连接是否关闭 |否|1000 * 60 ms| |
 |clientChannelMaxIdleTimeSeconds |客户端连接最大空闲时间 |否|120s | |
 |clientSocketSndBufSize |发送缓冲区 |否|65535 | |
 |clientSocketRcvBufSize |接收缓冲区 |否|65535 | |
@@ -114,7 +114,7 @@ netty.client
 |serverSelectorThreads |socket io线程数 |否|3 | |
 |serverOnewaySemaphoreValue |单向请求流量控制|否|256|  |
 |serverAsyncSemaphoreValue |异步请求流量控制 |否|64 | |
-|serverChannelMaxIdleTimeSeconds | 连接最大空闲时间|否| | |
+|serverChannelMaxIdleTimeSeconds | 连接最大空闲时间|否| 120 s| |
 |serverSocketSndBufSize |发送缓存区 |否|65535| |
 |serverSocketRcvBufSize |接收缓存区 |否|65535| |
 |serverPooledByteBufAllocatorEnable | BUFFER分配方式|否|true | |
