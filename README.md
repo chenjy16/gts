@@ -52,13 +52,8 @@
  
 3、引入依赖
 
-    <dependency>
-    <groupId>com.wf.gts</groupId>
-    <artifactId>gts-dubbo</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-    
-    
+  参见example样例工程，样例工程分为三个,可用于参考测试使用
+    
 
 二、manage服务部署
 
