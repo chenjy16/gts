@@ -53,7 +53,7 @@
     <dependency>
     <groupId>com.wf.gts</groupId>
     <artifactId>gts-dubbo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     </dependency>
     
     
@@ -65,7 +65,7 @@
 |---- |----|----|------|----|
 |namesrvAddr |注册中心地址 ip：port;ip：port |是|无 | 多个用逗号分隔 |
 |manageName |manage实例名 |否| |  |
-|manageId |manage标识|是|1 |1：主  其它数字为备 |
+|manageId |manage标识|是|1 |支持主备模式ha,  配置为 1：主 , 否则为备 |
 |registerBrokerTimeoutMills |注册manage地址向nameserver的请求超时时间 |否|6000 ms | |
 |defaultThreadPoolNums |默认线程池数量|是| |  |
 |clientManageThreadPoolNums |客户端连接管理的线程池数量 |是| | |
