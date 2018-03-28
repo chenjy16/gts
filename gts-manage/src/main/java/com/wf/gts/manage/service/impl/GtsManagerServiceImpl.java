@@ -1,23 +1,26 @@
 package com.wf.gts.manage.service.impl;
 import java.util.Collection;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.gts.redis.util.JedisUtils;
 import com.wf.gts.common.beans.TransGroup;
 import com.wf.gts.common.beans.TransItem;
 import com.wf.gts.common.enums.TransRoleEnum;
 import com.wf.gts.common.enums.TransStatusEnum;
-import com.wf.gts.manage.constant.Constant;
+import com.wf.gts.manage.constant.Constants;
 import com.wf.gts.manage.service.GtsManagerService;
-import com.wufumall.redis.util.JedisUtils;
 
 @Service
 public class GtsManagerServiceImpl implements GtsManagerService{
@@ -94,14 +97,14 @@ public class GtsManagerServiceImpl implements GtsManagerService{
 
 
   private String cacheKey(String key) {
-      return String.format(Constant.REDIS_PRE_FIX, key);
+      return String.format(Constants.REDIS_PRE_FIX, key);
   }
 
 
 
   @Override
   public List<List<TransItem>> listTxTransactionItem() {
-    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constants.REDIS_KEYS);
     List<List<TransItem>>  lists=Lists.newArrayList();
     keys.stream().forEach(key->{
         final Map<String, String> entries = JedisUtils.getJedisInstance().execHgetAllToCache(key);
@@ -117,7 +120,7 @@ public class GtsManagerServiceImpl implements GtsManagerService{
 
   @Override
   public void removeCommitTxGroup() {
-    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constants.REDIS_KEYS);
     keys.stream().forEach(key -> {
         final Map<String, String> entries = JedisUtils.getJedisInstance().execHgetAllToCache(key);
         final Collection<String> values = entries.values();
@@ -140,7 +143,7 @@ public class GtsManagerServiceImpl implements GtsManagerService{
    */
   @Override
   public void removeAllCommit() {
-	    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constant.REDIS_KEYS);
+	    Collection<String> keys=JedisUtils.getJedisInstance().execKeysToCache(Constants.REDIS_KEYS);
 	    keys.stream().forEach(key -> {
 	        final Map<String, String> entries = JedisUtils.getJedisInstance().execHgetAllToCache(key);
 	        final Collection<String> values = entries.values();
