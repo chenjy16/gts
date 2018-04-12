@@ -13,6 +13,7 @@ jdk1.8
 
 lombok
 
+redis
 
 
 代码工程介绍
@@ -28,6 +29,7 @@ lombok
  
  gts-nameserver：注册中心模块
 
+ reids : 缓存工具类
 
 
  框架特性
