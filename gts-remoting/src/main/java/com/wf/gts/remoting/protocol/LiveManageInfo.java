@@ -1,22 +1,18 @@
 package com.wf.gts.remoting.protocol;
 
+import java.util.List;
 
 public class LiveManageInfo extends RemotingSerializable {
   
-    GtsManageLiveAddr gtsManageLiveAddr;
+    List<GtsManageLiveAddr> gtsManageLiveAddrs;
 
-    public GtsManageLiveAddr getGtsManageLiveAddr() {
-      return gtsManageLiveAddr;
+    public List<GtsManageLiveAddr> getGtsManageLiveAddrs() {
+      return gtsManageLiveAddrs;
     }
 
-    public void setGtsManageLiveAddr(GtsManageLiveAddr gtsManageLiveAddr) {
-      this.gtsManageLiveAddr = gtsManageLiveAddr;
+    public void setGtsManageLiveAddrs(List<GtsManageLiveAddr> gtsManageLiveAddrs) {
+      this.gtsManageLiveAddrs = gtsManageLiveAddrs;
     }
 
-    
-
-    
-    
-    
     
 }
