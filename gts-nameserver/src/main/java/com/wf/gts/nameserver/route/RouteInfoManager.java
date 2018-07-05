@@ -1,16 +1,16 @@
 package com.wf.gts.nameserver.route;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wf.gts.remoting.core.MixAll;
 import com.wf.gts.remoting.core.RemotingUtil;
 import com.wf.gts.remoting.protocol.GtsManageLiveAddr;
 import com.wf.gts.remoting.protocol.GtsManageLiveInfo;
@@ -39,18 +39,13 @@ public class RouteInfoManager {
    * @return
    */
   public byte[] getGtsManagerInfo() {
+    
       LiveManageInfo liveManageInfo = new LiveManageInfo();
-      Optional<GtsManageLiveAddr> brokerLiveAddr=this.liveTable.values().stream().
-      filter(item->Objects.nonNull(item)&&item.getGtsManageId()==MixAll.MASTER_ID).
+      List<GtsManageLiveAddr>  brokerLiveAddrs=this.liveTable.values().stream().
+      filter(item->Objects.nonNull(item)).
       map(item-> new GtsManageLiveAddr(item.getGtsManageId(), item.getLastUpdateTimestamp(),item.getGtsManageName(), item.getGtsManageAddr())).
-      findFirst();
-      if(!brokerLiveAddr.isPresent()){
-        brokerLiveAddr=this.liveTable.values().stream().
-        filter(item->Objects.nonNull(item)).
-        map(item-> new GtsManageLiveAddr(item.getGtsManageId(), item.getLastUpdateTimestamp(),item.getGtsManageName(), item.getGtsManageAddr())).
-        findFirst();
-      }
-      liveManageInfo.setGtsManageLiveAddr(brokerLiveAddr.get());
+      collect(Collectors.toList());
+      liveManageInfo.setGtsManageLiveAddrs(brokerLiveAddrs);
       return liveManageInfo.encode();
   }
 
