@@ -6,6 +6,7 @@ import com.wf.gts.common.beans.TransGroup;
 import com.wf.gts.common.beans.TransItem;
 import com.wf.gts.core.client.ClientInstance;
 import com.wf.gts.core.exception.GtsManageException;
+import com.wf.gts.core.lb.ConsistentHashLoadBalancer;
 import com.wf.gts.core.service.GtsMessageService;
 import com.wf.gts.remoting.exception.RemotingConnectException;
 import com.wf.gts.remoting.exception.RemotingException;
@@ -17,6 +18,7 @@ import com.wf.gts.remoting.header.FindTransGroupStatusRequestHeader;
 import com.wf.gts.remoting.header.FindTransGroupStatusResponseHeader;
 import com.wf.gts.remoting.header.PreCommitRequestHeader;
 import com.wf.gts.remoting.header.RollBackTransGroupRequestHeader;
+import com.wf.gts.remoting.protocol.GtsManageLiveAddr;
 import com.wf.gts.remoting.protocol.RemotingCommand;
 import com.wf.gts.remoting.protocol.RemotingSerializable;
 import com.wf.gts.remoting.protocol.RequestCode;
@@ -44,7 +46,10 @@ public class GtsMessageServiceImpl implements GtsMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.SAVE_TRANSGROUP, null);
         byte[] body = RemotingSerializable.encode(tx);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
+        //一致性哈希
+        GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(gtsManageLiveAddr.getGtsManageAddr(), timeout, request);
+        
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -65,7 +70,8 @@ public class GtsMessageServiceImpl implements GtsMessageService {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ADD_TRANS, header);
         byte[] body = RemotingSerializable.encode(txTransactionItem);
         request.setBody(body);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
+        GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(gtsManageLiveAddr.getGtsManageAddr(), timeout, request);
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -84,7 +90,8 @@ public class GtsMessageServiceImpl implements GtsMessageService {
       FindTransGroupStatusRequestHeader header=new FindTransGroupStatusRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.FIND_TRANSGROUP_STATUS,header);
-      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request);
+      GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(gtsManageLiveAddr.getGtsManageAddr(), timeout, request);
       if(res.getCode()==ResponseCode.SUCCESS){
         FindTransGroupStatusResponseHeader resHeader=(FindTransGroupStatusResponseHeader)res.decodeCommandCustomHeader(FindTransGroupStatusResponseHeader.class);
         return resHeader.getStatus();
@@ -105,7 +112,8 @@ public class GtsMessageServiceImpl implements GtsMessageService {
       RollBackTransGroupRequestHeader  header=new RollBackTransGroupRequestHeader();
       header.setTxGroupId(txGroupId);
       RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.ROLLBACK_TRANSGROUP, header);
-      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request); 
+      GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+      RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(gtsManageLiveAddr.getGtsManageAddr(), timeout, request); 
       if(res.getCode()==ResponseCode.SUCCESS){
         return true;
       }
@@ -127,7 +135,8 @@ public class GtsMessageServiceImpl implements GtsMessageService {
         PreCommitRequestHeader header=new PreCommitRequestHeader();
         header.setTxGroupId(txGroupId);
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.PRE_COMMIT_TRANS, header);
-        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(), timeout, request); 
+        GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+        RemotingCommand res=clientInstance.getClientAPIImpl().sendMessageSync(gtsManageLiveAddr.getGtsManageAddr(), timeout, request); 
         if(res.getCode()==ResponseCode.SUCCESS){
           return true;
         }
@@ -158,7 +167,8 @@ public class GtsMessageServiceImpl implements GtsMessageService {
           byte[] body = RemotingSerializable.encode(tx);
           request.setBody(body);
           try {
-            clientInstance.getClientAPIImpl().invokeOnewayImpl(clientInstance.getLiveManageRef().get().getGtsManageLiveAddr().getGtsManageAddr(),request ,3000);
+            GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(clientInstance.getConfig().getClientIP(), clientInstance.getLiveManageRef().get().getGtsManageLiveAddrs());
+            clientInstance.getClientAPIImpl().invokeOnewayImpl(gtsManageLiveAddr.getGtsManageAddr(),request ,3000);
           } catch (RemotingConnectException | RemotingTooMuchRequestException | RemotingTimeoutException
               | RemotingSendRequestException | InterruptedException e) {
             e.printStackTrace();

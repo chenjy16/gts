@@ -1,16 +1,13 @@
 package com.wf.gts.core.concurrent;
 import java.util.concurrent.ExecutionException;
-
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
 
 /**
- * 采用google cache 来缓存task类 (放弃concurrentHashMap)
+ * 采用google cache来缓存task类 
  */
 public class BlockTaskHelper {
 

@@ -22,7 +22,7 @@ public abstract class GtsTransAspect {
     @Around("gtsTransInterceptor()")
     public Object interceptCompensableMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         return gtsTransInterceptor.interceptor(proceedingJoinPoint);
-}
+    }
 
     public abstract int getOrder();
 }

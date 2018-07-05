@@ -14,8 +14,10 @@ import com.alibaba.fastjson.JSON;
 import com.wf.gts.core.client.processor.ClientRemotingProcessor;
 import com.wf.gts.core.config.ClientConfig;
 import com.wf.gts.core.exception.GtsClientException;
+import com.wf.gts.core.lb.ConsistentHashLoadBalancer;
 import com.wf.gts.remoting.exception.RemotingException;
 import com.wf.gts.remoting.header.UnregisterClientRequestHeader;
+import com.wf.gts.remoting.protocol.GtsManageLiveAddr;
 import com.wf.gts.remoting.protocol.HeartbeatData;
 import com.wf.gts.remoting.protocol.LiveManageInfo;
 import com.wf.gts.remoting.protocol.RemotingCommand;
@@ -123,7 +125,9 @@ public class ClientInstance {
     private void unregisterClientWithLock() {
         try {
             if (lockHeartbeat.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-               unregisterClient(liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), config.buildMQClientId(), config.getTimeoutMillis());
+               //一致性哈希
+               GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(config.getClientIP(), liveManageRef.get().getGtsManageLiveAddrs());
+               unregisterClient(gtsManageLiveAddr.getGtsManageAddr(), config.buildMQClientId(), config.getTimeoutMillis());
             }
         }catch (Exception e) {
             LOGGER.warn("客户端注销异常:{}", e);
@@ -175,7 +179,9 @@ public class ClientInstance {
       heartbeatData.setClientID(config.buildMQClientId());
       if (Objects.nonNull(liveManageRef.get())) {
           try {
-              RemotingCommand res= clientAPIImpl.sendHearbeat(liveManageRef.get().getGtsManageLiveAddr().getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
+              //一致性哈希
+              GtsManageLiveAddr gtsManageLiveAddr=ConsistentHashLoadBalancer.doSelect(config.getClientIP(), liveManageRef.get().getGtsManageLiveAddrs());
+              RemotingCommand res= clientAPIImpl.sendHearbeat(gtsManageLiveAddr.getGtsManageAddr(), heartbeatData, config.getTimeoutMillis());
               LOGGER.info("发送心跳信息:{}",JSON.toJSONString(res));
           } catch (Exception e) {
               LOGGER.info("发送心跳异常:{}",e);
@@ -195,7 +201,6 @@ public class ClientInstance {
     private boolean updateRouteInfoFromNameServer() {
         try {
             if (lockNamesrv.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-              
                 LiveManageInfo liveManageInfo=this.clientAPIImpl.getGtsClusterInfo(config.getNamesrvAddr(),config.getTimeoutMillis());
                 LOGGER.info("更新路由信息:{}",JSON.toJSONString(liveManageInfo));
                 liveManageRef.set(liveManageInfo);

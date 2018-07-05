@@ -10,12 +10,14 @@ public interface Constant {
     public static final int CONSTANT_INT_ZERO = 0;
     /**常量int类型2  **/
     public static final int CONSTANT_INT_TWO = 2;
-    /**常量int类型2  **/
-    public static final int CONSTANT_INT_FIVE = 5;
+    /**常量int类型4  **/
+    public static final int CONSTANT_INT_FOUR = 4;
     /** 常量int类型11 **/
     public static final int CONSTANT_INT_ELEVEN = 11;
     /** 常量int类型100 **/
     public static final  int CONSTANT_INT_HUNDRED = 100;
+    /** 常量int类型虚拟节点数量 **/
+    public static final  int  VIRTUAL_NODES= 128;
     /** 常量int类型1000 **/
     public static final  long CONSTANT_INT_THOUSAND = 1000L;
     

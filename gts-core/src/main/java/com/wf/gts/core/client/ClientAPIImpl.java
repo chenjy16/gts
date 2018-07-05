@@ -84,7 +84,9 @@ public class ClientAPIImpl {
    * @throws InterruptedException
    */
   public RemotingCommand sendMessageSync( String addr, long timeoutMillis, RemotingCommand request) throws RemotingException,InterruptedException {
-      return remotingClient.invokeSync(addr, request, timeoutMillis);
+      
+    
+    return remotingClient.invokeSync(addr, request, timeoutMillis);
   }
   
   
