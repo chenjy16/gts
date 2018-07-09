@@ -7,7 +7,7 @@ import com.wf.gts.remoting.protocol.GtsManageLiveAddr;
 
 
 /**
- * 一致性hash算法，同样的请求（第一参数）会打到同样的节点
+ * 一致性hash算法，同样的客户端ip会打到同样的节点
  */
 public class ConsistentHashLoadBalancer  {
 
