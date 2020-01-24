@@ -63,9 +63,7 @@ redis
 
 ![Image text](https://github.com/chenjy16/gts/blob/master/gts.png)
 
-![Image text](https://raw.github.com/chenjy16/repositpry/master/gts/gts.png)
-
-
+![Image text](https://raw.github.com/chenjy16/gts/raw/master/gts/gts.png)
 
 
 
