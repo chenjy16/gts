@@ -28,7 +28,7 @@
 	    <properties>
 	      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	      <jdk.version>1.8</jdk.version>
-	      <spring.version>4.3.9.RELEASE</spring.version>
+	      <spring.version>5.2.22.RELEASE</spring.version>
 	      <spring-cloud.version>Dalston.SR1</spring-cloud.version>
 	      <dubbo.version>2.8.4</dubbo.version>
 	      <mongo.driver.version>3.5.0</mongo.driver.version>
